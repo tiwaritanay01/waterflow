@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html class="h-full overflow-hidden" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WaterFlow OS — Municipal Water Command Center</title>
+<meta name="description" content="GIS-enabled community water allocation and complaint-intelligence platform for municipal operations."/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        canvas: '#F0F8FF',
+        deepBlue: '#0056B3',
+        vibrantBlue: '#3399FF',
+        oliveGreen: '#6B8E23',
+        warmAmber: '#C27A29',
+        critRed: '#D32F2F',
+        headText: '#1A1A1A',
+        secText: '#4A4A4A',
+        cardBorder: '#D8E5F0',
+        borderLight: '#DDE7F0',
+        borderMid: '#E2EDF7',
+      },
+      fontFamily: {
+        sans: ['Public Sans', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+      }
+    }
+  }
+}
+</script>
+<style>
+html, body { height: 100vh; max-height: 100vh; overflow: hidden; margin: 0; padding: 0; }
+.custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+.custom-scroll::-webkit-scrollbar-track { background: #F0F8FF; }
+.custom-scroll::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+.gis-grid {
+  background-size: 28px 28px;
+  background-image:
+    linear-gradient(to right, rgba(0,86,179,0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,86,179,0.04) 1px, transparent 1px);
+}
+@keyframes pulse-ring {
+  0% { transform: scale(0.92); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 0.15; }
+  100% { transform: scale(0.92); opacity: 0.8; }
+}
+.pulse-amber { animation: pulse-ring 2.2s infinite cubic-bezier(0.4, 0, 0.6, 1); }
+@keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in { animation: fade-in 0.3s ease-out; }
+@keyframes sim-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(107,142,35,0.3); } 50% { box-shadow: 0 0 0 6px rgba(107,142,35,0); } }
+.sim-active { animation: sim-pulse 1.5s ease-in-out 2; }
+.ward-poly { cursor: pointer; transition: fill-opacity 0.2s; }
+.ward-poly:hover { fill-opacity: 0.25 !important; }
+.tanker-marker { cursor: pointer; transition: transform 0.2s; }
+.tanker-marker:hover { transform: scale(1.15); }
+.layer-btn.active { background: #0056B3 !important; color: white !important; }
+.layer-btn.active i { color: #3399FF !important; }
+.search-result { cursor: pointer; }
+.search-result:hover { background: #EBF5FF; }
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 999; padding: 8px 20px; border-radius: 8px; font-size: 12px; font-weight: 700; color: white; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body class="h-screen w-screen flex flex-col bg-canvas text-headText font-sans antialiased overflow-hidden">
+
+<!-- TOAST NOTIFICATION -->
+<div class="toast bg-oliveGreen" id="toast">Action completed</div>
+
+<!-- TOP HEADER BAR -->
+<header class="h-14 flex-shrink-0 bg-white border-b border-cardBorder shadow-xs px-4 flex items-center justify-between z-30">
+  <div class="flex items-center space-x-3">
+    <div class="w-8 h-8 rounded-lg flex-shrink-0 bg-deepBlue shadow-sm flex items-center justify-center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="white"/></svg>
+    </div>
+    <div class="flex items-center space-x-2">
+      <span class="font-extrabold text-base tracking-tight text-deepBlue">WaterFlow OS</span>
+      <span class="px-1.5 py-0.5 bg-emerald-50 text-oliveGreen border border-oliveGreen/30 text-[10px] font-bold rounded flex items-center space-x-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-oliveGreen animate-pulse"></span>
+        <span>LIVE</span>
+      </span>
+      <span class="hidden md:inline-block px-2 py-0.5 bg-slate-100 text-secText text-[10px] font-semibold rounded border border-cardBorder">Municipal Command Center</span>
+    </div>
+  </div>
+  <!-- Center: Search -->
+  <div class="flex items-center space-x-3 flex-1 max-w-md mx-4 relative">
+    <div class="relative w-full" id="search-container">
+      <i class="w-3.5 h-3.5 text-secText absolute left-2.5 top-2.5" data-lucide="search"></i>
+      <input id="search-input" class="w-full pl-8 pr-3 py-1.5 bg-[#F8FAFC] border border-cardBorder rounded-lg text-xs text-headText placeholder:text-secText/70 focus:outline-none focus:ring-1 focus:ring-vibrantBlue focus:bg-white transition-all" placeholder="Search Ward, Tanker, or ID..." type="text" autocomplete="off"/>
+      <div id="search-results" class="absolute top-full left-0 right-0 mt-1 bg-white border border-cardBorder rounded-lg shadow-lg z-50 hidden max-h-48 overflow-y-auto custom-scroll"></div>
+    </div>
+    <div class="hidden xl:flex items-center space-x-1.5 text-[11px] text-secText font-mono whitespace-nowrap bg-blue-50/70 border border-blue-100 px-2.5 py-1 rounded-md">
+      <i class="w-3 h-3 text-deepBlue" data-lucide="clock"></i>
+      <span id="live-clock">Sep 10, 23:14 IST</span>
+    </div>
+  </div>
+  <!-- Right Controls -->
+  <div class="flex items-center space-x-2.5">
+    <button class="flex items-center space-x-1 px-2 py-1 rounded-lg bg-red-50 border border-red-200 text-critRed text-xs font-bold hover:bg-red-100 transition-colors" onclick="switchTab('alerts-view')">
+      <span class="w-2 h-2 rounded-full bg-critRed animate-ping"></span>
+      <span>3 Critical</span>
+    </button>
+    <button class="relative p-1.5 rounded-lg text-secText hover:text-deepBlue hover:bg-blue-50/80 transition-colors" title="Notifications">
+      <i class="w-4 h-4" data-lucide="bell"></i>
+      <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-warmAmber ring-2 ring-white"></span>
+    </button>
+    <div class="w-8 h-8 rounded-full bg-deepBlue text-white flex items-center justify-center font-bold text-xs shadow-sm ring-2 ring-blue-100 cursor-pointer" title="Admin">AD</div>
+  </div>
+</header>
+
+<!-- BODY -->
+<div class="h-[calc(100vh-56px)] flex overflow-hidden">
+  <!-- LEFT SIDEBAR -->
+  <aside class="w-56 flex-shrink-0 bg-deepBlue text-white flex flex-col justify-between p-2.5 select-none border-r border-blue-900/30">
+    <div class="space-y-2">
+      <div class="px-2 py-1 flex items-center justify-between text-[10px] uppercase tracking-wider text-blue-200 font-bold border-b border-white/10 pb-2">
+        <span>Control Console</span>
+      </div>
+      <nav class="space-y-0.5" id="sidebar-nav">
+        <button class="nav-tab-btn w-full flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-white/20 text-white border-l-[3px] border-vibrantBlue shadow-xs transition-all text-left" data-tab="overview-tab" onclick="switchTab('overview-tab')">
+          <i class="w-3.5 h-3.5 text-vibrantBlue" data-lucide="layout-dashboard"></i>
+          <span>Live Overview</span>
+        </button>
+        <button class="nav-tab-btn w-full flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-blue-100 hover:bg-white/10 border-l-[3px] border-transparent transition-all text-left" data-tab="spatial-tab" onclick="switchTab('spatial-tab')">
+          <i class="w-3.5 h-3.5" data-lucide="map"></i>
+          <span>GIS Spatial Map</span>
+        </button>
+        <button class="nav-tab-btn w-full flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-blue-100 hover:bg-white/10 border-l-[3px] border-transparent transition-all text-left" data-tab="queue-tab" onclick="switchTab('queue-tab')">
+          <i class="w-3.5 h-3.5" data-lucide="list-ordered"></i>
+          <span class="flex-1">Allocation Queue</span>
+          <span class="px-1.5 py-0.5 bg-warmAmber text-white text-[9px] font-bold rounded-full leading-none">4</span>
+        </button>
+        <button class="nav-tab-btn w-full flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-blue-100 hover:bg-white/10 border-l-[3px] border-transparent transition-all text-left" data-tab="fleet-tab" onclick="switchTab('fleet-tab')">
+          <i class="w-3.5 h-3.5" data-lucide="truck"></i>
+          <span class="flex-1">Fleet & Logistics</span>
+          <span class="text-[9px] text-blue-200 font-mono">18/25</span>
+        </button>
+        <button class="nav-tab-btn w-full flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-blue-100 hover:bg-white/10 border-l-[3px] border-transparent transition-all text-left" data-tab="forecast-tab" onclick="switchTab('forecast-tab')">
+          <i class="w-3.5 h-3.5" data-lucide="trending-up"></i>
+          <span>Complaint & Forecast</span>
+        </button>
+        <button class="nav-tab-btn w-full flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-blue-100 hover:bg-white/10 border-l-[3px] border-transparent transition-all text-left" data-tab="equity-tab" onclick="switchTab('equity-tab')">
+          <i class="w-3.5 h-3.5" data-lucide="scale"></i>
+          <span>Equity & Impact</span>
+        </button>
+      </nav>
+    </div>
+    <!-- Sidebar Footer -->
+    <div class="space-y-2 border-t border-white/10 pt-2 text-blue-100">
+      <div class="bg-black/20 rounded-lg p-2 text-xs">
+        <div class="flex justify-between text-[10px] mb-1">
+          <span class="text-blue-200">Daily Quota</span>
+          <span class="font-bold text-white font-mono" id="sidebar-quota">286 / 420 KL</span>
+        </div>
+        <div class="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
+          <div class="bg-vibrantBlue h-1.5 rounded-full transition-all duration-700" id="sidebar-quota-bar" style="width: 68%"></div>
+        </div>
+        <div class="flex items-center justify-between text-[9px] text-blue-300 mt-1">
+          <span id="sidebar-pct">68% Allocated</span>
+          <span class="text-emerald-300 font-semibold" id="sidebar-reserve">134 KL Reserve</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-between text-[10px] px-1 text-blue-200">
+        <span class="flex items-center space-x-1.5">
+          <span class="w-2 h-2 rounded-full bg-oliveGreen"></span>
+          <span id="sidebar-tankers">17 Active Tankers</span>
+        </span>
+        <span class="font-mono text-[9px] text-blue-300">Prototype</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 h-full min-w-0 overflow-hidden flex flex-col gap-1.5 p-1.5">
+    <!-- KPI ROW -->
+    <section class="grid grid-cols-6 gap-1.5 flex-shrink-0" id="kpi-row">
+      <!-- KPI 1 -->
+      <div class="bg-white rounded-lg px-2 py-1.5 border border-cardBorder shadow-2xs flex items-center justify-between">
+        <div class="min-w-0">
+          <div class="text-[9px] font-bold text-secText uppercase tracking-wider truncate">Active Requests</div>
+          <div class="flex items-baseline space-x-1">
+            <span class="text-base font-black text-headText" id="kpi-requests">142</span>
+            <span class="text-[9px] font-bold text-warmAmber">+12%</span>
+          </div>
+        </div>
+        <div class="p-1 rounded bg-blue-50 text-deepBlue flex-shrink-0"><i class="w-3.5 h-3.5" data-lucide="droplet"></i></div>
+      </div>
+      <!-- KPI 2 -->
+      <div class="bg-white rounded-lg px-2 py-1.5 border border-cardBorder shadow-2xs flex items-center justify-between">
+        <div class="min-w-0">
+          <div class="text-[9px] font-bold text-secText uppercase tracking-wider truncate">Fleet Available</div>
+          <div class="flex items-baseline space-x-1">
+            <span class="text-base font-black text-headText" id="kpi-fleet">18</span>
+            <span class="text-[10px] font-bold text-secText">/25</span>
+            <span class="text-[9px] font-bold text-deepBlue ml-0.5">72%</span>
+          </div>
+        </div>
+        <div class="p-1 rounded bg-blue-50 text-deepBlue flex-shrink-0"><i class="w-3.5 h-3.5" data-lucide="truck"></i></div>
+      </div>
+      <!-- KPI 3 -->
+      <div class="bg-white rounded-lg px-2 py-1.5 border border-cardBorder shadow-2xs flex items-center justify-between">
+        <div class="min-w-0">
+          <div class="text-[9px] font-bold text-secText uppercase tracking-wider truncate">Water Available</div>
+          <div class="flex items-baseline space-x-1">
+            <span class="text-base font-black text-headText" id="kpi-water">286</span>
+            <span class="text-[9px] font-bold text-secText">KL</span>
+            <span class="text-[9px] font-semibold text-oliveGreen ml-0.5">62% bal</span>
+          </div>
+        </div>
+        <div class="p-1 rounded bg-blue-50 text-deepBlue flex-shrink-0"><i class="w-3.5 h-3.5" data-lucide="droplets"></i></div>
+      </div>
+      <!-- KPI 4 -->
+      <div class="bg-white rounded-lg px-2 py-1.5 border border-cardBorder shadow-2xs flex items-center justify-between">
+        <div class="min-w-0">
+          <div class="text-[9px] font-bold text-secText uppercase tracking-wider truncate">Unmet Demand</div>
+          <div class="flex items-baseline space-x-1">
+            <span class="text-base font-black text-warmAmber" id="kpi-unmet">184</span>
+            <span class="text-[9px] font-bold text-secText">KL</span>
+            <span class="text-[9px] font-bold text-critRed ml-0.5">↑14%</span>
+          </div>
+        </div>
+        <div class="p-1 rounded bg-amber-50 text-warmAmber flex-shrink-0"><i class="w-3.5 h-3.5" data-lucide="arrow-up-right"></i></div>
+      </div>
+      <!-- KPI 5 -->
+      <div class="bg-white rounded-lg px-2 py-1.5 border border-cardBorder shadow-2xs flex items-center justify-between">
+        <div class="min-w-0">
+          <div class="text-[9px] font-bold text-secText uppercase tracking-wider truncate">Equity Index</div>
+          <div class="flex items-baseline space-x-1">
+            <span class="text-base font-black text-oliveGreen" id="kpi-equity">84%</span>
+            <span class="text-[9px] text-secText font-semibold truncate">&gt;90% tgt</span>
+          </div>
+        </div>
+        <div class="p-1 rounded bg-emerald-50 text-oliveGreen flex-shrink-0"><i class="w-3.5 h-3.5" data-lucide="bar-chart-2"></i></div>
+      </div>
+      <!-- KPI 6 -->
+      <div class="bg-white rounded-lg px-2 py-1.5 border border-cardBorder shadow-2xs flex items-center justify-between cursor-pointer hover:border-warmAmber transition-colors" onclick="switchTab('alerts-view')">
+        <div class="min-w-0">
+          <div class="text-[9px] font-bold text-secText uppercase tracking-wider truncate">Critical Alerts</div>
+          <div class="flex items-baseline space-x-1">
+            <span class="text-base font-black text-warmAmber" id="kpi-alerts">3</span>
+            <span class="text-[9px] font-bold text-warmAmber">Wards &gt;48h</span>
+          </div>
+        </div>
+        <div class="p-1 rounded bg-amber-100 text-warmAmber flex-shrink-0"><i class="w-3.5 h-3.5" data-lucide="alert-triangle"></i></div>
+      </div>
+    </section>
+
+    <!-- TAB PANELS CONTAINER -->
+    <div class="flex-1 min-h-0 overflow-hidden relative">
+
+      <!-- ========= TAB 1: LIVE OVERVIEW ========= -->
+      <div class="tab-pane h-full w-full flex flex-col gap-1.5 overflow-hidden" id="overview-tab">
+        <!-- TOP: Map + Right Column -->
+        <div class="flex-1 min-h-0 flex gap-1.5">
+          <!-- LEFT: GIS Map -->
+          <div class="w-[62%] h-full flex flex-col gap-1.5 min-h-0">
+            <div class="flex-1 min-h-0 bg-white rounded-xl border border-cardBorder shadow-sm flex flex-col overflow-hidden">
+              <!-- Map Header -->
+              <div class="px-2.5 py-1 border-b border-cardBorder flex items-center justify-between bg-[#FBFDFF] flex-shrink-0">
+                <div class="flex items-center space-x-2">
+                  <span class="w-2 h-2 rounded-full bg-critRed animate-ping"></span>
+                  <span class="font-bold text-[11px] text-headText">Live Allocation Map</span>
+                  <span class="text-[8px] text-secText">Demand, vulnerability, coverage & tanker movement</span>
+                </div>
+                <div class="flex items-center space-x-1 text-[9px]" id="layer-controls">
+                  <button class="layer-btn active px-1.5 py-0.5 rounded font-semibold flex items-center space-x-0.5" data-layer="demand" onclick="toggleLayer(this)">
+                    <i class="w-2.5 h-2.5" data-lucide="flame"></i><span>Demand</span>
+                  </button>
+                  <button class="layer-btn active px-1.5 py-0.5 rounded bg-slate-100 text-secText font-medium" data-layer="vulnerability" onclick="toggleLayer(this)">Vuln</button>
+                  <button class="layer-btn active px-1.5 py-0.5 rounded bg-slate-100 text-secText font-medium" data-layer="tankers" onclick="toggleLayer(this)">Tankers</button>
+                  <button class="layer-btn active px-1.5 py-0.5 rounded bg-slate-100 text-secText font-medium" data-layer="routes" onclick="toggleLayer(this)">Routes</button>
+                  <button class="layer-btn active px-1.5 py-0.5 rounded bg-slate-100 text-secText font-medium" data-layer="signals" onclick="toggleLayer(this)">Signals</button>
+                </div>
+              </div>
+              <!-- GIS Canvas -->
+              <div class="flex-1 min-h-0 relative bg-[#EAF2F9] gis-grid overflow-hidden flex flex-col justify-between p-1.5 select-none" id="map-canvas">
+                <!-- SVG Ward Geometry -->
+                <svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 700 340" id="map-svg">
+                  <!-- Ward Polygons -->
+                  <g id="layer-demand">
+                    <polygon class="ward-poly" data-ward="08" fill="#0056b3" fill-opacity="0.06" points="35,20 200,15 260,100 140,155 40,120" stroke="#0056b3" stroke-dasharray="3,3" stroke-width="1.5" onclick="selectWard('08')"/>
+                    <text fill="#0056B3" font-size="9" font-weight="700" opacity="0.6" x="90" y="72">WARD 08</text>
+                    <polygon class="ward-poly" data-ward="12" fill="#6b8e23" fill-opacity="0.07" points="200,15 430,20 450,135 260,100" stroke="#6b8e23" stroke-width="1.5" onclick="selectWard('12')"/>
+                    <text fill="#6B8E23" font-size="9" font-weight="700" opacity="0.7" x="295" y="62">WARD 12 (Stable)</text>
+                    <polygon class="ward-poly" data-ward="23" fill="#c27a29" fill-opacity="0.12" points="430,20 650,30 630,185 450,135" stroke="#c27a29" stroke-width="2" onclick="selectWard('23')"/>
+                    <text fill="#C27A29" font-size="9" font-weight="800" x="500" y="90">WARD 23 (42%)</text>
+                    <polygon class="ward-poly" data-ward="17" fill="#c27a29" fill-opacity="0.18" points="140,155 310,135 350,278 170,300 80,235" stroke="#c27a29" stroke-width="2.5" onclick="selectWard('17')"/>
+                    <text fill="#C27A29" font-size="10" font-weight="900" x="180" y="215">WARD 17 (#1)</text>
+                    <polygon class="ward-poly" data-ward="05" fill="#0056b3" fill-opacity="0.06" points="310,135 490,145 510,295 350,278" stroke="#0056b3" stroke-width="1.5" onclick="selectWard('05')"/>
+                    <text fill="#0056B3" font-size="9" font-weight="700" opacity="0.6" x="380" y="220">WARD 05</text>
+                    <polygon class="ward-poly" data-ward="31" fill="#d32f2f" fill-opacity="0.12" points="490,145 630,185 620,325 510,295" stroke="#d32f2f" stroke-width="2" onclick="selectWard('31')"/>
+                    <text fill="#D32F2F" font-size="10" font-weight="800" x="530" y="250">WARD 31</text>
+                  </g>
+                  <!-- Vulnerability heatmap circles -->
+                  <g id="layer-vulnerability">
+                    <circle cx="200" cy="220" r="40" fill="#C27A29" fill-opacity="0.08" stroke="#C27A29" stroke-opacity="0.15" stroke-width="1"/>
+                    <circle cx="540" cy="100" r="35" fill="#C27A29" fill-opacity="0.08" stroke="#C27A29" stroke-opacity="0.15" stroke-width="1"/>
+                    <circle cx="560" cy="260" r="30" fill="#D32F2F" fill-opacity="0.08" stroke="#D32F2F" stroke-opacity="0.15" stroke-width="1"/>
+                  </g>
+                  <!-- Depots -->
+                  <circle cx="150" cy="90" fill="#3399FF" fill-opacity="0.25" r="14"/><circle cx="150" cy="90" fill="#0056B3" r="7"/>
+                  <text fill="#0056B3" font-size="8" font-weight="700" x="118" y="113">DEPOT #1</text>
+                  <circle cx="540" cy="105" fill="#3399FF" fill-opacity="0.2" r="10"/><circle cx="540" cy="105" fill="#3399FF" r="5"/>
+                  <text fill="#0056B3" font-size="8" font-weight="700" x="510" y="124">BOOSTER #4</text>
+                  <!-- Routes -->
+                  <g id="layer-routes">
+                    <path d="M 150,90 Q 190,155 230,200" fill="none" stroke="#0056B3" stroke-dasharray="5,4" stroke-width="2.5"/>
+                    <path d="M 150,90 Q 300,100 500,95" fill="none" stroke="#3399FF" stroke-dasharray="4,4" stroke-width="2"/>
+                    <path d="M 540,105 Q 565,175 575,235" fill="none" stroke="#C27A29" stroke-dasharray="4,3" stroke-width="2"/>
+                  </g>
+                  <!-- Complaint signals -->
+                  <g id="layer-signals">
+                    <circle cx="210" cy="230" r="6" fill="none" stroke="#D32F2F" stroke-width="1.5" stroke-dasharray="2,2" opacity="0.6"/>
+                    <circle cx="210" cy="230" r="12" fill="none" stroke="#D32F2F" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+                    <circle cx="550" cy="90" r="6" fill="none" stroke="#C27A29" stroke-width="1.5" stroke-dasharray="2,2" opacity="0.6"/>
+                    <circle cx="550" cy="90" r="10" fill="none" stroke="#C27A29" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+                  </g>
+                </svg>
+                <!-- Tanker Markers -->
+                <div id="layer-tankers-markers">
+                  <!-- Tanker T-08 -->
+                  <div class="tanker-marker absolute left-[33%] top-[54%] z-20 -translate-x-1/2 -translate-y-1/2" onclick="selectTanker('T-08')">
+                    <span class="absolute -inset-1 rounded-full bg-vibrantBlue/40 animate-ping"></span>
+                    <div class="relative bg-deepBlue text-white p-1 rounded-full shadow-md border-2 border-white flex items-center justify-center"><i class="w-3 h-3" data-lucide="truck"></i></div>
+                    <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-headText text-white text-[8px] px-1.5 py-0.5 rounded whitespace-nowrap font-bold shadow-xs">T-08 (10KL)</div>
+                  </div>
+                  <!-- Tanker T-14 -->
+                  <div class="tanker-marker absolute left-[76%] top-[32%] z-20" onclick="selectTanker('T-14')">
+                    <div class="relative bg-warmAmber text-white p-1 rounded-full shadow border border-white flex items-center justify-center"><i class="w-3 h-3" data-lucide="truck"></i></div>
+                    <span class="bg-headText text-white text-[7px] px-1 rounded font-mono absolute -top-4 left-0 whitespace-nowrap">T-14 (+18m)</span>
+                  </div>
+                  <!-- Tanker T-02 -->
+                  <div class="tanker-marker absolute left-[82%] top-[62%] z-20" onclick="selectTanker('T-02')">
+                    <div class="relative bg-oliveGreen text-white p-1 rounded-full shadow border border-white flex items-center justify-center"><i class="w-3 h-3" data-lucide="droplet"></i></div>
+                    <span class="bg-headText text-white text-[7px] px-1 rounded font-mono absolute -top-4 left-0 whitespace-nowrap">T-02 (65%)</span>
+                  </div>
+                  <!-- Pulse Ward 17 -->
+                  <div class="absolute left-[35%] top-[66%] z-10">
+                    <div class="w-8 h-8 rounded-full bg-warmAmber/30 flex items-center justify-center pulse-amber">
+                      <div class="w-3.5 h-3.5 rounded-full bg-warmAmber text-white text-[7px] font-black flex items-center justify-center border border-white shadow">!</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- HUD Overlays -->
+                <div class="flex justify-between items-start z-10">
+                  <div class="bg-white/95 backdrop-blur-sm px-1.5 py-1 rounded-md border border-cardBorder text-[8px] space-y-0.5 shadow-xs">
+                    <div class="font-bold text-headText">GIS Legend</div>
+                    <div class="flex items-center space-x-2">
+                      <span class="inline-flex items-center space-x-0.5"><span class="w-2 h-2 rounded-xs bg-critRed"></span><span class="text-secText">&gt;48h Deficit</span></span>
+                      <span class="inline-flex items-center space-x-0.5"><span class="w-2 h-2 rounded-xs bg-warmAmber"></span><span class="text-secText">High Vuln</span></span>
+                      <span class="inline-flex items-center space-x-0.5"><span class="w-2 h-2 rounded-xs bg-oliveGreen"></span><span class="text-secText">Normal</span></span>
+                    </div>
+                  </div>
+                  <div class="bg-white/90 backdrop-blur px-1.5 py-0.5 rounded border border-cardBorder text-[8px] font-mono text-secText shadow-xs">
+                    <span class="text-deepBlue font-bold">1:25,000</span> · 12.9716°N
+                  </div>
+                </div>
+                <!-- Bottom Stats Bar -->
+                <div class="z-10 bg-white/95 backdrop-blur-sm rounded-md px-2 py-1 border border-cardBorder shadow-xs flex items-center justify-between text-[9px]">
+                  <div class="flex items-center space-x-3 font-semibold text-secText">
+                    <span class="flex items-center space-x-1 text-deepBlue"><i class="w-2.5 h-2.5" data-lucide="truck"></i><span><strong>17</strong> Tankers</span></span>
+                    <span>·</span>
+                    <span class="flex items-center space-x-1 text-warmAmber"><i class="w-2.5 h-2.5" data-lucide="map-pin"></i><span><strong>23</strong> Zones</span></span>
+                    <span>·</span>
+                    <span class="flex items-center space-x-1 text-secText"><i class="w-2.5 h-2.5 text-vibrantBlue" data-lucide="radio"></i><span><strong>61</strong> Signals</span></span>
+                  </div>
+                  <button class="text-deepBlue font-bold hover:underline flex items-center space-x-0.5" onclick="switchTab('spatial-tab')"><span>Full Map</span><i class="w-2.5 h-2.5" data-lucide="arrow-up-right"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- RIGHT COLUMN -->
+          <div class="w-[38%] h-full flex flex-col gap-1.5 min-h-0 overflow-hidden">
+            <!-- Explainable Priority Queue -->
+            <div class="bg-white rounded-xl border border-cardBorder shadow-sm p-2 flex flex-col flex-shrink-0">
+              <div class="flex items-center justify-between pb-1 border-b border-cardBorder">
+                <div class="flex items-center space-x-1.5">
+                  <i class="w-3 h-3 text-deepBlue" data-lucide="list-ordered"></i>
+                  <h4 class="font-extrabold text-[11px] text-headText">Explainable Allocation Queue</h4>
+                </div>
+                <span class="text-[8px] font-bold text-deepBlue bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">Top 4 Pending</span>
+              </div>
+              <div class="space-y-1 mt-1.5" id="queue-list">
+                <!-- Queue items rendered by JS -->
+              </div>
+            </div>
+            <!-- Resource & Fleet -->
+            <div class="bg-white rounded-xl border border-cardBorder shadow-sm p-2 flex-shrink-0">
+              <div class="flex items-center justify-between pb-1 border-b border-cardBorder">
+                <div class="flex items-center space-x-1.5">
+                  <i class="w-3 h-3 text-deepBlue" data-lucide="pie-chart"></i>
+                  <h4 class="font-extrabold text-[11px] text-headText">Resource & Fleet</h4>
+                </div>
+                <span class="text-[8px] font-mono text-secText">DEPOT #1</span>
+              </div>
+              <div class="mt-1.5 space-y-1">
+                <div class="flex justify-between text-[10px] font-semibold">
+                  <span class="text-secText">Water Allocation</span>
+                  <span class="font-mono text-headText"><strong id="res-alloc">286</strong> / 420 KL (<span id="res-pct">68</span>%)</span>
+                </div>
+                <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden flex">
+                  <div class="bg-deepBlue h-1.5 transition-all duration-700" id="res-bar-alloc" style="width: 68%"></div>
+                  <div class="bg-vibrantBlue h-1.5" style="width: 14%"></div>
+                  <div class="bg-emerald-200 h-1.5" style="width: 18%"></div>
+                </div>
+                <div class="grid grid-cols-4 gap-1 mt-1 text-center text-[9px]">
+                  <div class="p-1 rounded bg-emerald-50 border border-emerald-100"><div class="font-mono font-extrabold text-oliveGreen text-xs" id="fleet-avail">18</div><div class="text-secText">Available</div></div>
+                  <div class="p-1 rounded bg-blue-50 border border-blue-100"><div class="font-mono font-extrabold text-deepBlue text-xs">4</div><div class="text-secText">Loading</div></div>
+                  <div class="p-1 rounded bg-amber-50 border border-amber-100"><div class="font-mono font-extrabold text-warmAmber text-xs" id="fleet-enroute">3</div><div class="text-secText">En Route</div></div>
+                  <div class="p-1 rounded bg-slate-50 border border-slate-200"><div class="font-mono font-extrabold text-secText text-xs">0</div><div class="text-secText">Offline</div></div>
+                </div>
+              </div>
+            </div>
+            <!-- Active Alerts -->
+            <div class="flex-1 min-h-0 bg-white rounded-xl border border-cardBorder shadow-sm p-2 flex flex-col overflow-hidden">
+              <div class="flex items-center justify-between pb-1 border-b border-cardBorder flex-shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="w-2 h-2 rounded-full bg-critRed"></span>
+                  <h4 class="font-extrabold text-[11px] text-headText">Active Alerts</h4>
+                </div>
+                <span class="text-[8px] font-bold text-critRed bg-red-50 border border-red-200 px-1 rounded">3 Live</span>
+              </div>
+              <div class="flex-1 min-h-0 overflow-y-auto custom-scroll divide-y divide-cardBorder/60 mt-1">
+                <div class="py-1 flex items-start space-x-1.5 cursor-pointer hover:bg-red-50/50 rounded px-1" onclick="selectWard('23')">
+                  <span class="text-critRed text-[10px] mt-0.5">●</span>
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center justify-between"><span class="font-extrabold text-[10px] text-headText">Ward 23 · Deficit</span><span class="text-[8px] font-mono text-critRed font-bold">52h</span></div>
+                    <p class="text-[9px] text-secText truncate">Booster pump tripped; reroute initiated</p>
+                  </div>
+                </div>
+                <div class="py-1 flex items-start space-x-1.5 cursor-pointer hover:bg-amber-50/50 rounded px-1" onclick="selectWard('17')">
+                  <span class="text-warmAmber text-[10px] mt-0.5">●</span>
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center justify-between"><span class="font-extrabold text-[10px] text-headText">Ward 17 · Complaint Spike</span><span class="text-[8px] font-mono text-warmAmber font-bold">+31%</span></div>
+                    <p class="text-[9px] text-secText truncate">42 calls in Sub-sector 4; T-08 queued</p>
+                  </div>
+                </div>
+                <div class="py-1 flex items-start space-x-1.5 cursor-pointer hover:bg-amber-50/50 rounded px-1" onclick="selectTanker('T-14')">
+                  <span class="text-warmAmber text-[10px] mt-0.5">●</span>
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center justify-between"><span class="font-extrabold text-[10px] text-headText">Tanker T-14 · Delayed</span><span class="text-[8px] font-mono text-warmAmber font-bold">+18m</span></div>
+                    <p class="text-[9px] text-secText truncate">Ring Road North bottleneck</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- BOTTOM ROW: Explainability + Community Signals + Impact Simulation -->
+        <div class="flex gap-1.5 flex-shrink-0" style="height: 140px;">
+          <!-- Explainability Panel -->
+          <div class="flex-[3] bg-white rounded-xl border border-blue-200 shadow-sm p-2 flex flex-col justify-between" id="explain-panel">
+            <div class="flex items-center justify-between border-b border-cardBorder/60 pb-1">
+              <div class="flex items-center space-x-2">
+                <span class="px-1 py-0.5 bg-deepBlue text-white text-[8px] font-bold uppercase rounded">Explainability</span>
+                <h4 class="font-extrabold text-[11px] text-headText" id="explain-title">WHY IS WARD 17 PRIORITIZED?</h4>
+              </div>
+              <div class="flex items-center space-x-1 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
+                <span class="text-[9px] font-bold text-secText uppercase">Score:</span>
+                <span class="font-mono font-black text-xs text-deepBlue" id="explain-score">94/100</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-5 gap-1.5 my-1" id="explain-factors">
+              <!-- Rendered by JS -->
+            </div>
+            <div class="flex items-center justify-between bg-blue-50/70 border border-blue-200 rounded-lg px-2 py-1">
+              <div class="flex items-center space-x-1.5">
+                <i class="w-3.5 h-3.5 text-deepBlue flex-shrink-0" data-lucide="check-circle-2"></i>
+                <span class="text-[10px] font-bold text-headText" id="explain-rec">Recommended: <strong class="text-deepBlue">10,000 L</strong> via Tanker T-08</span>
+              </div>
+              <button class="px-2.5 py-1 bg-deepBlue hover:bg-blue-700 text-white rounded text-[10px] font-bold shadow-2xs flex items-center space-x-1 transition-all" id="assign-btn" onclick="assignTanker()">
+                <i class="w-3 h-3 text-vibrantBlue" data-lucide="send"></i>
+                <span id="assign-btn-text">Assign T-08</span>
+              </button>
+            </div>
+          </div>
+          <!-- Community Signals -->
+          <div class="flex-[2] bg-white rounded-xl border border-cardBorder shadow-sm p-2 flex flex-col">
+            <div class="flex items-center space-x-1.5 pb-1 border-b border-cardBorder">
+              <i class="w-3 h-3 text-warmAmber" data-lucide="radio"></i>
+              <h4 class="font-extrabold text-[11px] text-headText">Community Signals</h4>
+            </div>
+            <div class="flex-1 flex flex-col justify-center space-y-1 mt-1">
+              <div class="flex items-center justify-between text-[10px]">
+                <span class="font-semibold text-headText">Ward 17 — 31 reports</span>
+                <span class="text-[8px] font-mono text-critRed font-bold">within 2.4km</span>
+              </div>
+              <div class="flex items-center justify-between text-[10px]">
+                <span class="font-semibold text-headText">Ward 23 — High unmet</span>
+                <span class="text-[8px] font-mono text-warmAmber font-bold">52h gap</span>
+              </div>
+              <div class="flex items-center justify-between text-[10px]">
+                <span class="font-semibold text-headText">Duplicate requests</span>
+                <span class="text-[8px] font-mono text-secText font-bold">14 detected</span>
+              </div>
+              <div class="mt-0.5 text-[8px] text-secText italic">Complaints → Community-level supply signals</div>
+            </div>
+          </div>
+          <!-- Impact Simulation -->
+          <div class="flex-[2] bg-white rounded-xl border border-cardBorder shadow-sm p-2 flex flex-col" id="sim-panel">
+            <div class="flex items-center justify-between pb-1 border-b border-cardBorder">
+              <div class="flex items-center space-x-1.5">
+                <i class="w-3 h-3 text-oliveGreen" data-lucide="git-compare"></i>
+                <h4 class="font-extrabold text-[11px] text-headText">Allocation Simulation</h4>
+              </div>
+              <span class="text-[7px] font-bold text-secText bg-slate-100 border border-cardBorder px-1 rounded">SYNTHETIC DATA</span>
+            </div>
+            <div class="flex-1 flex flex-col justify-center space-y-0.5 mt-0.5" id="sim-metrics">
+              <div class="flex items-center justify-between text-[9px]">
+                <span class="text-secText font-semibold">Metric</span>
+                <div class="flex space-x-4">
+                  <span class="text-secText font-bold w-12 text-right">FCFS</span>
+                  <span class="text-deepBlue font-bold w-14 text-right">WaterFlow</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-[10px]">
+                <span class="font-semibold">Unmet Requests</span>
+                <div class="flex space-x-4">
+                  <span class="font-mono text-secText font-bold w-12 text-right" id="sim-fcfs-unmet">61</span>
+                  <span class="font-mono text-oliveGreen font-bold w-14 text-right" id="sim-wf-unmet">—</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-[10px]">
+                <span class="font-semibold">Avg Distance</span>
+                <div class="flex space-x-4">
+                  <span class="font-mono text-secText font-bold w-12 text-right" id="sim-fcfs-dist">18.3km</span>
+                  <span class="font-mono text-oliveGreen font-bold w-14 text-right" id="sim-wf-dist">—</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-[10px]">
+                <span class="font-semibold">Equity Index</span>
+                <div class="flex space-x-4">
+                  <span class="font-mono text-secText font-bold w-12 text-right" id="sim-fcfs-eq">61%</span>
+                  <span class="font-mono text-oliveGreen font-bold w-14 text-right" id="sim-wf-eq">—</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-[10px]">
+                <span class="font-semibold">Vuln Coverage</span>
+                <div class="flex space-x-4">
+                  <span class="font-mono text-secText font-bold w-12 text-right" id="sim-fcfs-vc">54%</span>
+                  <span class="font-mono text-oliveGreen font-bold w-14 text-right" id="sim-wf-vc">—</span>
+                </div>
+              </div>
+            </div>
+            <button class="w-full py-1 bg-deepBlue hover:bg-blue-700 text-white rounded text-[10px] font-bold shadow-2xs transition-all flex items-center justify-center space-x-1 mt-0.5" onclick="runSimulation()" id="sim-btn">
+              <i class="w-3 h-3" data-lucide="play"></i>
+              <span id="sim-btn-text">Run Allocation Simulation</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========= TAB 2: GIS SPATIAL DISPATCH ========= -->
+      <div class="tab-pane hidden h-full w-full bg-white rounded-xl border border-cardBorder shadow-sm flex flex-col overflow-hidden" id="spatial-tab">
+        <div class="p-2.5 border-b border-cardBorder flex items-center justify-between bg-[#FBFDFF] flex-shrink-0">
+          <div>
+            <h3 class="font-extrabold text-sm text-headText flex items-center space-x-2">
+              <i class="w-4 h-4 text-deepBlue" data-lucide="map"></i>
+              <span>Municipal GIS Dispatch & Spatial Network</span>
+            </h3>
+            <p class="text-[10px] text-secText">Real-time vector tracking across all administrative zones</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xs text-secText">Depots: <strong>4 Active</strong></span>
+            <button class="px-3 py-1 bg-deepBlue text-white text-xs font-bold rounded-lg shadow-2xs" onclick="showToast('Routes optimized')">Optimize Routes</button>
+          </div>
+        </div>
+        <div class="flex-1 min-h-0 relative bg-[#EAF2F9] gis-grid p-3 flex flex-col justify-between overflow-hidden">
+          <svg class="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 1000 500">
+            <polygon fill="#0056b3" fill-opacity="0.08" points="50,40 300,30 380,180 220,240 60,190" stroke="#0056b3" stroke-width="2"/>
+            <text fill="#0056B3" font-size="12" font-weight="700" x="120" y="120">WARD 08 (58% Coverage)</text>
+            <polygon fill="#6b8e23" fill-opacity="0.09" points="300,30 650,40 680,220 380,180" stroke="#6b8e23" stroke-width="2"/>
+            <text fill="#6B8E23" font-size="12" font-weight="700" x="420" y="110">WARD 12 (Stable 91%)</text>
+            <polygon fill="#c27a29" fill-opacity="0.14" points="650,40 940,50 920,280 680,220" stroke="#c27a29" stroke-width="2"/>
+            <text fill="#C27A29" font-size="12" font-weight="800" x="720" y="150">WARD 23 (Critical 42%)</text>
+            <polygon fill="#c27a29" fill-opacity="0.2" points="220,240 480,210 540,430 260,460 140,360" stroke="#c27a29" stroke-width="3"/>
+            <text fill="#C27A29" font-size="13" font-weight="900" x="300" y="340">WARD 17 (Priority #1 — Score 94)</text>
+            <polygon fill="#0056b3" fill-opacity="0.08" points="480,210 740,230 760,450 540,430" stroke="#0056b3" stroke-width="2"/>
+            <text fill="#0056B3" font-size="12" font-weight="700" x="560" y="330">WARD 05 (74% Coverage)</text>
+            <polygon fill="#d32f2f" fill-opacity="0.15" points="740,230 940,280 930,470 760,450" stroke="#d32f2f" stroke-width="2"/>
+            <text fill="#D32F2F" font-size="12" font-weight="800" x="790" y="370">WARD 31 (Deficit Zone)</text>
+            <line stroke="#0056b3" stroke-dasharray="6,4" stroke-width="4" x1="220" x2="380" y1="140" y2="280"/>
+            <line stroke="#3399FF" stroke-dasharray="6,4" stroke-width="3" x1="380" x2="780" y1="280" y2="240"/>
+            <line stroke="#c27a29" stroke-dasharray="4,4" stroke-width="3" x1="780" x2="860" y1="240" y2="380"/>
+          </svg>
+          <div class="z-10 bg-white/95 backdrop-blur px-3 py-1.5 rounded-lg border border-cardBorder max-w-sm text-xs shadow-sm">
+            <div class="font-bold text-deepBlue">Fleet Transponder Telemetry</div>
+            <p class="text-[10px] text-secText mt-0.5">Simultaneous GPS tracking of 25 municipal + 14 contractor tankers.</p>
+          </div>
+          <div class="z-10 bg-white/95 backdrop-blur px-3 py-1.5 rounded-lg border border-cardBorder flex items-center justify-between text-xs shadow-sm">
+            <div class="flex items-center space-x-4">
+              <span>Depot 1 (Central): <strong>9 Trucks</strong></span>
+              <span>Depot 2 (East): <strong>5 Trucks</strong></span>
+              <span>Depot 3 (North): <strong>4 Trucks</strong></span>
+            </div>
+            <button class="text-deepBlue font-bold hover:underline" onclick="switchTab('overview-tab')">← Command View</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========= TAB 3: ALLOCATION QUEUE ========= -->
+      <div class="tab-pane hidden h-full w-full bg-white rounded-xl border border-cardBorder shadow-sm flex flex-col overflow-hidden p-2.5" id="queue-tab">
+        <div class="flex items-center justify-between pb-2 border-b border-cardBorder flex-shrink-0">
+          <div>
+            <h3 class="font-extrabold text-sm text-headText">Algorithmic Allocation Queue & Transparent Scoring</h3>
+            <p class="text-[10px] text-secText">Prioritization: Vulnerability (30%) + Unmet Demand (25%) + Population (20%) + Historical Deficit (15%) + Distance (10%)</p>
+          </div>
+          <button class="px-3 py-1 bg-deepBlue text-white text-xs font-bold rounded-lg shadow-2xs" onclick="showToast('Optimizer re-run complete')">Re-run Optimizer</button>
+        </div>
+        <div class="flex-1 min-h-0 overflow-y-auto custom-scroll mt-2">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-blue-50/60 sticky top-0 text-secText">
+              <tr class="border-b border-cardBorder">
+                <th class="py-2 px-3">Rank</th>
+                <th class="py-2 px-3">Ward</th>
+                <th class="py-2 px-3">Volume</th>
+                <th class="py-2 px-3">Dry Time</th>
+                <th class="py-2 px-3">Score</th>
+                <th class="py-2 px-3">Primary Factor</th>
+                <th class="py-2 px-3 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-cardBorder" id="queue-table-body">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ========= TAB 4: FLEET & LOGISTICS ========= -->
+      <div class="tab-pane hidden h-full w-full bg-white rounded-xl border border-cardBorder shadow-sm flex flex-col overflow-hidden p-2.5" id="fleet-tab">
+        <div class="flex items-center justify-between pb-2 border-b border-cardBorder flex-shrink-0">
+          <div>
+            <h3 class="font-extrabold text-sm text-headText">Municipal Tanker Fleet & Turnaround</h3>
+            <p class="text-[10px] text-secText">25 Registered Tankers · Avg Dispatch Latency: 14 min</p>
+          </div>
+          <span class="px-2 py-0.5 bg-emerald-50 text-oliveGreen border border-emerald-200 text-xs font-bold rounded">100% Telemetry Online</span>
+        </div>
+        <div class="flex-1 min-h-0 overflow-y-auto custom-scroll mt-2">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2" id="fleet-grid">
+          </div>
+        </div>
+      </div>
+
+      <!-- ========= TAB 5: COMPLAINT & FORECAST ========= -->
+      <div class="tab-pane hidden h-full w-full bg-white rounded-xl border border-cardBorder shadow-sm flex flex-col overflow-hidden p-2.5" id="forecast-tab">
+        <div class="flex items-center justify-between pb-2 border-b border-cardBorder flex-shrink-0">
+          <div>
+            <h3 class="font-extrabold text-sm text-headText">7-Day Complaint Intelligence & Demand Forecast</h3>
+            <p class="text-[10px] text-secText">Citizen complaint clusters correlated with demand depletion rates · <em>Simulated data</em></p>
+          </div>
+          <div class="flex items-center space-x-3 text-xs font-semibold">
+            <span class="flex items-center space-x-1.5 text-headText"><span class="w-3 h-1 bg-deepBlue inline-block rounded"></span><span>Actual Calls</span></span>
+            <span class="flex items-center space-x-1.5 text-vibrantBlue"><span class="w-3 h-1 border-b-2 border-dashed border-vibrantBlue inline-block"></span><span>Predicted</span></span>
+          </div>
+        </div>
+        <div class="flex-1 min-h-0 relative my-2">
+          <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 700 200">
+            <line stroke="#E2EDF7" stroke-width="1" x1="40" x2="680" y1="20" y2="20"/>
+            <line stroke="#E2EDF7" stroke-width="1" x1="40" x2="680" y1="65" y2="65"/>
+            <line stroke="#E2EDF7" stroke-width="1" x1="40" x2="680" y1="110" y2="110"/>
+            <line stroke="#E2EDF7" stroke-width="1" x1="40" x2="680" y1="155" y2="155"/>
+            <line stroke="#CBD5E1" stroke-width="1.5" x1="40" x2="680" y1="180" y2="180"/>
+            <text fill="#4A4A4A" font-size="9" font-weight="600" x="10" y="24">250</text>
+            <text fill="#4A4A4A" font-size="9" font-weight="600" x="10" y="69">200</text>
+            <text fill="#4A4A4A" font-size="9" font-weight="600" x="10" y="114">150</text>
+            <text fill="#4A4A4A" font-size="9" font-weight="600" x="10" y="159">100</text>
+            <defs><linearGradient id="foreGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#0056B3" stop-opacity="0.25"/><stop offset="100%" stop-color="#0056B3" stop-opacity="0.0"/></linearGradient></defs>
+            <polygon fill="url(#foreGrad)" points="80,150 180,130 280,105 380,80 480,90 480,180 80,180"/>
+            <path d="M 80,150 L 180,130 L 280,105 L 380,80 L 480,90" fill="none" stroke="#0056B3" stroke-linecap="round" stroke-width="3"/>
+            <path d="M 80,165 L 180,140 L 280,115 L 380,90 L 480,75 L 580,45 L 670,30" fill="none" stroke="#3399FF" stroke-dasharray="6,4" stroke-width="2.5"/>
+            <circle cx="480" cy="90" fill="#0056B3" r="4" stroke="#fff" stroke-width="2"/>
+            <circle cx="580" cy="45" fill="#3399FF" r="3.5" stroke="#fff" stroke-width="1.5"/>
+            <circle cx="670" cy="30" fill="#3399FF" r="3.5" stroke="#fff" stroke-width="1.5"/>
+            <text fill="#1A1A1A" font-size="10" font-weight="700" text-anchor="middle" x="80" y="195">Mon</text>
+            <text fill="#1A1A1A" font-size="10" font-weight="700" text-anchor="middle" x="180" y="195">Tue</text>
+            <text fill="#1A1A1A" font-size="10" font-weight="700" text-anchor="middle" x="280" y="195">Wed</text>
+            <text fill="#1A1A1A" font-size="10" font-weight="700" text-anchor="middle" x="380" y="195">Thu</text>
+            <text fill="#0056B3" font-size="10" font-weight="900" text-anchor="middle" x="480" y="195">Today</text>
+            <text fill="#3399FF" font-size="10" font-weight="700" text-anchor="middle" x="580" y="195">Sat</text>
+            <text fill="#3399FF" font-size="10" font-weight="700" text-anchor="middle" x="670" y="195">Sun</text>
+          </svg>
+        </div>
+        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-cardBorder flex-shrink-0">
+          <div class="p-2 bg-blue-50/60 rounded-lg border border-blue-100">
+            <div class="text-[9px] font-bold text-deepBlue uppercase">Complaint Spike</div>
+            <div class="font-bold text-xs">Ward 17 · +31%</div>
+            <p class="text-[9px] text-secText">Low pipeline pressure triggered 42 tickets.</p>
+          </div>
+          <div class="p-2 bg-amber-50/60 rounded-lg border border-amber-200">
+            <div class="text-[9px] font-bold text-warmAmber uppercase">Weekend Forecast</div>
+            <div class="font-bold text-xs">Expected ↑ 18%</div>
+            <p class="text-[9px] text-secText">High residential refill demand predicted.</p>
+          </div>
+          <div class="p-2 bg-red-50/60 rounded-lg border border-red-200">
+            <div class="text-[9px] font-bold text-critRed uppercase">Shortage Warning</div>
+            <div class="font-bold text-xs">Ward 23 · High Risk</div>
+            <p class="text-[9px] text-secText">Reservoir depth nearing intake cutoff.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========= TAB 6: EQUITY & IMPACT ========= -->
+      <div class="tab-pane hidden h-full w-full bg-white rounded-xl border border-cardBorder shadow-sm flex flex-col overflow-hidden p-2.5" id="equity-tab">
+        <div class="flex items-center justify-between pb-2 border-b border-cardBorder flex-shrink-0">
+          <div>
+            <h3 class="font-extrabold text-sm text-headText">Service Equity & Impact Evaluation</h3>
+            <p class="text-[10px] text-secText">Comparative performance: First-Come-First-Served baseline vs WaterFlow need-aware allocation · <em>Simulation on synthetic dataset</em></p>
+          </div>
+          <button class="px-3 py-1 bg-deepBlue text-white text-xs font-bold rounded-lg shadow-2xs" onclick="runSimulation(); showToast('Simulation complete')">Run Simulation</button>
+        </div>
+        <div class="flex-1 min-h-0 flex gap-3 mt-2">
+          <!-- Metrics Table -->
+          <div class="flex-1 overflow-y-auto custom-scroll">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-cardBorder bg-blue-50/50 text-secText">
+                  <th class="py-2 px-3 font-bold">Metric</th>
+                  <th class="py-2 px-3 font-bold text-center">Baseline (FCFS)</th>
+                  <th class="py-2 px-3 font-bold text-center">WaterFlow OS</th>
+                  <th class="py-2 px-3 font-bold text-right">Improvement</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-cardBorder" id="equity-table-body">
+              </tbody>
+            </table>
+            <!-- Underserved Areas -->
+            <div class="mt-3 p-3 bg-slate-50 rounded-lg border border-cardBorder">
+              <h4 class="font-extrabold text-xs text-headText mb-2">Underserved Area Coverage</h4>
+              <div class="space-y-2">
+                <div>
+                  <div class="flex justify-between text-[11px] font-semibold mb-0.5"><span>Ward 23</span><span class="text-critRed font-mono">42%</span></div>
+                  <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden"><div class="bg-critRed h-2 rounded-full" style="width: 42%"></div></div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-[11px] font-semibold mb-0.5"><span>Ward 17</span><span class="text-warmAmber font-mono">51%</span></div>
+                  <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden"><div class="bg-warmAmber h-2 rounded-full" style="width: 51%"></div></div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-[11px] font-semibold mb-0.5"><span>Ward 08</span><span class="text-warmAmber font-mono">58%</span></div>
+                  <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden"><div class="bg-warmAmber h-2 rounded-full" style="width: 58%"></div></div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-[11px] font-semibold mb-0.5"><span>Ward 31</span><span class="text-warmAmber font-mono">63%</span></div>
+                  <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden"><div class="bg-deepBlue h-2 rounded-full" style="width: 63%"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Equity Visual -->
+          <div class="w-72 flex-shrink-0 flex flex-col gap-2">
+            <div class="p-3 bg-blue-50 rounded-lg border border-blue-200 flex-1">
+              <h4 class="font-extrabold text-xs text-deepBlue mb-2">Ward-Level Equity Distribution</h4>
+              <div class="space-y-1.5">
+                <div class="flex items-center space-x-2 text-[11px]"><span class="w-14 font-semibold">Ward 12</span><div class="flex-1 bg-slate-200 h-3 rounded-full overflow-hidden"><div class="bg-oliveGreen h-3 rounded-full" style="width:91%"></div></div><span class="font-mono font-bold text-oliveGreen w-8 text-right">91%</span></div>
+                <div class="flex items-center space-x-2 text-[11px]"><span class="w-14 font-semibold">Ward 05</span><div class="flex-1 bg-slate-200 h-3 rounded-full overflow-hidden"><div class="bg-deepBlue h-3 rounded-full" style="width:74%"></div></div><span class="font-mono font-bold text-deepBlue w-8 text-right">74%</span></div>
+                <div class="flex items-center space-x-2 text-[11px]"><span class="w-14 font-semibold">Ward 31</span><div class="flex-1 bg-slate-200 h-3 rounded-full overflow-hidden"><div class="bg-warmAmber h-3 rounded-full" style="width:63%"></div></div><span class="font-mono font-bold text-warmAmber w-8 text-right">63%</span></div>
+                <div class="flex items-center space-x-2 text-[11px]"><span class="w-14 font-semibold">Ward 08</span><div class="flex-1 bg-slate-200 h-3 rounded-full overflow-hidden"><div class="bg-warmAmber h-3 rounded-full" style="width:58%"></div></div><span class="font-mono font-bold text-warmAmber w-8 text-right">58%</span></div>
+                <div class="flex items-center space-x-2 text-[11px]"><span class="w-14 font-semibold">Ward 17</span><div class="flex-1 bg-slate-200 h-3 rounded-full overflow-hidden"><div class="bg-critRed h-3 rounded-full" style="width:51%"></div></div><span class="font-mono font-bold text-critRed w-8 text-right">51%</span></div>
+                <div class="flex items-center space-x-2 text-[11px]"><span class="w-14 font-semibold">Ward 23</span><div class="flex-1 bg-slate-200 h-3 rounded-full overflow-hidden"><div class="bg-critRed h-3 rounded-full" style="width:42%"></div></div><span class="font-mono font-bold text-critRed w-8 text-right">42%</span></div>
+              </div>
+            </div>
+            <div class="p-2.5 bg-emerald-50 rounded-lg border border-emerald-200">
+              <div class="text-[10px] font-bold text-oliveGreen uppercase">Service Equity Index</div>
+              <div class="font-mono font-black text-2xl text-oliveGreen" id="equity-big-num">84%</div>
+              <div class="text-[10px] text-secText">Target: &gt;90% · Project-defined metric</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========= TAB 7: ALERTS ========= -->
+      <div class="tab-pane hidden h-full w-full bg-white rounded-xl border border-cardBorder shadow-sm flex flex-col overflow-hidden p-2.5" id="alerts-view">
+        <div class="flex items-center justify-between pb-2 border-b border-cardBorder flex-shrink-0">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-critRed"></span>
+            <h3 class="font-extrabold text-sm text-headText">Critical Municipal Alerts</h3>
+            <span class="px-2 py-0.5 rounded-full bg-red-100 text-critRed text-[10px] font-bold">4 Active</span>
+          </div>
+          <button class="text-xs text-deepBlue font-bold hover:underline" onclick="switchTab('overview-tab')">← Close</button>
+        </div>
+        <div class="flex-1 min-h-0 overflow-y-auto custom-scroll divide-y divide-cardBorder mt-2">
+          <div class="py-3 flex items-center justify-between">
+            <div>
+              <div class="font-extrabold text-xs text-headText flex items-center space-x-2"><span class="text-critRed">🔴</span><span>Ward 23 · Critical Water Deficit</span></div>
+              <p class="text-xs text-secText mt-0.5">52hr unmet demand · Underground booster pump tripped due to low voltage</p>
+            </div>
+            <button class="px-3 py-1 bg-deepBlue text-white rounded text-xs font-bold" onclick="showToast('Auxiliary tanker dispatched to Ward 23')">Dispatch Aux Tanker</button>
+          </div>
+          <div class="py-3 flex items-center justify-between">
+            <div>
+              <div class="font-extrabold text-xs text-headText flex items-center space-x-2"><span class="text-warmAmber">🟠</span><span>Ward 17 · Citizen Complaint Spike</span></div>
+              <p class="text-xs text-secText mt-0.5">Demand +31% today · 42 grievance calls in Sub-sector 4</p>
+            </div>
+            <button class="px-3 py-1 bg-white border border-cardBorder text-deepBlue rounded text-xs font-bold" onclick="switchTab('forecast-tab')">View Forecast</button>
+          </div>
+          <div class="py-3 flex items-center justify-between">
+            <div>
+              <div class="font-extrabold text-xs text-headText flex items-center space-x-2"><span class="text-warmAmber">🟠</span><span>Tanker T-14 · Routing Delay</span></div>
+              <p class="text-xs text-secText mt-0.5">Delayed by 18 min · Rail crossing bottleneck on Ring Road North</p>
+            </div>
+            <button class="px-3 py-1 bg-white border border-cardBorder text-deepBlue rounded text-xs font-bold" onclick="showToast('Route recalculated for T-14')">Recalculate Route</button>
+          </div>
+          <div class="py-3 flex items-center justify-between">
+            <div>
+              <div class="font-extrabold text-xs text-headText flex items-center space-x-2"><span class="text-warmAmber">🟡</span><span>Ward 08 · Low Service Coverage</span></div>
+              <p class="text-xs text-secText mt-0.5">Coverage at 58% — below 70% threshold for 3 consecutive days</p>
+            </div>
+            <button class="px-3 py-1 bg-white border border-cardBorder text-deepBlue rounded text-xs font-bold" onclick="selectWard('08'); switchTab('overview-tab')">View Ward</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end tab container -->
+  </main>
+</div>
+
+<!-- ============ JAVASCRIPT ============ -->
+<script>
+// ===== MOCK DATA =====
+const wards = {
+  '17': { name: 'Ward 17 (Old City Ridge)', population: 28400, vulnerability: 30, unmetDemand: 25, historicalDeficit: 18, populationScore: 12, distanceScore: 9, coverage: 51, dryTime: 52, litresNeeded: 10000, score: 94, factor: 'High vulnerability · 52h unmet demand', tanker: 'T-08' },
+  '23': { name: 'Ward 23 (North Settlement)', population: 22100, vulnerability: 28, unmetDemand: 24, historicalDeficit: 16, populationScore: 10, distanceScore: 10, coverage: 42, dryTime: 46, litresNeeded: 8000, score: 88, factor: 'Informal settlement · 46h dry pipe', tanker: 'T-14' },
+  '31': { name: 'Ward 31 (East Periphery)', population: 19600, vulnerability: 26, unmetDemand: 22, historicalDeficit: 14, populationScore: 14, distanceScore: 8, coverage: 63, dryTime: 29, litresNeeded: 7000, score: 84, factor: 'Pressure drop · Service deficit', tanker: null },
+  '08': { name: 'Ward 08 (Industrial Colony)', population: 31200, vulnerability: 18, unmetDemand: 20, historicalDeficit: 15, populationScore: 16, distanceScore: 10, coverage: 58, dryTime: 38, litresNeeded: 6000, score: 79, factor: 'Motor failure · 38h deficit', tanker: null },
+  '05': { name: 'Ward 05 (Central Market)', population: 35800, vulnerability: 12, unmetDemand: 14, historicalDeficit: 10, populationScore: 18, distanceScore: 12, coverage: 74, dryTime: 18, litresNeeded: 5000, score: 66, factor: 'Regular scheduled supply', tanker: null },
+  '12': { name: 'Ward 12 (Lake View)', population: 18900, vulnerability: 8, unmetDemand: 6, historicalDeficit: 4, populationScore: 8, distanceScore: 14, coverage: 91, dryTime: 6, litresNeeded: 3000, score: 40, factor: 'Stable supply — low priority', tanker: null }
+};
+
+const tankers = {
+  'T-08': { capacity: 10000, status: 'En Route', ward: '17', eta: '12 min', depot: 'Depot 1', progress: 75, color: 'deepBlue' },
+  'T-14': { capacity: 8000, status: 'Delayed (+18m)', ward: '23', eta: '31 min', depot: 'Depot 2', progress: 45, color: 'warmAmber' },
+  'T-02': { capacity: 12000, status: 'Dispensing 65%', ward: '08', eta: '—', depot: 'Depot 1', progress: 65, color: 'oliveGreen' },
+  'T-05': { capacity: 10000, status: 'Available', ward: null, eta: '—', depot: 'Depot 1', progress: 0, color: 'deepBlue' },
+  'T-11': { capacity: 8000, status: 'Available', ward: null, eta: '—', depot: 'Depot 2', progress: 0, color: 'deepBlue' },
+  'T-19': { capacity: 12000, status: 'Loading', ward: null, eta: '—', depot: 'Depot 3', progress: 30, color: 'vibrantBlue' },
+  'T-22': { capacity: 10000, status: 'Available', ward: null, eta: '—', depot: 'Depot 1', progress: 0, color: 'deepBlue' },
+  'T-03': { capacity: 8000, status: 'Loading', ward: null, eta: '—', depot: 'Depot 1', progress: 55, color: 'vibrantBlue' },
+  'T-07': { capacity: 10000, status: 'Available', ward: null, eta: '—', depot: 'Depot 2', progress: 0, color: 'deepBlue' },
+};
+
+const queueOrder = ['17', '23', '31', '08'];
+const equityMetrics = [
+  { metric: 'Unmet Requests', baseline: 61, waterflow: 42, unit: '', improvement: '-31.1% Unmet' },
+  { metric: 'Avg. Tanker Distance', baseline: '18.3', waterflow: '13.7', unit: ' km', improvement: '-25.1% Transit' },
+  { metric: 'Service Equity Index', baseline: '61', waterflow: '84', unit: '%', improvement: '+23.0% Parity' },
+  { metric: 'Vulnerable-Area Coverage', baseline: '54', waterflow: '78', unit: '%', improvement: '+24.0% Protected' },
+  { metric: 'Duplicate Requests', baseline: 28, waterflow: 14, unit: '', improvement: '-50.0% Reduced' }
+];
+
+let selectedWard = '17';
+let simRun = false;
+
+// ===== INIT =====
+function init() {
+  renderQueue();
+  renderExplainPanel(selectedWard);
+  renderQueueTable();
+  renderFleetGrid();
+  renderEquityTable();
+  updateClock();
+  setInterval(updateClock, 30000);
+  setupSearch();
+  lucide.createIcons();
+}
+
+// ===== LIVE CLOCK =====
+function updateClock() {
+  const now = new Date();
+  const opts = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
+  document.getElementById('live-clock').textContent = now.toLocaleDateString('en-IN', opts) + ' IST';
+}
+
+// ===== TAB SWITCHING =====
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+  const target = document.getElementById(tabId);
+  if (target) { target.classList.remove('hidden'); target.classList.add('animate-fade-in'); }
+  document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+    if (btn.getAttribute('data-tab') === tabId) {
+      btn.classList.add('bg-white/20', 'text-white', 'border-vibrantBlue');
+      btn.classList.remove('text-blue-100', 'border-transparent');
+      const icon = btn.querySelector('i'); if (icon) icon.classList.add('text-vibrantBlue');
+    } else {
+      btn.classList.remove('bg-white/20', 'text-white', 'border-vibrantBlue');
+      btn.classList.add('text-blue-100', 'border-transparent');
+      const icon = btn.querySelector('i'); if (icon) icon.classList.remove('text-vibrantBlue');
+    }
+  });
+  lucide.createIcons();
+}
+
+// ===== SEARCH =====
+function setupSearch() {
+  const input = document.getElementById('search-input');
+  const results = document.getElementById('search-results');
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase().trim();
+    if (!q) { results.classList.add('hidden'); return; }
+    let html = '';
+    // Search wards
+    Object.entries(wards).forEach(([id, w]) => {
+      if (w.name.toLowerCase().includes(q) || ('ward ' + id).includes(q) || id.includes(q)) {
+        html += `<div class="search-result px-3 py-2 text-xs border-b border-cardBorder/50 flex items-center justify-between" onclick="selectWard('${id}'); document.getElementById('search-results').classList.add('hidden'); document.getElementById('search-input').value = '';">
+          <div><span class="font-bold text-headText">${w.name}</span> <span class="text-secText">· Score ${w.score}</span></div>
+          <span class="text-[9px] font-mono text-deepBlue">${w.coverage}% cov</span>
+        </div>`;
+      }
+    });
+    // Search tankers
+    Object.entries(tankers).forEach(([id, t]) => {
+      if (id.toLowerCase().includes(q) || ('tanker ' + id.toLowerCase()).includes(q)) {
+        html += `<div class="search-result px-3 py-2 text-xs border-b border-cardBorder/50 flex items-center justify-between" onclick="selectTanker('${id}'); document.getElementById('search-results').classList.add('hidden'); document.getElementById('search-input').value = '';">
+          <div><span class="font-bold text-headText">Tanker ${id}</span> <span class="text-secText">· ${t.status}</span></div>
+          <span class="text-[9px] font-mono text-deepBlue">${(t.capacity/1000)}KL</span>
+        </div>`;
+      }
+    });
+    if (!html) html = '<div class="px-3 py-2 text-xs text-secText">No results found</div>';
+    results.innerHTML = html;
+    results.classList.remove('hidden');
+  });
+  input.addEventListener('blur', () => { setTimeout(() => results.classList.add('hidden'), 200); });
+  input.addEventListener('focus', () => { if (input.value.trim()) input.dispatchEvent(new Event('input')); });
+}
+
+// ===== QUEUE RENDERING =====
+function renderQueue() {
+  const container = document.getElementById('queue-list');
+  container.innerHTML = queueOrder.map((id, i) => {
+    const w = wards[id];
+    const isSelected = id === selectedWard;
+    const rank = i + 1;
+    return `<div class="p-1.5 rounded-lg border ${isSelected ? 'border-deepBlue/30 bg-blue-50/50' : 'border-cardBorder bg-[#FBFDFF]'} flex items-center justify-between cursor-pointer hover:bg-blue-50/30 transition-colors" onclick="selectWard('${id}')">
+      <div class="min-w-0 flex-1 pr-2">
+        <div class="flex items-center space-x-1">
+          <span class="px-1 py-0.5 ${rank === 1 ? 'bg-deepBlue text-white' : 'bg-slate-200 text-secText'} text-[7px] font-bold rounded">#${rank}</span>
+          <span class="font-extrabold text-[11px] text-headText">${w.name.split(' (')[0]}</span>
+          <span class="text-[9px] font-mono font-bold text-deepBlue">${(w.litresNeeded/1000).toFixed(0)}KL</span>
+        </div>
+        <div class="text-[9px] text-secText truncate mt-0.5">${w.factor}</div>
+      </div>
+      <div class="flex items-center space-x-1 flex-shrink-0">
+        <span class="font-mono font-black text-[11px] text-deepBlue">${w.score}<span class="text-[8px] font-normal text-secText">/100</span></span>
+        ${rank === 1 ? `<button class="px-1.5 py-0.5 bg-deepBlue text-white text-[9px] font-bold rounded shadow-2xs hover:bg-blue-700 transition-colors" onclick="event.stopPropagation(); assignTanker()">Assign</button>` : `<button class="px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 text-deepBlue text-[9px] font-semibold rounded" onclick="event.stopPropagation(); selectWard('${id}')">View</button>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== EXPLAINABILITY PANEL =====
+function renderExplainPanel(wardId) {
+  selectedWard = wardId;
+  const w = wards[wardId];
+  document.getElementById('explain-title').textContent = `WHY IS ${w.name.split(' (')[0].toUpperCase()} PRIORITIZED?`;
+  document.getElementById('explain-score').textContent = `${w.score}/100`;
+
+  const factors = [
+    { label: 'Vulnerability', value: w.vulnerability, max: 30, desc: 'Socioeconomic' },
+    { label: 'Unmet Demand', value: w.unmetDemand, max: 25, desc: `${w.dryTime}h dry` },
+    { label: 'Hist. Deficit', value: w.historicalDeficit, max: 15, desc: 'Service gap' },
+    { label: 'Population', value: w.populationScore, max: 20, desc: `${(w.population/1000).toFixed(1)}K res` },
+    { label: 'Distance', value: w.distanceScore, max: 10, desc: 'From depot' }
+  ];
+
+  document.getElementById('explain-factors').innerHTML = factors.map(f => `
+    <div class="bg-[#F8FAFC] border border-cardBorder rounded p-1">
+      <div class="flex justify-between items-center text-[9px]">
+        <span class="font-bold text-headText truncate">${f.label}</span>
+        <span class="font-mono font-extrabold text-deepBlue">+${f.value}</span>
+      </div>
+      <div class="w-full bg-slate-200 h-1 rounded-full mt-0.5 overflow-hidden">
+        <div class="bg-deepBlue h-1 rounded-full" style="width: ${(f.value / f.max) * 100}%"></div>
+      </div>
+      <div class="text-[8px] text-secText truncate mt-0.5">${f.desc}</div>
+    </div>
+  `).join('');
+
+  const tankerAssigned = w.tanker;
+  document.getElementById('explain-rec').innerHTML = `Recommended: <strong class="text-deepBlue">${(w.litresNeeded/1000).toFixed(0)},000 L</strong> ${tankerAssigned ? `via Tanker ${tankerAssigned}` : '(No tanker assigned)'}`;
+  document.getElementById('assign-btn-text').textContent = tankerAssigned ? `Assign ${tankerAssigned}` : 'Assign Tanker';
+
+  renderQueue();
+  lucide.createIcons();
+}
+
+// ===== WARD SELECTION =====
+function selectWard(wardId) {
+  if (!wards[wardId]) return;
+  switchTab('overview-tab');
+  renderExplainPanel(wardId);
+  // Highlight ward polygon
+  document.querySelectorAll('.ward-poly').forEach(p => {
+    p.setAttribute('stroke-width', p.getAttribute('data-ward') === wardId ? '3.5' : p.getAttribute('data-ward') === '17' ? '2.5' : '1.5');
+  });
+  showToast(`Selected: ${wards[wardId].name}`);
+}
+
+// ===== TANKER SELECTION =====
+function selectTanker(tankerId) {
+  const t = tankers[tankerId];
+  if (!t) return;
+  switchTab('overview-tab');
+  if (t.ward && wards[t.ward]) {
+    renderExplainPanel(t.ward);
+  }
+  showToast(`Tanker ${tankerId}: ${t.status} · ${t.capacity/1000}KL · ${t.ward ? 'Assigned to Ward ' + t.ward : 'Available'}`);
+}
+
+// ===== ASSIGN TANKER =====
+function assignTanker() {
+  const w = wards[selectedWard];
+  if (!w) return;
+  const tankerName = w.tanker || 'T-05';
+  showToast(`✓ Tanker ${tankerName} dispatched to ${w.name.split(' (')[0]} — ${(w.litresNeeded/1000).toFixed(0)},000L`);
+  // Visual feedback
+  const btn = document.getElementById('assign-btn');
+  btn.classList.add('bg-oliveGreen');
+  btn.classList.remove('bg-deepBlue');
+  document.getElementById('assign-btn-text').textContent = '✓ Dispatched';
+  setTimeout(() => {
+    btn.classList.remove('bg-oliveGreen');
+    btn.classList.add('bg-deepBlue');
+    document.getElementById('assign-btn-text').textContent = w.tanker ? `Assign ${w.tanker}` : 'Assign Tanker';
+  }, 2000);
+}
+
+// ===== MAP LAYER TOGGLE =====
+function toggleLayer(btn) {
+  btn.classList.toggle('active');
+  const layer = btn.getAttribute('data-layer');
+  const isActive = btn.classList.contains('active');
+
+  if (layer === 'tankers') {
+    const el = document.getElementById('layer-tankers-markers');
+    if (el) el.style.display = isActive ? 'block' : 'none';
+  } else {
+    const el = document.getElementById('layer-' + layer);
+    if (el) el.style.display = isActive ? 'block' : 'none';
+  }
+
+  if (!isActive) {
+    btn.classList.remove('bg-deepBlue', 'text-white');
+    btn.classList.add('bg-slate-100', 'text-secText');
+  } else {
+    btn.classList.add('bg-deepBlue', 'text-white');
+    btn.classList.remove('bg-slate-100', 'text-secText');
+  }
+}
+
+// ===== SIMULATION =====
+function runSimulation() {
+  simRun = true;
+  const btn = document.getElementById('sim-btn');
+  document.getElementById('sim-btn-text').textContent = 'Calculating...';
+
+  setTimeout(() => {
+    // Animate WaterFlow results in
+    animateValue('sim-wf-unmet', 0, 42, 800);
+    animateText('sim-wf-dist', '13.7km', 400);
+    animateText('sim-wf-eq', '84%', 600);
+    animateText('sim-wf-vc', '78%', 800);
+
+    document.getElementById('sim-btn-text').textContent = '✓ Simulation Complete';
+    const panel = document.getElementById('sim-panel');
+    panel.classList.add('sim-active');
+    setTimeout(() => panel.classList.remove('sim-active'), 3000);
+
+    showToast('Allocation simulation: WaterFlow outperforms FCFS baseline');
+  }, 600);
+}
+
+function animateValue(id, start, end, duration) {
+  const el = document.getElementById(id);
+  const startTime = performance.now();
+  function update(time) {
+    const progress = Math.min((time - startTime) / duration, 1);
+    el.textContent = Math.round(start + (end - start) * progress);
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+function animateText(id, text, delay) {
+  setTimeout(() => { document.getElementById(id).textContent = text; }, delay);
+}
+
+// ===== QUEUE TABLE (full tab) =====
+function renderQueueTable() {
+  const sorted = Object.entries(wards).sort((a, b) => b[1].score - a[1].score);
+  document.getElementById('queue-table-body').innerHTML = sorted.map(([id, w], i) => `
+    <tr class="hover:bg-blue-50/40 cursor-pointer" onclick="selectWard('${id}'); switchTab('overview-tab')">
+      <td class="py-2 px-3 font-bold ${i === 0 ? 'text-deepBlue' : 'text-secText'}">#${i+1}</td>
+      <td class="py-2 px-3 font-bold">${w.name}</td>
+      <td class="py-2 px-3 font-mono">${(w.litresNeeded/1000).toFixed(0)},000 L</td>
+      <td class="py-2 px-3 ${w.dryTime > 40 ? 'text-warmAmber' : 'text-secText'} font-bold">${w.dryTime} hours</td>
+      <td class="py-2 px-3 font-mono font-black text-deepBlue">${w.score} / 100</td>
+      <td class="py-2 px-3 text-secText">${w.factor}</td>
+      <td class="py-2 px-3 text-right">
+        <button class="px-2.5 py-1 ${i === 0 ? 'bg-deepBlue text-white' : 'bg-slate-100 hover:bg-slate-200 text-deepBlue'} rounded text-[11px] font-bold" onclick="event.stopPropagation(); selectWard('${id}'); assignTanker()">Dispatch</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ===== FLEET GRID =====
+function renderFleetGrid() {
+  document.getElementById('fleet-grid').innerHTML = Object.entries(tankers).map(([id, t]) => {
+    const statusColor = t.status.includes('Available') ? 'oliveGreen' : t.status.includes('Delay') || t.status.includes('Traffic') ? 'warmAmber' : t.status.includes('Loading') ? 'vibrantBlue' : t.status.includes('Dispensing') ? 'oliveGreen' : 'deepBlue';
+    return `<div class="p-2.5 rounded-lg border border-cardBorder bg-[#FBFDFF] hover:border-deepBlue/30 transition-colors cursor-pointer" onclick="selectTanker('${id}'); switchTab('overview-tab')">
+      <div class="flex justify-between font-bold text-xs">
+        <span>Tanker ${id} (${t.capacity/1000}KL)</span>
+        <span class="text-${statusColor} font-mono text-[11px]">${t.status}</span>
+      </div>
+      <p class="text-[10px] text-secText mt-1">${t.ward ? 'Assigned: Ward ' + t.ward + ' · ETA: ' + t.eta : t.depot + ' · Ready for dispatch'}</p>
+      <div class="w-full bg-slate-200 h-1.5 rounded-full mt-2">
+        <div class="bg-${statusColor} h-1.5 rounded-full transition-all" style="width: ${t.progress}%"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== EQUITY TABLE =====
+function renderEquityTable() {
+  document.getElementById('equity-table-body').innerHTML = equityMetrics.map(m => `
+    <tr class="hover:bg-slate-50/50">
+      <td class="py-2 px-3 font-semibold text-headText">${m.metric}</td>
+      <td class="py-2 px-3 text-center text-secText font-mono font-bold">${m.baseline}${m.unit}</td>
+      <td class="py-2 px-3 text-center font-mono font-black text-deepBlue">${m.waterflow}${m.unit}</td>
+      <td class="py-2 px-3 text-right font-bold text-oliveGreen">${m.improvement}</td>
+    </tr>
+  `).join('');
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

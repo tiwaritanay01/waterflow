@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "outline": "#727784", "surface": "#f5faff", "surface-container-highest": "#dbe4ea", "on-surface-variant": "#424752", "surface-container": "#e7eff6", "secondary-fixed": "#d3e3ff", "secondary": "#0060ab", "on-secondary": "#ffffff", "secondary-container": "#3298fe", "on-surface": "#151d22", "on-tertiary": "#ffffff", "on-primary-fixed-variant": "#004491", "surface-container-low": "#edf5fc", "tertiary-container": "#456200", "tertiary-fixed-dim": "#add461", "on-tertiary-fixed-variant": "#364e00", "on-primary-fixed": "#001a40", "inverse-on-surface": "#eaf2f9", "inverse-surface": "#293137", "on-error": "#ffffff", "on-secondary-fixed-variant": "#004882", "surface-bright": "#f5faff", "background": "#f5faff", "error": "#ba1a1a", "tertiary": "#324900", "surface-dim": "#d3dbe2", "on-secondary-container": "#002f59", "secondary-fixed-dim": "#a3c9ff", "on-secondary-fixed": "#001c39", "primary-container": "#0056b3", "on-tertiary-container": "#b6de6a", "inverse-primary": "#acc7ff", "on-primary-container": "#bbd0ff", "on-primary": "#ffffff", "on-error-container": "#93000a", "primary": "#003f87", "primary-fixed-dim": "#acc7ff", "surface-tint": "#115cb9", "surface-container-high": "#e1e9f0", "outline-variant": "#c2c6d4", "tertiary-fixed": "#c8f17a", "on-tertiary-fixed": "#131f00", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "primary-fixed": "#d7e2ff", "on-background": "#151d22", "surface-variant": "#dbe4ea" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "gutter": "1rem", "space-lg": "1.5rem", "margin": "1.5rem", "margin-mobile": "1rem", "space-sm": "0.5rem", "space-xs": "0.25rem", "space-md": "1rem", "space-xl": "2rem", "gutter-mobile": "0.75rem" }, "fontFamily": { "headline-md": ["Public Sans"], "headline-lg-mobile": ["Public Sans"], "body-lg": ["Public Sans"], "data-sm": ["JetBrains Mono"], "headline-sm": ["Public Sans"], "headline-xl": ["Public Sans"], "data-lg": ["JetBrains Mono"], "headline-lg": ["Public Sans"], "label-md": ["Public Sans"], "body-md": ["Public Sans"], "body-sm": ["Public Sans"], "data-md": ["JetBrains Mono"], "label-sm": ["Public Sans"], "headline-xl-mobile": ["Public Sans"] }, "fontSize": { "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }], "headline-lg-mobile": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "data-sm": ["11px", { "lineHeight": "16px", "fontWeight": "500" }], "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "headline-xl": ["36px", { "lineHeight": "44px", "fontWeight": "700" }], "data-lg": ["24px", { "lineHeight": "32px", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "data-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "700" }], "headline-xl-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }] } } } };</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><main class="w-full min-h-screen bg-surface flex items-center justify-center p-margin"><div class="flex flex-col w-full">
+<div class="w-full max-w-7xl mx-auto flex flex-col gap-space-lg">
+<!-- Top System Telemetry Bar (No double H1, subtle contextual ribbon) -->
+<div class="w-full bg-surface-container-low px-space-lg py-space-sm rounded-lg flex flex-wrap items-center justify-between gap-space-sm shadow-sm">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs text-tertiary">
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-tertiary animate-pulse"></span>
+<span class="font-data-sm text-data-sm uppercase tracking-wider">Gateway 04-B Online</span>
+</div>
+<span class="text-outline-variant font-data-sm text-data-sm">/</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">TLS 1.3 · 256-Bit Cryptographic Ledger</span>
+<span class="text-outline-variant font-data-sm text-data-sm">/</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Ward Distribution Grid A-12</span>
+</div>
+<div class="flex items-center gap-space-md">
+<span class="font-data-sm text-data-sm text-primary">SCADA Node SYNC: 14:02:18 IST</span>
+<button class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors flex items-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-body-md">language</span>
+<span>मराठी / ENG</span>
+</button>
+</div>
+</div>
+<!-- Main Civic Gateway Mosaic Split -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-stretch">
+<!-- Left Anchor: Civic Authority & System Status Architecture -->
+<div class="lg:col-span-5 flex flex-col justify-between bg-surface-container-lowest p-space-xl rounded-xl shadow-md relative overflow-hidden">
+<!-- Structural Backdrop Accent -->
+<div class="absolute -right-16 -top-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex flex-col gap-space-lg relative z-10">
+<!-- Municipal Seal & Authority Header -->
+<div class="flex items-start gap-space-md">
+<div class="w-14 h-14 rounded-lg bg-primary flex items-center justify-center text-on-primary shadow-sm shrink-0">
+<span class="material-symbols-outlined text-headline-xl">water_drop</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-widest">WaterFlow OS</span>
+<span class="bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm px-1.5 py-0.5 rounded">v4.8.2</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface leading-tight mt-0.5">Municipal Water Command</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">MCGM / BMC Unified SCADA &amp; Dispatch Gateway</p>
+</div>
+</div>
+<!-- Security Directive Notice -->
+<div class="bg-surface-container p-space-md rounded-lg">
+<div class="flex items-center gap-space-xs text-primary mb-1">
+<span class="material-symbols-outlined text-body-md">verified_user</span>
+<span class="font-label-sm text-label-sm uppercase font-bold">RBAC Cryptographic Ledger</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Every valve operation, grievance resolution, and tanker dispatch telemetry is signed with civic asymmetric keys for tamper-evident municipal audit compliance.
+            </p>
+</div>
+<!-- Live Municipal Telemetry Preview Sparklines -->
+<div class="flex flex-col gap-space-sm bg-surface-container-low p-space-md rounded-lg">
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Regional Flow Nominality</span>
+<span class="font-data-sm text-data-sm text-tertiary">99.4% Flow Cap</span>
+</div>
+<!-- Realtime Telemetry Sparkline -->
+<div class="w-full h-12 flex items-end gap-1 pt-2">
+<div class="flex-1 bg-secondary-fixed hover:bg-primary transition-all rounded-t" style="height: 60%"></div>
+<div class="flex-1 bg-secondary-fixed hover:bg-primary transition-all rounded-t" style="height: 72%"></div>
+<div class="flex-1 bg-secondary-fixed hover:bg-primary transition-all rounded-t" style="height: 85%"></div>
+<div class="flex-1 bg-secondary-fixed hover:bg-primary transition-all rounded-t" style="height: 90%"></div>
+<div class="flex-1 bg-secondary hover:bg-primary transition-all rounded-t" style="height: 78%"></div>
+<div class="flex-1 bg-secondary hover:bg-primary transition-all rounded-t" style="height: 94%"></div>
+<div class="flex-1 bg-primary hover:bg-primary-container transition-all rounded-t" style="height: 88%"></div>
+<div class="flex-1 bg-primary hover:bg-primary-container transition-all rounded-t" style="height: 96%"></div>
+<div class="flex-1 bg-primary-container rounded-t" style="height: 99%"></div>
+</div>
+<div class="flex justify-between items-center text-outline text-data-sm font-data-sm pt-1">
+<span>Bhandup Intake (T-0)</span>
+<span>Dadar Trunk (+4h)</span>
+</div>
+</div>
+<!-- Municipal Infrastructure Image Mosaic -->
+<div class="grid grid-cols-2 gap-space-sm">
+<div class="rounded-lg overflow-hidden h-28 shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Close up architectural capture of stainless steel automated SCADA water control valves in an immaculate modern municipal treatment facility with soft industrial daylight and digital flow meters" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEUrbfOzzOTD9YKg1GQR0fPpcppdXD7eDuvGTCUT2cea5znBrHVOVexAm6spZCFQY5qENArXJY6mI7ygPLvSo81QkbkRKWWh0PHl_AWbvb-UvdUXH42VEGoB3ewcYa_RWzckO0FAXgeNZgKr2b3QQj475B1nmdP3l00EYWJb2l64oZKmK27-gNbNR5sZ0QQvPCbHl-X3m8BJGgrc7mB6H39NfscyXjzfOwZxO1z8c1Aqh5FHINLal8xg"/>
+</div>
+<div class="rounded-lg overflow-hidden h-28 shadow-sm">
+<img class="w-full h-full object-cover" data-alt="High angle view of municipal hydraulic reservoir command center showing dual curved monitors with geographical GIS overlays and real-time telemetry charts in deep civic blue tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCTTjBfF5hTpVcEMOWchv8GW-Ru2YLJoTp-FgaxdZLVV1is-u_JwmC3IGRfK26tCInfktWd5DqKzlFDxUCxoKpLyJREMrX70V3SFatfqU9cOLaizf6UgWE2LVIMVTdqDHb7r5SYUS6omHQAp6Ucki5w6dw61seHiKP9J84VOh8zqj8CNoVd71YpsnFx7oImYtn6U2fZhNqzhGp4-MVNqUsmmOkNfMfhtOlrbA-b7VKiA4tyGB1UP8Lqw"/>
+</div>
+</div>
+</div>
+<!-- Municipal Authority Credentials Footer -->
+<div class="pt-space-lg mt-space-md flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-headline-sm">shield</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-bold">CERT-In Audited</span>
+<span class="font-data-sm text-data-sm text-outline">STQC Cert #4491-MCGM</span>
+</div>
+</div>
+<span class="font-data-sm text-data-sm text-outline">Zone 01 · Greater Mumbai</span>
+</div>
+</div>
+<!-- Right Column: The Unified Secure Portal Switcher & Action Panels -->
+<div class="lg:col-span-7 flex flex-col gap-space-md">
+<!-- Role Switching Segmented Rail -->
+<div class="bg-surface-container-high p-1.5 rounded-xl shadow-sm flex flex-col sm:flex-row gap-1">
+<button class="flex-1 py-2.5 px-space-md rounded-lg flex items-center justify-center gap-space-xs font-label-md text-label-md transition-all duration-200 bg-surface-container-lowest text-primary shadow-sm" id="tab-btn-citizen" onclick="switchPortal('citizen')" type="button">
+<span class="material-symbols-outlined text-body-lg">person_pin</span>
+<span>Citizen &amp; Resident</span>
+</button>
+<button class="flex-1 py-2.5 px-space-md rounded-lg flex items-center justify-center gap-space-xs font-label-md text-label-md transition-all duration-200 text-on-surface-variant hover:text-on-surface" id="tab-btn-engineer" onclick="switchPortal('engineer')" type="button">
+<span class="material-symbols-outlined text-body-lg">engineering</span>
+<span>SCADA &amp; Engineer</span>
+</button>
+<button class="flex-1 py-2.5 px-space-md rounded-lg flex items-center justify-center gap-space-xs font-label-md text-label-md transition-all duration-200 text-on-surface-variant hover:text-on-surface" id="tab-btn-driver" onclick="switchPortal('driver')" type="button">
+<span class="material-symbols-outlined text-body-lg">local_shipping</span>
+<span>Field Driver &amp; Valve PWA</span>
+</button>
+</div>
+<!-- Dynamic Portal Containers -->
+<div class="bg-surface-container-lowest p-space-xl rounded-xl shadow-md flex flex-col justify-between flex-1">
+<!-- TAB 1: CITIZEN AUTHENTICATION (DEFAULT) -->
+<div class="flex flex-col gap-space-lg" id="panel-citizen">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wider">Citizen Identity Gateway</span>
+<p class="font-headline-md text-headline-md text-on-surface mt-0.5">Resident Water Services Login</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Instant verification via Aadhaar mobile link or Municipal Consumer Number (CCN).</p>
+</div>
+<span class="material-symbols-outlined text-primary-container text-headline-xl">water_ph</span>
+</div>
+<!-- Input Fields Area -->
+<form class="flex flex-col gap-space-md" onsubmit="event.preventDefault(); triggerAuthSim('citizen');">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex justify-between">
+<span>Registered Mobile or Consumer ID</span>
+<span class="text-secondary font-normal cursor-pointer hover:underline">Find Consumer No?</span>
+</label>
+<div class="flex gap-space-sm items-center">
+<!-- Country code prefix chip -->
+<div class="bg-surface-container-low px-space-md py-2.5 rounded-lg flex items-center gap-space-xs font-data-md text-data-md text-on-surface">
+<span class="w-4 h-3 bg-secondary-fixed rounded-xs inline-block"></span>
+<span>+91</span>
+</div>
+<input class="flex-1 bg-surface-container-low px-space-md py-2.5 rounded-lg font-data-md text-data-md text-on-surface focus:outline-none focus:bg-surface-container-lowest focus:shadow-md transition-all" id="citizen-input" placeholder="Enter 10-digit mobile or CCN" type="tel" value="98204 11849"/>
+</div>
+</div>
+<!-- Auth Action Button -->
+<button class="w-full bg-primary-container hover:bg-primary text-on-primary py-3 rounded-lg font-headline-sm text-headline-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-space-xs" id="citizen-submit" type="submit">
+<span class="material-symbols-outlined">send_to_mobile</span>
+<span>Send 6-Digit Secure OTP</span>
+</button>
+<div class="flex items-center justify-center gap-space-sm font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-body-md text-tertiary">check_circle</span>
+<span>WhatsApp / SMS verification ready · No static password required</span>
+</div>
+</form>
+<!-- Citizen Rapid Utility Actions -->
+<div class="pt-space-md mt-space-sm flex flex-col sm:flex-row gap-space-sm justify-between bg-surface-container-low p-space-md rounded-lg">
+<a class="flex items-center gap-space-xs text-secondary hover:text-primary font-body-sm text-body-sm" href="javascript:void(0)">
+<span class="material-symbols-outlined text-body-md">receipt_long</span>
+<span>Track Grievance Ticket Without Login</span>
+</a>
+<a class="flex items-center gap-space-xs text-secondary hover:text-primary font-body-sm text-body-sm" href="javascript:void(0)">
+<span class="material-symbols-outlined text-body-md">calendar_month</span>
+<span>Check Ward M-East Rationing Timetable</span>
+</a>
+</div>
+</div>
+<!-- TAB 2: SCADA & ENGINEER AUTHENTICATION -->
+<div class="hidden flex flex-col gap-space-lg" id="panel-engineer">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-wider">Hydraulic Command Station</span>
+<p class="font-headline-md text-headline-md text-on-surface mt-0.5">MCGM Officer &amp; SCADA Console</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Multi-factor gateway for telemetry control, valve actuation, and GIS dispatch.</p>
+</div>
+<span class="material-symbols-outlined text-primary text-headline-xl">tune</span>
+</div>
+<form class="flex flex-col gap-space-md" onsubmit="event.preventDefault(); triggerAuthSim('engineer');">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Government SSO Identifier (@mcgm.gov.in / @waterflow.gov)</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-headline-sm">badge</span>
+<input class="w-full bg-surface-container-low pl-10 pr-space-md py-2.5 rounded-lg font-data-md text-data-md text-on-surface focus:outline-none focus:bg-surface-container-lowest focus:shadow-md transition-all" id="engineer-input" placeholder="Officer Email or SCADA Badge ID" type="email" value="er.kulkarni@mcgm.gov.in"/>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold">NIC e-Parichay / Security PIN</label>
+<input class="bg-surface-container-low px-space-md py-2.5 rounded-lg font-data-md text-data-md text-on-surface focus:outline-none" type="password" value="••••••••••••"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Hardware Keycard Token</label>
+<div class="bg-surface-container-low px-space-md py-2 rounded-lg flex items-center justify-between text-on-surface-variant">
+<span class="font-data-sm text-data-sm">SCADA-KEY-7102</span>
+<span class="inline-block w-2 h-2 rounded-full bg-tertiary"></span>
+</div>
+</div>
+</div>
+<!-- Engineer Submit -->
+<button class="w-full bg-primary hover:bg-on-primary-fixed-variant text-on-primary py-3 rounded-lg font-headline-sm text-headline-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-space-xs" id="engineer-submit" type="submit">
+<span class="material-symbols-outlined">lock_open</span>
+<span>Authenticate Parichay SSO Session</span>
+</button>
+</form>
+<div class="bg-error-container/40 p-space-md rounded-lg flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-error text-headline-sm">gavel</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Access is restricted to authorized municipal hydraulic engineers and dispatchers. Unapproved actuator signals are monitored under the National Critical Information Infrastructure Protection Centre (NCIIPC).
+              </p>
+</div>
+</div>
+<!-- TAB 3: FIELD DRIVER & VALVE OPERATOR (PWA) -->
+<div class="hidden flex flex-col gap-space-lg" id="panel-driver">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-label-sm text-label-sm text-tertiary uppercase font-bold tracking-wider">Fleet Terminal PWA</span>
+<p class="font-headline-md text-headline-md text-on-surface mt-0.5">Tanker &amp; Valve Operator Dispatch</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">High-contrast rapid authentication for route navigation and digital delivery vouchers.</p>
+</div>
+<span class="material-symbols-outlined text-tertiary text-headline-xl">rv_hookup</span>
+</div>
+<form class="flex flex-col gap-space-md" onsubmit="event.preventDefault(); triggerAuthSim('driver');">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Tanker Fleet ID or Driver Badge</label>
+<input class="bg-surface-container-low px-space-md py-2.5 rounded-lg font-data-md text-data-md text-on-surface focus:outline-none" id="driver-input" placeholder="e.g. MH-03-BW-7821" type="text" value="MH-03-BW-7821"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Primary Depot Station</label>
+<select class="bg-surface-container-low px-space-md py-2.5 rounded-lg font-data-md text-data-md text-on-surface focus:outline-none">
+<option>Trombay Pumping Hub #04</option>
+<option>Bhandup Master Reservoir</option>
+<option>Dadar Central Supply Depot</option>
+<option>Kurla Tanker Terminal</option>
+</select>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold">4-Digit Driver PIN</label>
+<div class="flex gap-space-sm max-w-xs">
+<input class="w-12 h-12 text-center bg-surface-container-low rounded-lg font-data-lg text-data-lg text-primary focus:outline-none" maxlength="1" type="password" value="7"/>
+<input class="w-12 h-12 text-center bg-surface-container-low rounded-lg font-data-lg text-data-lg text-primary focus:outline-none" maxlength="1" type="password" value="4"/>
+<input class="w-12 h-12 text-center bg-surface-container-low rounded-lg font-data-lg text-data-lg text-primary focus:outline-none" maxlength="1" type="password" value="1"/>
+<input class="w-12 h-12 text-center bg-surface-container-low rounded-lg font-data-lg text-data-lg text-primary focus:outline-none" maxlength="1" type="password" value="9"/>
+</div>
+</div>
+<!-- Driver Action -->
+<button class="w-full bg-tertiary-container hover:bg-tertiary text-on-tertiary py-3 rounded-lg font-headline-sm text-headline-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-space-xs" id="driver-submit" type="submit">
+<span class="material-symbols-outlined">satellite_alt</span>
+<span>Authorize Field Terminal Session</span>
+</button>
+</form>
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg text-on-surface-variant font-data-sm text-data-sm">
+<span class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-tertiary text-body-md">offline_pin</span>
+<span>Offline GPS Voucher Cache Active</span>
+</span>
+<span>Hub Sync: 100%</span>
+</div>
+</div>
+<!-- DEMO / REVIEWER RAPID ACCESS PALETTE (Requirement #3) -->
+<div class="mt-space-lg pt-space-md bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase font-bold text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-body-md text-primary">quick_reference</span>
+<span>Evaluator 1-Click Access Archetypes</span>
+</span>
+<span class="font-data-sm text-data-sm text-outline">Preset Role Credentials</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm">
+<button class="text-left bg-surface-container-lowest hover:bg-secondary-fixed/30 p-space-sm rounded-lg transition-all flex flex-col gap-0.5 shadow-sm group" onclick="loadRoleArchetype('citizen')" type="button">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-primary font-bold">Govandi Citizen</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary text-body-md transition-colors">arrow_forward</span>
+</div>
+<span class="font-data-sm text-data-sm text-on-surface-variant">Ward M-East (#98204)</span>
+</button>
+<button class="text-left bg-surface-container-lowest hover:bg-secondary-fixed/30 p-space-sm rounded-lg transition-all flex flex-col gap-0.5 shadow-sm group" onclick="loadRoleArchetype('engineer')" type="button">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-primary font-bold">BMC Hydraulic Eng</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary text-body-md transition-colors">arrow_forward</span>
+</div>
+<span class="font-data-sm text-data-sm text-on-surface-variant">SCADA Level 4 Access</span>
+</button>
+<button class="text-left bg-surface-container-lowest hover:bg-secondary-fixed/30 p-space-sm rounded-lg transition-all flex flex-col gap-0.5 shadow-sm group" onclick="loadRoleArchetype('driver')" type="button">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-tertiary font-bold">Tanker T-08 Driver</span>
+<span class="material-symbols-outlined text-outline group-hover:text-tertiary text-body-md transition-colors">arrow_forward</span>
+</div>
+<span class="font-data-sm text-data-sm text-on-surface-variant">MH-03-BW-7821</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Civic Assurance & Transparency Footer (Requirement #4) -->
+<div class="mt-space-md p-space-lg bg-surface-container-lowest rounded-xl shadow-sm grid grid-cols-2 md:grid-cols-4 gap-space-lg items-center text-center sm:text-left">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined">policy</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm font-bold text-on-surface uppercase">Zero Data Monetization</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Public Civic Trust Charter</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined">call</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm font-bold text-on-surface uppercase">24x7 MCGM Helpline</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Dial 1916 / Grievance Cell</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-tertiary shrink-0">
+<span class="material-symbols-outlined">translate</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm font-bold text-on-surface uppercase">Bilingual Guarantee</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">English &amp; मराठी Standard</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary-container shrink-0">
+<span class="material-symbols-outlined">security</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm font-bold text-on-surface uppercase">CERT-In Hardened</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Govt of India Compliant</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Client-side Scripting -->
+<script>
+    function switchPortal(role) {
+      // Containers
+      const panels = {
+        citizen: document.getElementById('panel-citizen'),
+        engineer: document.getElementById('panel-engineer'),
+        driver: document.getElementById('panel-driver')
+      };
+
+      // Buttons
+      const buttons = {
+        citizen: document.getElementById('tab-btn-citizen'),
+        engineer: document.getElementById('tab-btn-engineer'),
+        driver: document.getElementById('tab-btn-driver')
+      };
+
+      Object.keys(panels).forEach(key => {
+        if (key === role) {
+          panels[key].classList.remove('hidden');
+          buttons[key].classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+          buttons[key].classList.remove('text-on-surface-variant');
+        } else {
+          panels[key].classList.add('hidden');
+          buttons[key].classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+          buttons[key].classList.add('text-on-surface-variant');
+        }
+      });
+    }
+
+    function loadRoleArchetype(role) {
+      switchPortal(role);
+      const submitBtns = {
+        citizen: document.getElementById('citizen-submit'),
+        engineer: document.getElementById('engineer-submit'),
+        driver: document.getElementById('driver-submit')
+      };
+      
+      const targetBtn = submitBtns[role];
+      if (targetBtn) {
+        targetBtn.classList.add('scale-95');
+        setTimeout(() => targetBtn.classList.remove('scale-95'), 150);
+      }
+    }
+
+    function triggerAuthSim(role) {
+      const submitBtns = {
+        citizen: document.getElementById('citizen-submit'),
+        engineer: document.getElementById('engineer-submit'),
+        driver: document.getElementById('driver-submit')
+      };
+
+      const btn = submitBtns[role];
+      if (!btn) return;
+
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = `
+        <span class="inline-block w-4 h-4 border-2 border-on-primary border-t-transparent rounded-full animate-spin"></span>
+        <span>Verifying Security Clearance...</span>
+      `;
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerHTML = `
+          <span class="material-symbols-outlined">task_alt</span>
+          <span>Access Granted · Connecting Session...</span>
+        `;
+        setTimeout(() => {
+          btn.innerHTML = originalHtml;
+          btn.disabled = false;
+        }, 1800);
+      }, 900);
+    }
+  </script>
+</div></main></body></html>

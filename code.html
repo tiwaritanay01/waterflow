@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+
+<html class="h-full overflow-hidden" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WaterFlow OS — Municipal Water Command Center</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Public+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#F0F8FF',
+            deepBlue: '#0056B3',
+            vibrantBlue: '#3399FF',
+            oliveGreen: '#6B8E23',
+            warmAmber: '#C27A29',
+            critRed: '#D32F2F',
+            headText: '#1A1A1A',
+            secText: '#4A4A4A',
+            cardBorder: '#D8E5F0',
+          },
+          fontFamily: {
+            sans: ['Public Sans', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    html, body {
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    /* Subtle custom inner scrollbar for compact tables/lists if needed */
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #F0F8FF;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+    .gis-grid {
+      background-size: 24px 24px;
+      background-image: 
+        linear-gradient(to right, rgba(0, 86, 179, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 86, 179, 0.05) 1px, transparent 1px);
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.92); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 0.15; }
+      100% { transform: scale(0.92); opacity: 0.8; }
+    }
+    .pulse-amber {
+      animation: pulse-ring 2.2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    }
+  </style>
+</head>
+<body class="h-screen w-screen flex flex-col bg-[#F0F8FF] text-[#1A1A1A] font-sans antialiased overflow-hidden">
+<!-- TOP HEADER BAR (~56px Fixed Height) -->
+<header class="h-14 flex-shrink-0 bg-white border-b border-cardBorder shadow-xs px-4 flex items-center justify-between z-30">
+<!-- Left: Brand Logo + System ID -->
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 bg-deepBlue shadow-sm flex items-center justify-center p-0.5">
+<img alt="WaterFlow OS Logo" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1W270GtFhR2yqbaSF1woF4dtLcCUEBPYiGZ0KAts9vhzEEYFmsSYGVYDJk9q-LMAeOcMnbGPfTGiNj5ZdbSeyM0cspAFtdCQh1YH0zBZEav7xApyKHRnjLMlXioTrXtOMfBcE7q5CEFcrO2SlPoX-F728O3aNV_CySum-0jUhceqsncuAv8oZ6tuVyOJLM4u0IUvBgsnq27xMwHPhguug0MU2WOIGnr3POxYNM2B_E9zcQtB56p3mDT_d6V"/>
+</div>
+<div class="flex items-center space-x-2">
+<span class="font-extrabold text-base tracking-tight text-deepBlue">WaterFlow OS</span>
+<span class="px-1.5 py-0.5 bg-emerald-50 text-oliveGreen border border-oliveGreen/30 text-[10px] font-bold rounded flex items-center space-x-1">
+<span class="w-1.5 h-1.5 rounded-full bg-oliveGreen animate-pulse"></span>
+<span>99.4% Grid Stable</span>
+</span>
+<span class="hidden md:inline-block px-2 py-0.5 bg-slate-100 text-secText text-[10px] font-semibold rounded border border-cardBorder">
+          Municipal Command Center
+        </span>
+</div>
+</div>
+<!-- Center: Search + UTC Clock -->
+<div class="flex items-center space-x-3 flex-1 max-w-md mx-4">
+<div class="relative w-full">
+<i class="w-3.5 h-3.5 text-secText absolute left-2.5 top-2.5" data-lucide="search"></i>
+<input class="w-full pl-8 pr-3 py-1.5 bg-[#F8FAFC] border border-cardBorder rounded-lg text-xs text-headText placeholder:text-secText/70 focus:outline-none focus:ring-1 focus:ring-vibrantBlue focus:bg-white transition-all shadow-inner" placeholder="Search Ward, Tanker Transponder, Depot ID..." type="text"/>
+</div>
+<div class="hidden xl:flex items-center space-x-1.5 text-[11px] text-secText font-mono whitespace-nowrap bg-blue-50/70 border border-blue-100 px-2.5 py-1 rounded-md">
+<i class="w-3 h-3 text-deepBlue" data-lucide="clock"></i>
+<span>Oct 24, 14:35 UTC</span>
+</div>
+</div>
+<!-- Right Controls: Emergency Mode + Critical Alert Chip + Bell + Avatar -->
+<div class="flex items-center space-x-2.5">
+<!-- Emergency Mode Pill -->
+<span class="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 bg-deepBlue text-white text-[11px] font-semibold rounded-lg shadow-2xs">
+<i class="w-3.5 h-3.5 text-vibrantBlue" data-lucide="shield-alert"></i>
+<span>Emergency Balancing</span>
+</span>
+<!-- Critical Alert Chip -->
+<button class="flex items-center space-x-1 px-2 py-1 rounded-lg bg-red-50 border border-red-200 text-critRed text-xs font-bold hover:bg-red-100 transition-colors" onclick="switchTab('alerts-view')">
+<span class="w-2 h-2 rounded-full bg-critRed animate-ping"></span>
+<span>3 Critical Wards</span>
+</button>
+<!-- Alert Bell with Amber Dot -->
+<button class="relative p-1.5 rounded-lg text-secText hover:text-deepBlue hover:bg-blue-50/80 transition-colors" title="Notifications">
+<i class="w-4 h-4" data-lucide="bell"></i>
+<span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-warmAmber ring-2 ring-white"></span>
+</button>
+<!-- Circular Admin Avatar -->
+<div class="w-8 h-8 rounded-full bg-deepBlue text-white flex items-center justify-center font-bold text-xs shadow-sm ring-2 ring-blue-100 cursor-pointer" title="Supervisor Admin Dispatch">
+        AD
+      </div>
+</div>
+</header>
+<!-- BODY CONTENT CONTAINER (100% Viewport Height minus Header, ZERO SCROLL) -->
+<div class="h-[calc(100vh-56px)] flex overflow-hidden">
+<!-- FIXED LEFT SIDEBAR (w-64 flex-shrink-0 bg-deepBlue) -->
+<aside class="w-64 flex-shrink-0 bg-[#0056B3] text-white flex flex-col justify-between p-3 select-none border-r border-blue-900/30">
+<!-- Top Section & Navigation Links -->
+<div class="space-y-3">
+<div class="px-2 py-1 flex items-center justify-between text-[11px] uppercase tracking-wider text-blue-200 font-bold border-b border-white/10 pb-2">
+<span>Control Console</span>
+<span class="font-mono text-[10px] text-blue-300">SCADA v4.12</span>
+</div>
+<nav class="space-y-1" id="sidebar-nav">
+<!-- Nav Item 1: Live Overview (Default) -->
+<button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold bg-white/20 text-white border-l-4 border-vibrantBlue shadow-xs transition-all text-left" data-tab="overview-tab" onclick="switchTab('overview-tab')">
+<i class="w-4 h-4 text-vibrantBlue" data-lucide="layout-dashboard"></i>
+<span>Live Overview</span>
+</button>
+<!-- Nav Item 2: GIS Spatial Dispatch -->
+<button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold text-blue-100 hover:bg-white/10 border-l-4 border-transparent transition-all text-left" data-tab="spatial-tab" onclick="switchTab('spatial-tab')">
+<i class="w-4 h-4" data-lucide="map"></i>
+<span>GIS Spatial Dispatch</span>
+</button>
+<!-- Nav Item 3: Allocation Queue -->
+<button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold text-blue-100 hover:bg-white/10 border-l-4 border-transparent transition-all text-left" data-tab="queue-tab" onclick="switchTab('queue-tab')">
+<i class="w-4 h-4" data-lucide="list-ordered"></i>
+<span class="flex-1">Allocation Queue</span>
+<span class="px-1.5 py-0.2 bg-warmAmber text-white text-[10px] font-bold rounded-full">4</span>
+</button>
+<!-- Nav Item 4: Complaint & Forecast -->
+<button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold text-blue-100 hover:bg-white/10 border-l-4 border-transparent transition-all text-left" data-tab="forecast-tab" onclick="switchTab('forecast-tab')">
+<i class="w-4 h-4" data-lucide="trending-up"></i>
+<span>Complaint &amp; Forecast</span>
+</button>
+<!-- Nav Item 5: Fleet & Logistics -->
+<button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold text-blue-100 hover:bg-white/10 border-l-4 border-transparent transition-all text-left" data-tab="fleet-tab" onclick="switchTab('fleet-tab')">
+<i class="w-4 h-4" data-lucide="truck"></i>
+<span class="flex-1">Fleet &amp; Logistics</span>
+<span class="text-[10px] text-blue-200 font-mono">18/25</span>
+</button>
+<!-- Nav Item 6: Equity & Impact -->
+<button class="nav-tab-btn w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold text-blue-100 hover:bg-white/10 border-l-4 border-transparent transition-all text-left" data-tab="equity-tab" onclick="switchTab('equity-tab')">
+<i class="w-4 h-4" data-lucide="scale"></i>
+<span>Equity &amp; Impact</span>
+</button>
+</nav>
+</div>
+<!-- Sidebar Footer Stats Widget -->
+<div class="space-y-2 border-t border-white/10 pt-2.5 text-blue-100">
+<!-- Quick Quota Stat -->
+<div class="bg-black/20 rounded-lg p-2 text-xs">
+<div class="flex justify-between text-[11px] mb-1">
+<span class="text-blue-200">Daily Quota Burn</span>
+<span class="font-bold text-white">286 / 420 KL</span>
+</div>
+<div class="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
+<div class="bg-vibrantBlue h-1.5 rounded-full" style="width: 68%"></div>
+</div>
+<div class="flex items-center justify-between text-[10px] text-blue-300 mt-1">
+<span>68% Allocated</span>
+<span class="text-emerald-300 font-semibold">134 KL Reserve</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-[11px] px-1 text-blue-200">
+<span class="flex items-center space-x-1.5">
+<span class="w-2 h-2 rounded-full bg-oliveGreen"></span>
+<span>17 Active Tankers</span>
+</span>
+<span class="font-mono text-[10px] text-blue-300">v2.8.4</span>
+</div>
+</div>
+</aside>
+<!-- MAIN DASHBOARD CONTENT AREA (flex-1 h-full overflow-hidden flex flex-col p-2.5 sm:p-3 gap-2) -->
+<main class="flex-1 h-full min-w-0 overflow-hidden flex flex-col gap-2">
+<!-- TOP COMPACT KPI STRIP (Single Row of 6 Slim Metric Cards) -->
+<section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 flex-shrink-0">
+<!-- KPI 1: Active Requests -->
+<div class="bg-white rounded-lg px-2.5 py-1.5 border border-cardBorder shadow-2xs flex items-center justify-between">
+<div class="min-w-0">
+<div class="text-[10px] font-bold text-secText uppercase tracking-wider truncate">Active Requests</div>
+<div class="flex items-baseline space-x-1.5">
+<span class="text-lg font-black text-headText">142</span>
+<span class="text-[10px] font-bold text-warmAmber">+12%</span>
+</div>
+</div>
+<div class="p-1 rounded bg-blue-50 text-deepBlue flex-shrink-0">
+<i class="w-3.5 h-3.5" data-lucide="droplet"></i>
+</div>
+</div>
+<!-- KPI 2: Fleet Available -->
+<div class="bg-white rounded-lg px-2.5 py-1.5 border border-cardBorder shadow-2xs flex items-center justify-between">
+<div class="min-w-0">
+<div class="text-[10px] font-bold text-secText uppercase tracking-wider truncate">Fleet Available</div>
+<div class="flex items-baseline space-x-1">
+<span class="text-lg font-black text-headText">18</span>
+<span class="text-[11px] font-bold text-secText">/25</span>
+<span class="text-[10px] font-bold text-deepBlue ml-1">72%</span>
+</div>
+</div>
+<div class="p-1 rounded bg-blue-50 text-deepBlue flex-shrink-0">
+<i class="w-3.5 h-3.5" data-lucide="truck"></i>
+</div>
+</div>
+<!-- KPI 3: Water Available -->
+<div class="bg-white rounded-lg px-2.5 py-1.5 border border-cardBorder shadow-2xs flex items-center justify-between">
+<div class="min-w-0">
+<div class="text-[10px] font-bold text-secText uppercase tracking-wider truncate">Water Available</div>
+<div class="flex items-baseline space-x-1">
+<span class="text-lg font-black text-headText">286</span>
+<span class="text-[10px] font-bold text-secText">KL</span>
+<span class="text-[10px] font-semibold text-oliveGreen ml-0.5">62% bal</span>
+</div>
+</div>
+<div class="p-1 rounded bg-blue-50 text-deepBlue flex-shrink-0">
+<i class="w-3.5 h-3.5" data-lucide="droplets"></i>
+</div>
+</div>
+<!-- KPI 4: Unmet Demand -->
+<div class="bg-white rounded-lg px-2.5 py-1.5 border border-cardBorder shadow-2xs flex items-center justify-between">
+<div class="min-w-0">
+<div class="text-[10px] font-bold text-secText uppercase tracking-wider truncate">Unmet Demand</div>
+<div class="flex items-baseline space-x-1">
+<span class="text-lg font-black text-warmAmber">184</span>
+<span class="text-[10px] font-bold text-secText">KL</span>
+<span class="text-[10px] font-bold text-critRed ml-0.5">↑14%</span>
+</div>
+</div>
+<div class="p-1 rounded bg-amber-50 text-warmAmber flex-shrink-0">
+<i class="w-3.5 h-3.5" data-lucide="arrow-up-right"></i>
+</div>
+</div>
+<!-- KPI 5: Equity Index -->
+<div class="bg-white rounded-lg px-2.5 py-1.5 border border-cardBorder shadow-2xs flex items-center justify-between">
+<div class="min-w-0">
+<div class="text-[10px] font-bold text-secText uppercase tracking-wider truncate">Equity Index</div>
+<div class="flex items-baseline space-x-1">
+<span class="text-lg font-black text-oliveGreen">84%</span>
+<span class="text-[10px] text-secText font-semibold truncate">&gt;90% tgt</span>
+</div>
+</div>
+<div class="p-1 rounded bg-emerald-50 text-oliveGreen flex-shrink-0">
+<i class="w-3.5 h-3.5" data-lucide="bar-chart-2"></i>
+</div>
+</div>
+<!-- KPI 6: Critical Alerts -->
+<div class="bg-white rounded-lg px-2.5 py-1.5 border border-cardBorder shadow-2xs flex items-center justify-between cursor-pointer hover:border-warmAmber transition-colors" onclick="switchTab('alerts-view')">
+<div class="min-w-0">
+<div class="text-[10px] font-bold text-secText uppercase tracking-wider truncate">Critical Alerts</div>
+<div class="flex items-baseline space-x-1">
+<span class="text-lg font-black text-warmAmber">3</span>
+<span class="text-[10px] font-bold text-warmAmber">Wards &gt;48h</span>
+</div>
+</div>
+<div class="p-1 rounded bg-amber-100 text-warmAmber flex-shrink-0">
+<i class="w-3.5 h-3.5" data-lucide="alert-triangle"></i>
+</div>
+</div>
+</section>
+<!-- DYNAMIC TAB PANELS CONTAINER (Takes remainder height, zero scroll on main body) -->
+<div class="flex-1 min-h-0 overflow-hidden relative">
+<!-- ========================================================= -->
+<!-- TAB 1: LIVE OVERVIEW (DEFAULT SINGLE-SCREEN COMMAND VIEW) -->
+<!-- ========================================================= -->
+<div class="tab-pane h-full w-full flex flex-col lg:flex-row gap-2.5 overflow-hidden" id="overview-tab">
+<!-- LEFT COLUMN (62%): GIS Tactical Map + Explainability Spotlight -->
+<div class="w-full lg:w-[62%] h-full flex flex-col gap-2 min-h-0 overflow-hidden">
+<!-- GIS Tactical Map Panel (flex-1 min-h-0) -->
+<div class="flex-1 min-h-0 bg-white rounded-xl border border-cardBorder shadow-sm flex flex-col overflow-hidden">
+<!-- Map Sub-header -->
+<div class="px-3 py-1.5 border-b border-cardBorder flex items-center justify-between bg-[#FBFDFF] flex-shrink-0">
+<div class="flex items-center space-x-2">
+<span class="w-2 h-2 rounded-full bg-critRed animate-ping"></span>
+<span class="font-bold text-xs text-headText">Live Municipal Spatial GIS</span>
+<span class="px-1.5 py-0.2 rounded bg-blue-100 text-deepBlue text-[9px] font-mono font-bold">EPSG:4326</span>
+</div>
+<!-- Layer Toggles -->
+<div class="flex items-center space-x-1 text-[10px]">
+<button class="px-2 py-0.5 rounded bg-deepBlue text-white font-semibold flex items-center space-x-1 shadow-2xs">
+<i class="w-3 h-3 text-vibrantBlue" data-lucide="flame"></i>
+<span>Demand</span>
+</button>
+<button class="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-secText font-medium">Vulnerability</button>
+<button class="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-secText font-medium">Tankers</button>
+<button class="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-secText font-medium">Signals</button>
+</div>
+</div>
+<!-- Interactive GIS Canvas -->
+<div class="flex-1 min-h-0 relative bg-[#EAF2F9] gis-grid overflow-hidden flex flex-col justify-between p-2 select-none">
+<!-- SVG Ward Geometry Vectors & Heat zones -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" preserveaspectratio="none" viewbox="0 0 700 360">
+<!-- Ward Polygons -->
+<polygon fill="#0056b3" fill-opacity="0.05" points="35,25 210,20 270,110 150,165 45,130" stroke="#0056b3" stroke-dasharray="3,3" stroke-width="1.5"></polygon>
+<text fill="#0056B3" font-size="10" font-weight="700" opacity="0.6" x="100" y="80">WARD 08 (58% Cov)</text>
+<polygon fill="#6b8e23" fill-opacity="0.07" points="210,20 450,25 470,145 270,110" stroke="#6b8e23" stroke-width="1.5"></polygon>
+<text fill="#6B8E23" font-size="10" font-weight="700" opacity="0.7" x="310" y="70">WARD 12 (Stable 91%)</text>
+<polygon fill="#c27a29" fill-opacity="0.12" points="450,25 660,35 640,195 470,145" stroke="#c27a29" stroke-width="2"></polygon>
+<text fill="#C27A29" font-size="10" font-weight="800" x="510" y="100">WARD 23 (Critical 42%)</text>
+<polygon fill="#c27a29" fill-opacity="0.18" points="150,165 330,145 370,295 180,320 90,245" stroke="#c27a29" stroke-width="2.5"></polygon>
+<text fill="#C27A29" font-size="11" font-weight="900" x="210" y="225">WARD 17 (Priority #1)</text>
+<polygon fill="#0056b3" fill-opacity="0.06" points="330,145 510,155 530,315 370,295" stroke="#0056b3" stroke-width="1.5"></polygon>
+<text fill="#0056B3" font-size="10" font-weight="700" opacity="0.6" x="400" y="235">WARD 05 (74% Cov)</text>
+<polygon fill="#d32f2f" fill-opacity="0.12" points="510,155 650,195 640,345 530,315" stroke="#d32f2f" stroke-width="2"></polygon>
+<text fill="#D32F2F" font-size="11" font-weight="800" x="550" y="265">WARD 31 (Deficit)</text>
+<!-- Reservoirs and Depot Points -->
+<circle cx="160" cy="100" fill="#3399FF" fill-opacity="0.25" r="16"></circle>
+<circle cx="160" cy="100" fill="#0056B3" r="8"></circle>
+<text fill="#0056B3" font-size="9" font-weight="700" x="130" y="126">CENTRAL DEPOT #1</text>
+<circle cx="560" cy="110" fill="#3399FF" fill-opacity="0.2" r="12"></circle>
+<circle cx="560" cy="110" fill="#3399FF" r="6"></circle>
+<text fill="#0056B3" font-size="9" font-weight="700" x="530" y="132">EAST BOOSTER #4</text>
+<!-- Tanker Dispatch Routes -->
+<path d="M 160,100 Q 200,165 250,215" fill="none" stroke="#0056B3" stroke-dasharray="5,4" stroke-width="2.5"></path>
+<path d="M 160,100 Q 310,110 520,100" fill="none" stroke="#3399FF" stroke-dasharray="4,4" stroke-width="2"></path>
+<path d="M 560,110 Q 580,185 595,245" fill="none" stroke="#C27A29" stroke-dasharray="4,3" stroke-width="2"></path>
+</svg>
+<!-- Top Floating GIS HUD Bar -->
+<div class="flex justify-between items-start z-10">
+<div class="bg-white/95 backdrop-blur-sm px-2 py-1 rounded-md border border-cardBorder text-[9px] space-y-0.5 shadow-xs">
+<div class="font-bold text-headText">GIS Intensity</div>
+<div class="flex items-center space-x-2">
+<span class="inline-flex items-center space-x-1">
+<span class="w-2 h-2 rounded-xs bg-[#D32F2F]"></span>
+<span class="text-secText font-medium">&gt;48h Deficit</span>
+</span>
+<span class="inline-flex items-center space-x-1">
+<span class="w-2 h-2 rounded-xs bg-[#C27A29]"></span>
+<span class="text-secText font-medium">High Vulnerability</span>
+</span>
+<span class="inline-flex items-center space-x-1">
+<span class="w-2 h-2 rounded-xs bg-[#6B8E23]"></span>
+<span class="text-secText font-medium">&gt;80% Normal</span>
+</span>
+</div>
+</div>
+<div class="bg-white/90 backdrop-blur px-2 py-0.5 rounded border border-cardBorder text-[9px] font-mono text-secText shadow-xs">
+<span class="text-deepBlue font-bold">1:25,000</span> · 12.9716° N
+                  </div>
+</div>
+<!-- Dynamic Live Transponders & Hotspot Marker Pins -->
+<!-- Tanker T-08 Assigned to Ward 17 -->
+<div class="absolute left-[35%] top-[56%] z-20 -translate-x-1/2 -translate-y-1/2 cursor-pointer group">
+<span class="absolute -inset-1 rounded-full bg-vibrantBlue/40 animate-ping"></span>
+<div class="relative bg-deepBlue text-white p-1 rounded-full shadow-md border-2 border-white flex items-center justify-center">
+<i class="w-3 h-3" data-lucide="truck"></i>
+</div>
+<div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-headText text-white text-[9px] px-1.5 py-0.2 rounded whitespace-nowrap font-bold shadow-xs">
+                    T-08 (10,000L)
+                  </div>
+</div>
+<!-- Pulse Pin at Ward 17 -->
+<div class="absolute left-[37%] top-[68%] z-10">
+<div class="w-9 h-9 rounded-full bg-warmAmber/30 flex items-center justify-center pulse-amber">
+<div class="w-4 h-4 rounded-full bg-warmAmber text-white text-[8px] font-black flex items-center justify-center border border-white shadow">
+                      !
+                    </div>
+</div>
+</div>
+<!-- Tanker T-14 (Delayed) -->
+<div class="absolute left-[76%] top-[34%] z-20">
+<div class="relative bg-warmAmber text-white p-1 rounded-full shadow border border-white flex items-center justify-center">
+<i class="w-3 h-3" data-lucide="truck"></i>
+</div>
+<span class="bg-headText text-white text-[8px] px-1 rounded font-mono absolute -top-4 -left-2 whitespace-nowrap">
+                    T-14 (+18m)
+                  </span>
+</div>
+<!-- Tanker T-02 (Dispensing) -->
+<div class="absolute left-[83%] top-[63%] z-20">
+<div class="relative bg-oliveGreen text-white p-1 rounded-full shadow border border-white flex items-center justify-center">
+<i class="w-3 h-3" data-lucide="droplet"></i>
+</div>
+<span class="bg-headText text-white text-[8px] px-1 rounded font-mono absolute -top-4 -left-2 whitespace-nowrap">
+                    T-02 (65%)
+                  </span>
+</div>
+<!-- Bottom Telemetry Stats Overlay Bar -->
+<div class="z-10 bg-white/95 backdrop-blur-sm rounded-md px-2.5 py-1 border border-cardBorder shadow-xs flex items-center justify-between text-[10px]">
+<div class="flex items-center space-x-3 font-semibold text-secText">
+<span class="flex items-center space-x-1 text-deepBlue">
+<i class="w-3 h-3" data-lucide="truck"></i>
+<span><strong>17</strong> Active Tankers</span>
+</span>
+<span>·</span>
+<span class="flex items-center space-x-1 text-warmAmber">
+<i class="w-3 h-3" data-lucide="map-pin"></i>
+<span><strong>23</strong> Priority Zones</span>
+</span>
+<span>·</span>
+<span class="flex items-center space-x-1 text-secText">
+<i class="w-3 h-3 text-vibrantBlue" data-lucide="radio"></i>
+<span><strong>61</strong> Community Signals</span>
+</span>
+</div>
+<button class="text-deepBlue font-bold hover:underline flex items-center space-x-0.5" onclick="switchTab('spatial-tab')">
+<span>Expanded GIS</span>
+<i class="w-3 h-3" data-lucide="arrow-up-right"></i>
+</button>
+</div>
+</div>
+</div>
+<!-- Algorithmic Explainability Spotlight ("Why Ward 17?") - Compact Height Card (~150px) -->
+<div class="bg-white rounded-xl border border-blue-200 shadow-sm p-2.5 flex flex-col justify-between flex-shrink-0">
+<!-- Spotlight Header -->
+<div class="flex items-center justify-between border-b border-cardBorder/60 pb-1.5">
+<div class="flex items-center space-x-2">
+<span class="px-1.5 py-0.5 bg-deepBlue text-white text-[9px] font-bold uppercase rounded">
+                    Explainability Engine
+                  </span>
+<h4 class="font-extrabold text-xs text-headText">WHY IS WARD 17 PRIORITIZED?</h4>
+<span class="text-[10px] text-secText hidden sm:inline">Algorithmic Equity Formula decomposition</span>
+</div>
+<div class="flex items-center space-x-1 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+<span class="text-[10px] font-bold text-secText uppercase">Priority Index:</span>
+<span class="font-mono font-black text-xs text-deepBlue">94/100</span>
+<span class="px-1 py-0.2 bg-warmAmber text-white text-[8px] font-bold rounded ml-1">Tier 1</span>
+</div>
+</div>
+<!-- 5 Weighted Factor Score Bars -->
+<div class="grid grid-cols-5 gap-2 my-1.5">
+<!-- Factor 1: Vulnerability -->
+<div class="bg-[#F8FAFC] border border-cardBorder rounded p-1.5">
+<div class="flex justify-between items-center text-[10px]">
+<span class="font-bold text-headText truncate">Vulnerability</span>
+<span class="font-mono font-extrabold text-deepBlue">+30</span>
+</div>
+<div class="w-full bg-slate-200 h-1 rounded-full mt-1 overflow-hidden">
+<div class="bg-deepBlue h-1 rounded-full" style="width: 100%"></div>
+</div>
+<div class="text-[9px] text-secText truncate mt-0.5">High informal pop</div>
+</div>
+<!-- Factor 2: Unmet Demand -->
+<div class="bg-[#F8FAFC] border border-cardBorder rounded p-1.5">
+<div class="flex justify-between items-center text-[10px]">
+<span class="font-bold text-headText truncate">Unmet Demand</span>
+<span class="font-mono font-extrabold text-deepBlue">+25</span>
+</div>
+<div class="w-full bg-slate-200 h-1 rounded-full mt-1 overflow-hidden">
+<div class="bg-deepBlue h-1 rounded-full" style="width: 85%"></div>
+</div>
+<div class="text-[9px] text-secText truncate mt-0.5">52h pipe dry</div>
+</div>
+<!-- Factor 3: Deficit -->
+<div class="bg-[#F8FAFC] border border-cardBorder rounded p-1.5">
+<div class="flex justify-between items-center text-[10px]">
+<span class="font-bold text-headText truncate">Deficit</span>
+<span class="font-mono font-extrabold text-deepBlue">+18</span>
+</div>
+<div class="w-full bg-slate-200 h-1 rounded-full mt-1 overflow-hidden">
+<div class="bg-deepBlue h-1 rounded-full" style="width: 65%"></div>
+</div>
+<div class="text-[9px] text-secText truncate mt-0.5">38% last ration</div>
+</div>
+<!-- Factor 4: Population -->
+<div class="bg-[#F8FAFC] border border-cardBorder rounded p-1.5">
+<div class="flex justify-between items-center text-[10px]">
+<span class="font-bold text-headText truncate">Population</span>
+<span class="font-mono font-extrabold text-deepBlue">+12</span>
+</div>
+<div class="w-full bg-slate-200 h-1 rounded-full mt-1 overflow-hidden">
+<div class="bg-deepBlue h-1 rounded-full" style="width: 45%"></div>
+</div>
+<div class="text-[9px] text-secText truncate mt-0.5">28,400 residents</div>
+</div>
+<!-- Factor 5: Distance -->
+<div class="bg-[#F8FAFC] border border-cardBorder rounded p-1.5">
+<div class="flex justify-between items-center text-[10px]">
+<span class="font-bold text-headText truncate">Distance</span>
+<span class="font-mono font-extrabold text-deepBlue">+09</span>
+</div>
+<div class="w-full bg-slate-200 h-1 rounded-full mt-1 overflow-hidden">
+<div class="bg-deepBlue h-1 rounded-full" style="width: 30%"></div>
+</div>
+<div class="text-[9px] text-secText truncate mt-0.5">4.2km from Depot #1</div>
+</div>
+</div>
+<!-- Recommendation & Quick CTA Action Banner -->
+<div class="flex items-center justify-between bg-blue-50/70 border border-blue-200 rounded-lg px-2.5 py-1.5">
+<div class="flex items-center space-x-2">
+<i class="w-4 h-4 text-deepBlue flex-shrink-0" data-lucide="check-circle-2"></i>
+<span class="text-xs font-bold text-headText">
+                    Recommended: <strong class="text-deepBlue">10,000 L</strong> (Tanker T-08 queued via East Bypass)
+                  </span>
+</div>
+<button class="px-3 py-1 bg-deepBlue hover:bg-blue-700 active:bg-blue-800 text-white rounded text-xs font-bold shadow-2xs flex items-center space-x-1.5 transition-all">
+<i class="w-3 h-3 text-vibrantBlue" data-lucide="send"></i>
+<span>Assign Tanker T-08 Now</span>
+</button>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN (38%): Priority Queue + Resources & Quota + Live Alert Ticker -->
+<div class="w-full lg:w-[38%] h-full flex flex-col gap-2 min-h-0 overflow-hidden">
+<!-- 1. Explainable Priority Queue (Top 3 Wards) -->
+<div class="bg-white rounded-xl border border-cardBorder shadow-sm p-2.5 flex flex-col flex-shrink-0">
+<div class="flex items-center justify-between pb-1.5 border-b border-cardBorder">
+<div class="flex items-center space-x-1.5">
+<i class="w-3.5 h-3.5 text-deepBlue" data-lucide="list-ordered"></i>
+<h4 class="font-extrabold text-xs text-headText">Explainable Priority Queue</h4>
+</div>
+<span class="text-[9px] font-bold text-deepBlue bg-blue-50 border border-blue-200 px-1.5 py-0.2 rounded">
+                  Top 3 Pending
+                </span>
+</div>
+<!-- Compact Item List -->
+<div class="space-y-1.5 mt-2">
+<!-- Queue Item 1: Ward 17 -->
+<div class="p-2 rounded-lg border border-deepBlue/30 bg-blue-50/50 flex items-center justify-between">
+<div class="min-w-0 flex-1 pr-2">
+<div class="flex items-center space-x-1.5">
+<span class="px-1 py-0.2 bg-deepBlue text-white text-[8px] font-bold rounded">#1</span>
+<span class="font-extrabold text-xs text-headText">Ward 17</span>
+<span class="text-[10px] font-mono font-bold text-deepBlue">10,000L</span>
+</div>
+<div class="text-[10px] text-secText truncate mt-0.5">High vulnerability · 52h unmet deficit</div>
+</div>
+<div class="flex items-center space-x-1.5 flex-shrink-0">
+<span class="font-mono font-black text-xs text-deepBlue">94<span class="text-[9px] font-normal text-secText">/100</span></span>
+<button class="px-2 py-1 bg-deepBlue text-white text-[10px] font-bold rounded shadow-2xs hover:bg-blue-700 transition-colors">
+                      Assign
+                    </button>
+</div>
+</div>
+<!-- Queue Item 2: Ward 23 -->
+<div class="p-1.5 rounded-lg border border-cardBorder bg-[#FBFDFF] flex items-center justify-between">
+<div class="min-w-0 flex-1 pr-2">
+<div class="flex items-center space-x-1.5">
+<span class="px-1 py-0.2 bg-slate-200 text-secText text-[8px] font-bold rounded">#2</span>
+<span class="font-bold text-xs text-headText">Ward 23</span>
+<span class="text-[10px] font-mono text-secText">8,000L</span>
+</div>
+<div class="text-[10px] text-secText truncate mt-0.5">Informal settlement · 46h dry pipe</div>
+</div>
+<div class="flex items-center space-x-1.5 flex-shrink-0">
+<span class="font-mono font-bold text-xs text-deepBlue">88</span>
+<button class="px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 text-deepBlue text-[10px] font-semibold rounded">
+                      Queue
+                    </button>
+</div>
+</div>
+<!-- Queue Item 3: Ward 08 -->
+<div class="p-1.5 rounded-lg border border-cardBorder bg-[#FBFDFF] flex items-center justify-between">
+<div class="min-w-0 flex-1 pr-2">
+<div class="flex items-center space-x-1.5">
+<span class="px-1 py-0.2 bg-slate-200 text-secText text-[8px] font-bold rounded">#3</span>
+<span class="font-bold text-xs text-headText">Ward 08</span>
+<span class="text-[10px] font-mono text-secText">6,000L</span>
+</div>
+<div class="text-[10px] text-secText truncate mt-0.5">Motor failure · 38h deficit</div>
+</div>
+<div class="flex items-center space-x-1.5 flex-shrink-0">
+<span class="font-mono font-bold text-xs text-deepBlue">79</span>
+<button class="px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 text-deepBlue text-[10px] font-semibold rounded">
+                      Queue
+                    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- 2. Resource & Quota Gauge + Fleet Status -->
+<div class="bg-white rounded-xl border border-cardBorder shadow-sm p-2.5 flex flex-col flex-shrink-0">
+<div class="flex items-center justify-between pb-1.5 border-b border-cardBorder">
+<div class="flex items-center space-x-1.5">
+<i class="w-3.5 h-3.5 text-deepBlue" data-lucide="pie-chart"></i>
+<h4 class="font-extrabold text-xs text-headText">Resource &amp; Fleet Allocation</h4>
+</div>
+<span class="text-[9px] font-mono text-secText">DEPOT #1</span>
+</div>
+<!-- Quota Strip -->
+<div class="mt-2 space-y-1">
+<div class="flex justify-between text-[11px] font-semibold">
+<span class="text-secText">Daily Water Allocation</span>
+<span class="font-mono text-headText"><strong>286</strong> / 420 KL (68%)</span>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex">
+<div class="bg-deepBlue h-2" style="width: 68%" title="Allocated 68%"></div>
+<div class="bg-vibrantBlue h-2" style="width: 14%" title="Reserved Buffer 14%"></div>
+<div class="bg-emerald-200 h-2" style="width: 18%" title="Remaining 18%"></div>
+</div>
+</div>
+<!-- Fleet Pills Grid -->
+<div class="grid grid-cols-3 gap-1.5 mt-2 text-center text-[10px]">
+<div class="p-1 rounded bg-emerald-50 border border-emerald-100">
+<div class="font-mono font-extrabold text-oliveGreen text-xs">18</div>
+<div class="text-secText text-[9px] font-medium">Available</div>
+</div>
+<div class="p-1 rounded bg-blue-50 border border-blue-100">
+<div class="font-mono font-extrabold text-deepBlue text-xs">4</div>
+<div class="text-secText text-[9px] font-medium">Loading</div>
+</div>
+<div class="p-1 rounded bg-amber-50 border border-amber-100">
+<div class="font-mono font-extrabold text-warmAmber text-xs">3</div>
+<div class="text-secText text-[9px] font-medium">En Route</div>
+</div>
+</div>
+</div>
+<!-- 3. Live Critical Alert Ticker (flex-1 min-h-0 overflow-hidden) -->
+<div class="flex-1 min-h-0 bg-white rounded-xl border border-cardBorder shadow-sm p-2.5 flex flex-col overflow-hidden">
+<div class="flex items-center justify-between pb-1.5 border-b border-cardBorder flex-shrink-0">
+<div class="flex items-center space-x-1.5">
+<span class="w-2 h-2 rounded-full bg-critRed"></span>
+<h4 class="font-extrabold text-xs text-headText">Active Alert Dispatch Ticker</h4>
+</div>
+<span class="text-[9px] font-bold text-critRed bg-red-50 border border-red-200 px-1 rounded">
+                  3 Real-Time
+                </span>
+</div>
+<!-- Alert Stream (Contained, no parent overflow) -->
+<div class="flex-1 min-h-0 overflow-y-auto custom-scroll divide-y divide-cardBorder/60 space-y-1 pr-1 mt-1">
+<!-- Alert 1 -->
+<div class="pt-1.5 pb-1 flex items-start space-x-2">
+<span class="text-critRed text-xs mt-0.5">●</span>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-extrabold text-[11px] text-headText">Ward 23 · Deficit Surge</span>
+<span class="text-[9px] font-mono text-critRed font-bold">52h</span>
+</div>
+<p class="text-[10px] text-secText truncate">Booster pump tripped; auxiliary load reroute initiated.</p>
+</div>
+</div>
+<!-- Alert 2 -->
+<div class="pt-1.5 pb-1 flex items-start space-x-2">
+<span class="text-warmAmber text-xs mt-0.5">●</span>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-extrabold text-[11px] text-headText">Ward 17 · IVR Grievance Spike</span>
+<span class="text-[9px] font-mono text-warmAmber font-bold">+31%</span>
+</div>
+<p class="text-[10px] text-secText truncate">42 community calls in Sub-sector 4; Tanker T-08 queued.</p>
+</div>
+</div>
+<!-- Alert 3 -->
+<div class="pt-1.5 pb-1 flex items-start space-x-2">
+<span class="text-warmAmber text-xs mt-0.5">●</span>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-extrabold text-[11px] text-headText">Tanker T-14 · Delayed</span>
+<span class="text-[9px] font-mono text-warmAmber font-bold">+18m</span>
+</div>
+<p class="text-[10px] text-secText truncate">Ring Road North bottleneck; recalculating transit route.</p>
+</div>
+</div>
+</div>
+<div class="pt-1.5 border-t border-cardBorder flex items-center justify-between text-[10px] text-secText flex-shrink-0">
+<span>SCADA Bridge Telemetry: 100% Active</span>
+<button class="text-deepBlue font-bold hover:underline" onclick="switchTab('alerts-view')">View All Alerts</button>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================================= -->
+<!-- TAB 2: GIS SPATIAL DISPATCH (DEEP VIEW)                   -->
+<!-- ========================================================= -->
+<div class="tab-pane hidden h-full w-full bg-white rounded-xl border border-cardBorder shadow-sm flex flex-col overflow-hidden" id="spatial-tab">
+<div class="p-3 border-b border-cardBorder flex items-center justify-between bg-[#FBFDFF] flex-shrink-0">
+<div>
+<h3 class="font-extrabold text-sm text-headText flex items-center space-x-2">
+<i class="w-4 h-4 text-deepBlue" data-lucide="map"></i>
+<span>Municipal GIS Dispatch &amp; Aquifer Spatial Network</span>
+</h3>
+<p class="text-[11px] text-secText">Real-time vector tracking across all 32 administrative zones</p>
+</div>
+<div class="flex items-center space-x-2">
+<span class="text-xs text-secText">Depot Hubs: <strong>4 Active</strong></span>
+<button class="px-3 py-1 bg-deepBlue text-white text-xs font-bold rounded-lg shadow-2xs">Optimize All Routes</button>
+</div>
+</div>
+<div class="flex-1 min-h-0 relative bg-[#EAF2F9] gis-grid p-4 flex flex-col justify-between overflow-hidden">
+<!-- Full size SVG vector network -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" preserveaspectratio="none" viewbox="0 0 1000 500">
+<polygon fill="#0056b3" fill-opacity="0.08" points="50,40 300,30 380,180 220,240 60,190" stroke="#0056b3" stroke-width="2"></polygon>
+<polygon fill="#6b8e23" fill-opacity="0.09" points="300,30 650,40 680,220 380,180" stroke="#6b8e23" stroke-width="2"></polygon>
+<polygon fill="#c27a29" fill-opacity="0.14" points="650,40 940,50 920,280 680,220" stroke="#c27a29" stroke-width="2"></polygon>
+<polygon fill="#c27a29" fill-opacity="0.2" points="220,240 480,210 540,430 260,460 140,360" stroke="#c27a29" stroke-width="3"></polygon>
+<polygon fill="#0056b3" fill-opacity="0.08" points="480,210 740,230 760,450 540,430" stroke="#0056b3" stroke-width="2"></polygon>
+<polygon fill="#d32f2f" fill-opacity="0.15" points="740,230 940,280 930,470 760,450" stroke="#d32f2f" stroke-width="2"></polygon>
+<!-- Pipeline lines -->
+<line stroke="#0056b3" stroke-dasharray="6,4" stroke-width="4" x1="220" x2="380" y1="140" y2="280"></line>
+<line stroke="#3399FF" stroke-dasharray="6,4" stroke-width="3" x1="380" x2="780" y1="280" y2="240"></line>
+<line stroke="#c27a29" stroke-dasharray="4,4" stroke-width="3" x1="780" x2="860" y1="240" y2="380"></line>
+</svg>
+<div class="z-10 bg-white/95 backdrop-blur px-3 py-2 rounded-lg border border-cardBorder max-w-sm text-xs shadow-sm">
+<div class="font-bold text-deepBlue">GIS Fleet Transponder Telemetry</div>
+<p class="text-[11px] text-secText mt-0.5">Simultaneous GPS tracking of 25 municipal tankers and 14 auxiliary contractor trucks.</p>
+</div>
+<div class="z-10 bg-white/95 backdrop-blur px-3 py-2 rounded-lg border border-cardBorder flex items-center justify-between text-xs shadow-sm">
+<div class="flex items-center space-x-4">
+<span>Depot 1 (Central): <strong>9 Trucks</strong></span>
+<span>Depot 2 (East): <strong>5 Trucks</strong></span>
+<span>Depot 3 (North): <strong>4 Trucks</strong></span>
+</div>
+<button class="text-deepBlue font-bold hover:underline" onclick="switchTab('overview-tab')">Return to Command Overview</button>
+</div>
+</div>
+</div>
+<!-- ========================================================= -->
+<!-- TAB 3: ALLOCATION QUEUE & AUDIT                          -->
+<!-- ========================================================= -->
+<div class="tab-pane hidden h-full w-full bg-white rounded-xl border border-cardBorder shadow-sm flex flex-col overflow-hidden p-3" id="queue-tab">
+<div class="flex items-center justify-between pb-2 border-b border-cardBorder flex-shrink-0">
+<div>
+<h3 class="font-extrabold text-sm text-headText">Algorithmic Allocation Queue &amp; Transparent Scoring</h3>
+<p class="text-[11px] text-secText">Prioritization ranked according to vulnerability formula without human geographic bias</p>
+</div>
+<button class="px-3 py-1 bg-deepBlue text-white text-xs font-bold rounded-lg shadow-2xs">Re-run Optimizer</button>
+</div>
+<div class="flex-1 min-h-0 overflow-y-auto custom-scroll mt-2">
+<table class="w-full text-left text-xs">
+<thead class="bg-blue-50/60 sticky top-0 text-secText">
+<tr class="border-b border-cardBorder">
+<th class="py-2 px-3">Rank</th>
+<th class="py-2 px-3">Ward Identifier</th>
+<th class="py-2 px-3">Volume Needed</th>
+<th class="py-2 px-3">Dry Pipeline Time</th>
+<th class="py-2 px-3">Score</th>
+<th class="py-2 px-3">Primary Factor</th>
+<th class="py-2 px-3 text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-cardBorder">
+<tr class="hover:bg-blue-50/40">
+<td class="py-2 px-3 font-bold text-deepBlue">#1</td>
+<td class="py-2 px-3 font-bold">Ward 17 (Old City Ridge)</td>
+<td class="py-2 px-3 font-mono">10,000 L</td>
+<td class="py-2 px-3 text-warmAmber font-bold">52 hours</td>
+<td class="py-2 px-3 font-mono font-black text-deepBlue">94 / 100</td>
+<td class="py-2 px-3 text-secText">Socioeconomic Vulnerability (+30)</td>
+<td class="py-2 px-3 text-right">
+<button class="px-2.5 py-1 bg-deepBlue text-white rounded text-[11px] font-bold">Dispatch</button>
+</td>
+</tr>
+<tr class="hover:bg-blue-50/40">
+<td class="py-2 px-3 font-bold text-secText">#2</td>
+<td class="py-2 px-3 font-bold">Ward 23 (North Settlement)</td>
+<td class="py-2 px-3 font-mono">8,000 L</td>
+<td class="py-2 px-3 text-warmAmber font-bold">46 hours</td>
+<td class="py-2 px-3 font-mono font-black text-deepBlue">88 / 100</td>
+<td class="py-2 px-3 text-secText">Health Clinic Ration (+25)</td>
+<td class="py-2 px-3 text-right">
+<button class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-deepBlue rounded text-[11px] font-bold">Dispatch</button>
+</td>
+</tr>
+<tr class="hover:bg-blue-50/40">
+<td class="py-2 px-3 font-bold text-secText">#3</td>
+<td class="py-2 px-3 font-bold">Ward 08 (Industrial Colony)</td>
+<td class="py-2 px-3 font-mono">6,000 L</td>
+<td class="py-2 px-3 text-secText font-bold">38 hours</td>
+<td class="py-2 px-3 font-mono font-black text-deepBlue">79 / 100</td>
+<td class="py-2 px-3 text-secText">Tube Well Motor Burn (+18)</td>
+<td class="py-2 px-3 text-right">
+<button class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-deepBlue rounded text-[11px] font-bold">Dispatch</button>
+</td>
+</tr>
+<tr class="hover:bg-blue-50/40">
+<td class="py-2 px-3 font-bold text-secText">#4</td>
+<td class="py-2 px-3 font-bold">Ward 14 (South Rail Yard)</td>
+<td class="py-2 px-3 font-mono">5,000 L</td>
+<td class="py-2 px-3 text-secText font-bold">32 hours</td>
+<td class="py-2 px-3 font-mono font-black text-deepBlue">71 / 100</td>
+<td class="py-2 px-3 text-secText">Scheduled Ration Cycle (+12)</td>
+<td class="py-2 px-3 text-right">
+<button class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-deepBlue rounded text-[11px] font-bold">Dispatch</button>
+</td>
+</tr>
+<tr class="hover:bg-blue-50/40">
+<td class="py-2 px-3 font-bold text-secText">#5</td>
+<td class="py-2 px-3 font-bold">Ward 31 (East Periphery)</td>
+<td class="py-2 px-3 font-mono">7,500 L</td>
+<td class="py-2 px-3 text-secText font-bold">29 hours</td>
+<td class="py-2 px-3 font-mono font-black text-deepBlue">67 / 100</td>
+<td class="py-2 px-3 text-secText">Pressure Drop (+10)</td>
+<td class="py-2 px-3 text-right">
+<button class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-deepBlue rounded text-[11px] font-bold">Dispatch</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- ========================================================= -->
+<!-- TAB 4: COMPLAINT & DEMAND FORECAST                       -->
+<!-- ========================================================= -->
+<div class="tab-pane hidden h-full w-full bg-white rounded-xl border border-cardBorder shadow-sm flex flex-col overflow-hidden p-3" id="forecast-tab">
+<div class="flex items-center justify-between pb-2 border-b border-cardBorder flex-shrink-0">
+<div>
+<h3 class="font-extrabold text-sm text-headText">7-Day Complaint Intelligence &amp; SCADA Demand Forecast</h3>
+<p class="text-[11px] text-secText">Predictive ML model correlating citizen IVR call clusters with hydrologic depletion rates</p>
+</div>
+<div class="flex items-center space-x-3 text-xs font-semibold">
+<span class="flex items-center space-x-1.5 text-headText">
+<span class="w-3 h-1 bg-deepBlue inline-block rounded"></span>
+<span>Actual Calls</span>
+</span>
+<span class="flex items-center space-x-1.5 text-vibrantBlue">
+<span class="w-3 h-1 border-b-2 border-dashed border-vibrantBlue inline-block"></span>
+<span>Projected Demand</span>
+</span>
+</div>
+</div>
+<!-- Responsive SVG Time-Series Chart -->
+<div class="flex-1 min-h-0 relative my-2">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 700 200">
+<line stroke="#E2EDF7" stroke-width="1" x1="40" x2="680" y1="20" y2="20"></line>
+<line stroke="#E2EDF7" stroke-width="1" x1="40" x2="680" y1="65" y2="65"></line>
+<line stroke="#E2EDF7" stroke-width="1" x1="40" x2="680" y1="110" y2="110"></line>
+<line stroke="#E2EDF7" stroke-width="1" x1="40" x2="680" y1="155" y2="155"></line>
+<line stroke="#CBD5E1" stroke-width="1.5" x1="40" x2="680" y1="180" y2="180"></line>
+<text fill="#4A4A4A" font-size="9" font-weight="600" x="10" y="24">250 KL</text>
+<text fill="#4A4A4A" font-size="9" font-weight="600" x="10" y="69">200 KL</text>
+<text fill="#4A4A4A" font-size="9" font-weight="600" x="10" y="114">150 KL</text>
+<text fill="#4A4A4A" font-size="9" font-weight="600" x="10" y="159">100 KL</text>
+<defs>
+<lineargradient id="foreGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#0056B3" stop-opacity="0.25"></stop>
+<stop offset="100%" stop-color="#0056B3" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<polygon fill="url(#foreGrad)" points="80,150 180,130 280,105 380,80 480,90 480,180 80,180"></polygon>
+<path d="M 80,150 L 180,130 L 280,105 L 380,80 L 480,90" fill="none" stroke="#0056B3" stroke-linecap="round" stroke-width="3"></path>
+<path d="M 80,165 L 180,140 L 280,115 L 380,90 L 480,75 L 580,45 L 670,30" fill="none" stroke="#3399FF" stroke-dasharray="6,4" stroke-width="2.5"></path>
+<circle cx="480" cy="90" fill="#0056B3" r="4" stroke="#fff" stroke-width="2"></circle>
+<circle cx="580" cy="45" fill="#3399FF" r="3.5" stroke="#fff" stroke-width="1.5"></circle>
+<circle cx="670" cy="30" fill="#3399FF" r="3.5" stroke="#fff" stroke-width="1.5"></circle>
+<text fill="#1A1A1A" font-size="10" font-weight="700" text-anchor="middle" x="80" y="195">Mon</text>
+<text fill="#1A1A1A" font-size="10" font-weight="700" text-anchor="middle" x="180" y="195">Tue</text>
+<text fill="#1A1A1A" font-size="10" font-weight="700" text-anchor="middle" x="280" y="195">Wed</text>
+<text fill="#1A1A1A" font-size="10" font-weight="700" text-anchor="middle" x="380" y="195">Thu</text>
+<text fill="#0056B3" font-size="10" font-weight="900" text-anchor="middle" x="480" y="195">Today (Fri)</text>
+<text fill="#3399FF" font-size="10" font-weight="700" text-anchor="middle" x="580" y="195">Sat</text>
+<text fill="#3399FF" font-size="10" font-weight="700" text-anchor="middle" x="670" y="195">Sun</text>
+</svg>
+</div>
+<div class="grid grid-cols-3 gap-2 pt-2 border-t border-cardBorder flex-shrink-0">
+<div class="p-2 bg-blue-50/60 rounded-lg border border-blue-100">
+<div class="text-[10px] font-bold text-deepBlue uppercase">Complaint Spike</div>
+<div class="font-bold text-xs">Ward 17 · +31%</div>
+<p class="text-[10px] text-secText">Low pipeline pressure triggered 42 citizen tickets.</p>
+</div>
+<div class="p-2 bg-amber-50/60 rounded-lg border border-amber-200">
+<div class="text-[10px] font-bold text-warmAmber uppercase">Weekend Surge Forecast</div>
+<div class="font-bold text-xs">Expected ↑ 18%</div>
+<p class="text-[10px] text-secText">High residential domestic refill demand expected.</p>
+</div>
+<div class="p-2 bg-red-50/60 rounded-lg border border-red-200">
+<div class="text-[10px] font-bold text-critRed uppercase">Depletion Warning</div>
+<div class="font-bold text-xs">Ward 23 · Feeder 1.4m</div>
+<p class="text-[10px] text-secText">Submersible reservoir depth nearing intake cutoff.</p>
+</div>
+</div>
+</div>
+<!-- ========================================================= -->
+<!-- TAB 5: FLEET & LOGISTICS                                 -->
+<!-- ========================================================= -->
+<div class="tab-pane hidden h-full w-full bg-white rounded-xl border border-cardBorder shadow-sm flex flex-col overflow-hidden p-3" id="fleet-tab">
+<div class="flex items-center justify-between pb-2 border-b border-cardBorder flex-shrink-0">
+<div>
+<h3 class="font-extrabold text-sm text-headText">Municipal Tanker Fleet Transponders &amp; Turnaround</h3>
+<p class="text-[11px] text-secText">25 Total Registered Municipal Tankers · Average Dispatch Latency: 14 min</p>
+</div>
+<span class="px-2 py-0.5 bg-emerald-50 text-oliveGreen border border-emerald-200 text-xs font-bold rounded">100% Telemetry Online</span>
+</div>
+<div class="flex-1 min-h-0 overflow-y-auto custom-scroll mt-2">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+<div class="p-2.5 rounded-lg border border-cardBorder bg-[#FBFDFF]">
+<div class="flex justify-between font-bold text-xs">
+<span>Tanker T-08 (10,000L)</span>
+<span class="text-deepBlue font-mono">En Route</span>
+</div>
+<p class="text-[11px] text-secText mt-1">Assigned: Ward 17 · ETA: 12 min · Depot 1</p>
+<div class="w-full bg-slate-200 h-1.5 rounded-full mt-2">
+<div class="bg-deepBlue h-1.5 rounded-full" style="width: 75%"></div>
+</div>
+</div>
+<div class="p-2.5 rounded-lg border border-cardBorder bg-[#FBFDFF]">
+<div class="flex justify-between font-bold text-xs">
+<span>Tanker T-14 (8,000L)</span>
+<span class="text-warmAmber font-mono">Traffic (+18m)</span>
+</div>
+<p class="text-[11px] text-secText mt-1">Assigned: Ward 23 · Rail crossing congestion</p>
+<div class="w-full bg-slate-200 h-1.5 rounded-full mt-2">
+<div class="bg-warmAmber h-1.5 rounded-full" style="width: 45%"></div>
+</div>
+</div>
+<div class="p-2.5 rounded-lg border border-cardBorder bg-[#FBFDFF]">
+<div class="flex justify-between font-bold text-xs">
+<span>Tanker T-02 (12,000L)</span>
+<span class="text-oliveGreen font-mono">Dispensing 65%</span>
+</div>
+<p class="text-[11px] text-secText mt-1">Location: Ward 08 · Remaining: 4,200L</p>
+<div class="w-full bg-slate-200 h-1.5 rounded-full mt-2">
+<div class="bg-oliveGreen h-1.5 rounded-full" style="width: 65%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================================= -->
+<!-- TAB 6: EQUITY & IMPACT EVALUATION                        -->
+<!-- ========================================================= -->
+<div class="tab-pane hidden h-full w-full bg-white rounded-xl border border-cardBorder shadow-sm flex flex-col overflow-hidden p-3" id="equity-tab">
+<div class="flex items-center justify-between pb-2 border-b border-cardBorder flex-shrink-0">
+<div>
+<h3 class="font-extrabold text-sm text-headText">Impact &amp; Service Equity Evaluation</h3>
+<p class="text-[11px] text-secText">Comparative performance against legacy manual ward allocation baseline</p>
+</div>
+<span class="px-2 py-0.5 rounded bg-emerald-50 text-oliveGreen text-[10px] font-bold border border-emerald-200">
+              FairShare™ v2.4 Model
+            </span>
+</div>
+<div class="flex-1 min-h-0 overflow-y-auto custom-scroll mt-2">
+<table class="w-full text-left text-xs border-collapse">
+<thead>
+<tr class="border-b border-cardBorder bg-blue-50/50 text-secText">
+<th class="py-2 px-3 font-bold">Operational Metric</th>
+<th class="py-2 px-3 font-bold text-center">Baseline (Legacy)</th>
+<th class="py-2 px-3 font-bold text-center">Current (WaterFlow OS)</th>
+<th class="py-2 px-3 font-bold text-right">Net Improvement</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-cardBorder">
+<tr class="hover:bg-slate-50/50">
+<td class="py-2 px-3 font-semibold text-headText">Unmet Requests</td>
+<td class="py-2 px-3 text-center text-secText font-mono font-bold">61</td>
+<td class="py-2 px-3 text-center font-mono font-black text-deepBlue">42</td>
+<td class="py-2 px-3 text-right font-bold text-oliveGreen">-31.1% Unmet</td>
+</tr>
+<tr class="hover:bg-slate-50/50">
+<td class="py-2 px-3 font-semibold text-headText">Avg. Tanker Distance</td>
+<td class="py-2 px-3 text-center text-secText font-mono font-bold">18.3 km</td>
+<td class="py-2 px-3 text-center font-mono font-black text-deepBlue">13.7 km</td>
+<td class="py-2 px-3 text-right font-bold text-oliveGreen">-25.1% Transit</td>
+</tr>
+<tr class="hover:bg-slate-50/50">
+<td class="py-2 px-3 font-semibold text-headText">Service Equity Index</td>
+<td class="py-2 px-3 text-center text-secText font-mono font-bold">61%</td>
+<td class="py-2 px-3 text-center font-mono font-black text-oliveGreen">84%</td>
+<td class="py-2 px-3 text-right font-bold text-oliveGreen">+23.0% Parity</td>
+</tr>
+<tr class="hover:bg-slate-50/50">
+<td class="py-2 px-3 font-semibold text-headText">Vulnerable Area Coverage</td>
+<td class="py-2 px-3 text-center text-secText font-mono font-bold">54%</td>
+<td class="py-2 px-3 text-center font-mono font-black text-oliveGreen">78%</td>
+<td class="py-2 px-3 text-right font-bold text-oliveGreen">+24.0% Protected</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- ========================================================= -->
+<!-- TAB 7: ALERTS VIEW                                        -->
+<!-- ========================================================= -->
+<div class="tab-pane hidden h-full w-full bg-white rounded-xl border border-cardBorder shadow-sm flex flex-col overflow-hidden p-3" id="alerts-view">
+<div class="flex items-center justify-between pb-2 border-b border-cardBorder flex-shrink-0">
+<div class="flex items-center space-x-2">
+<span class="w-2.5 h-2.5 rounded-full bg-critRed"></span>
+<h3 class="font-extrabold text-sm text-headText">Critical Municipal Incident Center</h3>
+<span class="px-2 py-0.2 rounded-full bg-red-100 text-critRed text-[10px] font-bold">4 Active Signals</span>
+</div>
+<button class="text-xs text-deepBlue font-bold hover:underline" onclick="switchTab('overview-tab')">Close Alerts</button>
+</div>
+<div class="flex-1 min-h-0 overflow-y-auto custom-scroll divide-y divide-cardBorder mt-2">
+<div class="py-2.5 flex items-center justify-between">
+<div>
+<div class="font-extrabold text-xs text-headText flex items-center space-x-2">
+<span class="text-critRed">🔴</span>
+<span>Ward 23 · Critical Deficit</span>
+</div>
+<p class="text-xs text-secText mt-0.5">52hr unmet demand · Underground booster pump tripped due to low voltage</p>
+</div>
+<button class="px-3 py-1 bg-deepBlue text-white rounded text-xs font-bold">Dispatch Aux Tanker</button>
+</div>
+<div class="py-2.5 flex items-center justify-between">
+<div>
+<div class="font-extrabold text-xs text-headText flex items-center space-x-2">
+<span class="text-warmAmber">🟠</span>
+<span>Ward 17 · Citizen Complaint Spike</span>
+</div>
+<p class="text-xs text-secText mt-0.5">Demand +31% today · Grievance line spike in Sub-sector 4</p>
+</div>
+<button class="px-3 py-1 bg-white border border-cardBorder text-deepBlue rounded text-xs font-bold">View IVR Calls</button>
+</div>
+<div class="py-2.5 flex items-center justify-between">
+<div>
+<div class="font-extrabold text-xs text-headText flex items-center space-x-2">
+<span class="text-warmAmber">🟠</span>
+<span>Tanker T-14 · Routing Delay</span>
+</div>
+<p class="text-xs text-secText mt-0.5">Delayed by 18 min · Rail crossing bottleneck on Ring Road North</p>
+</div>
+<button class="px-3 py-1 bg-white border border-cardBorder text-deepBlue rounded text-xs font-bold">Recalculate Route</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- VANILLA JS TAB SWITCHING ENGINE (ZERO PAGE RELOAD / ZERO SCROLL) -->
+<script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Tab Switching Function
+    function switchTab(tabId) {
+      // Hide all panes
+      const panes = document.querySelectorAll('.tab-pane');
+      panes.forEach(pane => pane.classList.add('hidden'));
+
+      // Show targeted pane
+      const targetPane = document.getElementById(tabId);
+      if (targetPane) {
+        targetPane.classList.remove('hidden');
+      }
+
+      // Update sidebar nav states
+      const navButtons = document.querySelectorAll('.nav-tab-btn');
+      navButtons.forEach(btn => {
+        if (btn.getAttribute('data-tab') === tabId) {
+          btn.classList.add('bg-white/20', 'text-white', 'border-vibrantBlue');
+          btn.classList.remove('text-blue-100', 'border-transparent');
+          const icon = btn.querySelector('i');
+          if (icon) icon.classList.add('text-vibrantBlue');
+        } else {
+          btn.classList.remove('bg-white/20', 'text-white', 'border-vibrantBlue');
+          btn.classList.add('text-blue-100', 'border-transparent');
+          const icon = btn.querySelector('i');
+          if (icon) icon.classList.remove('text-vibrantBlue');
+        }
+      });
+
+      // Re-render icons if needed
+      lucide.createIcons();
+    }
+  </script>
+</body></html>
