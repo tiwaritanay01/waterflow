@@ -1,0 +1,9 @@
+metric,baseline_nearest,optimized_routing,improvement_pct
+Total Travel Distance (km),65.52,60.26,8.03
+Total Travel Duration (minutes),262.1,249.5,4.81
+Mean Response Time (minutes),22.5,20.7,8.0
+Median Response Time (minutes),16.6,16.6,0.0
+95th Percentile Response Time (minutes),56.5,52.7,6.73
+Emergency Mean Delay (minutes),29.2,21.3,27.05
+Water Delivered (Liters),56572.0,56642.0,0.12
+Water Use Efficiency (%),90.17,90.96,0.79

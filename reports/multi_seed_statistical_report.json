@@ -1,0 +1,86 @@
+{
+  "seeds_tested": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "runs": [
+    {
+      "seed": 42,
+      "total_demand_liters": 290012.4,
+      "total_allocated_liters": 240000.0,
+      "overall_fulfillment_pct": 82.76,
+      "high_vuln_fulfillment_pct": 100.0,
+      "total_routing_distance_km": 9.05,
+      "mean_response_time_minutes": 10.9
+    },
+    {
+      "seed": 43,
+      "total_demand_liters": 286149.8,
+      "total_allocated_liters": 240000.0,
+      "overall_fulfillment_pct": 83.87,
+      "high_vuln_fulfillment_pct": 100.0,
+      "total_routing_distance_km": 8.3,
+      "mean_response_time_minutes": 6.6
+    },
+    {
+      "seed": 44,
+      "total_demand_liters": 291007.7,
+      "total_allocated_liters": 240000.0,
+      "overall_fulfillment_pct": 82.47,
+      "high_vuln_fulfillment_pct": 100.0,
+      "total_routing_distance_km": 11.69,
+      "mean_response_time_minutes": 14.0
+    },
+    {
+      "seed": 45,
+      "total_demand_liters": 291092.3,
+      "total_allocated_liters": 240000.0,
+      "overall_fulfillment_pct": 82.45,
+      "high_vuln_fulfillment_pct": 100.0,
+      "total_routing_distance_km": 13.01,
+      "mean_response_time_minutes": 10.4
+    },
+    {
+      "seed": 46,
+      "total_demand_liters": 286635.9,
+      "total_allocated_liters": 240000.0,
+      "overall_fulfillment_pct": 83.73,
+      "high_vuln_fulfillment_pct": 100.0,
+      "total_routing_distance_km": 33.41,
+      "mean_response_time_minutes": 26.7
+    }
+  ],
+  "summary_statistics": [
+    {
+      "metric": "overall_fulfillment_pct",
+      "mean": 83.06,
+      "std_dev": 0.62,
+      "min": 82.45,
+      "max": 83.87
+    },
+    {
+      "metric": "high_vuln_fulfillment_pct",
+      "mean": 100.0,
+      "std_dev": 0.0,
+      "min": 100.0,
+      "max": 100.0
+    },
+    {
+      "metric": "total_routing_distance_km",
+      "mean": 15.09,
+      "std_dev": 9.32,
+      "min": 8.3,
+      "max": 33.41
+    },
+    {
+      "metric": "mean_response_time_minutes",
+      "mean": 13.72,
+      "std_dev": 6.9,
+      "min": 6.6,
+      "max": 26.7
+    }
+  ]
+}

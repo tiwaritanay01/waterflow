@@ -1,0 +1,4 @@
+model_name,precision,recall,f1_score,roc_auc,pr_auc
+Baseline: Operational Rule Heuristic,0.616,0.398,0.484,0.683,0.544
+Model 1: Balanced Logistic Regression,0.553,0.69,0.614,0.794,0.67
+Model 2: Balanced Random Forest (100 trees),0.576,0.708,0.635,0.788,0.644

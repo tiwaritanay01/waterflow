@@ -1,0 +1,4 @@
+strata,wards_count,total_demand_liters,wf_delivered_liters,wf_fulfillment_pct,wf_unmet_liters,fcfs_delivered_liters,fcfs_fulfillment_pct,fcfs_unmet_liters,fulfillment_delta_pct
+HIGH_VULNERABILITY (V >= 0.70),2,59857.0,59857.0,100.0,0.0,24531.8,41.0,35325.2,59.0
+LOW_VULNERABILITY (V < 0.40),9,42894.0,0.0,0.0,42894.0,20455.4,47.7,22438.6,-47.7
+MODERATE_VULNERABILITY (0.40 <= V < 0.70),13,151826.0,54702.7,36.0,97123.4,69572.4,45.8,82253.6,-9.8

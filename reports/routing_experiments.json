@@ -1,0 +1,56 @@
+{
+  "status": "PASS",
+  "fleet_size": 10,
+  "stops_count": 24,
+  "emergency_stops_count": 3,
+  "metrics": [
+    {
+      "metric": "Total Travel Distance (km)",
+      "baseline_nearest": 65.52,
+      "optimized_routing": 60.26,
+      "improvement_pct": 8.03
+    },
+    {
+      "metric": "Total Travel Duration (minutes)",
+      "baseline_nearest": 262.1,
+      "optimized_routing": 249.5,
+      "improvement_pct": 4.81
+    },
+    {
+      "metric": "Mean Response Time (minutes)",
+      "baseline_nearest": 22.5,
+      "optimized_routing": 20.7,
+      "improvement_pct": 8.0
+    },
+    {
+      "metric": "Median Response Time (minutes)",
+      "baseline_nearest": 16.6,
+      "optimized_routing": 16.6,
+      "improvement_pct": 0.0
+    },
+    {
+      "metric": "95th Percentile Response Time (minutes)",
+      "baseline_nearest": 56.5,
+      "optimized_routing": 52.7,
+      "improvement_pct": 6.73
+    },
+    {
+      "metric": "Emergency Mean Delay (minutes)",
+      "baseline_nearest": 29.2,
+      "optimized_routing": 21.3,
+      "improvement_pct": 27.05
+    },
+    {
+      "metric": "Water Delivered (Liters)",
+      "baseline_nearest": 56572.0,
+      "optimized_routing": 56642.0,
+      "improvement_pct": 0.12
+    },
+    {
+      "metric": "Water Use Efficiency (%)",
+      "baseline_nearest": 90.17,
+      "optimized_routing": 90.96,
+      "improvement_pct": 0.79
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+metric,mean,std_dev,min,max
+overall_fulfillment_pct,83.06,0.62,82.45,83.87
+high_vuln_fulfillment_pct,100.0,0.0,100.0,100.0
+total_routing_distance_km,15.09,9.32,8.3,33.41
+mean_response_time_minutes,13.72,6.9,6.6,26.7

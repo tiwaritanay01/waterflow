@@ -1,0 +1,263 @@
+{
+  "features": [
+    "population",
+    "density_per_sq_km",
+    "slum_share",
+    "dry_pipe_hours",
+    "historical_deficit",
+    "demand_liters",
+    "complaint_count",
+    "depot_distance_km"
+  ],
+  "sample_size_wards": 24,
+  "pearson_matrix": {
+    "population": {
+      "population": 1.0,
+      "density_per_sq_km": -0.146,
+      "slum_share": 0.632,
+      "dry_pipe_hours": 0.651,
+      "historical_deficit": 0.661,
+      "demand_liters": 0.725,
+      "complaint_count": 0.347,
+      "depot_distance_km": -0.692
+    },
+    "density_per_sq_km": {
+      "population": -0.146,
+      "density_per_sq_km": 1.0,
+      "slum_share": 0.186,
+      "dry_pipe_hours": 0.062,
+      "historical_deficit": 0.06,
+      "demand_liters": 0.088,
+      "complaint_count": -0.047,
+      "depot_distance_km": 0.476
+    },
+    "slum_share": {
+      "population": 0.632,
+      "density_per_sq_km": 0.186,
+      "slum_share": 1.0,
+      "dry_pipe_hours": 0.926,
+      "historical_deficit": 0.924,
+      "demand_liters": 0.931,
+      "complaint_count": 0.161,
+      "depot_distance_km": -0.385
+    },
+    "dry_pipe_hours": {
+      "population": 0.651,
+      "density_per_sq_km": 0.062,
+      "slum_share": 0.926,
+      "dry_pipe_hours": 1.0,
+      "historical_deficit": 0.999,
+      "demand_liters": 0.946,
+      "complaint_count": -0.028,
+      "depot_distance_km": -0.519
+    },
+    "historical_deficit": {
+      "population": 0.661,
+      "density_per_sq_km": 0.06,
+      "slum_share": 0.924,
+      "dry_pipe_hours": 0.999,
+      "historical_deficit": 1.0,
+      "demand_liters": 0.943,
+      "complaint_count": -0.03,
+      "depot_distance_km": -0.526
+    },
+    "demand_liters": {
+      "population": 0.725,
+      "density_per_sq_km": 0.088,
+      "slum_share": 0.931,
+      "dry_pipe_hours": 0.946,
+      "historical_deficit": 0.943,
+      "demand_liters": 1.0,
+      "complaint_count": 0.194,
+      "depot_distance_km": -0.486
+    },
+    "complaint_count": {
+      "population": 0.347,
+      "density_per_sq_km": -0.047,
+      "slum_share": 0.161,
+      "dry_pipe_hours": -0.028,
+      "historical_deficit": -0.03,
+      "demand_liters": 0.194,
+      "complaint_count": 1.0,
+      "depot_distance_km": -0.15
+    },
+    "depot_distance_km": {
+      "population": -0.692,
+      "density_per_sq_km": 0.476,
+      "slum_share": -0.385,
+      "dry_pipe_hours": -0.519,
+      "historical_deficit": -0.526,
+      "demand_liters": -0.486,
+      "complaint_count": -0.15,
+      "depot_distance_km": 1.0
+    }
+  },
+  "spearman_matrix": {
+    "population": {
+      "population": 1.0,
+      "density_per_sq_km": -0.103,
+      "slum_share": 0.657,
+      "dry_pipe_hours": 0.698,
+      "historical_deficit": 0.699,
+      "demand_liters": 0.83,
+      "complaint_count": 0.266,
+      "depot_distance_km": -0.699
+    },
+    "density_per_sq_km": {
+      "population": -0.103,
+      "density_per_sq_km": 1.0,
+      "slum_share": 0.215,
+      "dry_pipe_hours": 0.006,
+      "historical_deficit": 0.036,
+      "demand_liters": -0.051,
+      "complaint_count": 0.143,
+      "depot_distance_km": 0.477
+    },
+    "slum_share": {
+      "population": 0.657,
+      "density_per_sq_km": 0.215,
+      "slum_share": 1.0,
+      "dry_pipe_hours": 0.875,
+      "historical_deficit": 0.885,
+      "demand_liters": 0.847,
+      "complaint_count": -0.12,
+      "depot_distance_km": -0.383
+    },
+    "dry_pipe_hours": {
+      "population": 0.698,
+      "density_per_sq_km": 0.006,
+      "slum_share": 0.875,
+      "dry_pipe_hours": 1.0,
+      "historical_deficit": 0.997,
+      "demand_liters": 0.954,
+      "complaint_count": -0.075,
+      "depot_distance_km": -0.592
+    },
+    "historical_deficit": {
+      "population": 0.699,
+      "density_per_sq_km": 0.036,
+      "slum_share": 0.885,
+      "dry_pipe_hours": 0.997,
+      "historical_deficit": 1.0,
+      "demand_liters": 0.951,
+      "complaint_count": -0.06,
+      "depot_distance_km": -0.57
+    },
+    "demand_liters": {
+      "population": 0.83,
+      "density_per_sq_km": -0.051,
+      "slum_share": 0.847,
+      "dry_pipe_hours": 0.954,
+      "historical_deficit": 0.951,
+      "demand_liters": 1.0,
+      "complaint_count": 0.039,
+      "depot_distance_km": -0.683
+    },
+    "complaint_count": {
+      "population": 0.266,
+      "density_per_sq_km": 0.143,
+      "slum_share": -0.12,
+      "dry_pipe_hours": -0.075,
+      "historical_deficit": -0.06,
+      "demand_liters": 0.039,
+      "complaint_count": 1.0,
+      "depot_distance_km": -0.249
+    },
+    "depot_distance_km": {
+      "population": -0.699,
+      "density_per_sq_km": 0.477,
+      "slum_share": -0.383,
+      "dry_pipe_hours": -0.592,
+      "historical_deficit": -0.57,
+      "demand_liters": -0.683,
+      "complaint_count": -0.249,
+      "depot_distance_km": 1.0
+    }
+  },
+  "identified_redundancies": [
+    {
+      "feature_1": "population",
+      "feature_2": "slum_share",
+      "pearson_r": 0.632,
+      "spearman_rho": 0.657,
+      "status": "MODERATE_CORRELATION"
+    },
+    {
+      "feature_1": "population",
+      "feature_2": "dry_pipe_hours",
+      "pearson_r": 0.651,
+      "spearman_rho": 0.698,
+      "status": "MODERATE_CORRELATION"
+    },
+    {
+      "feature_1": "population",
+      "feature_2": "historical_deficit",
+      "pearson_r": 0.661,
+      "spearman_rho": 0.699,
+      "status": "MODERATE_CORRELATION"
+    },
+    {
+      "feature_1": "population",
+      "feature_2": "demand_liters",
+      "pearson_r": 0.725,
+      "spearman_rho": 0.83,
+      "status": "HIGH_CORRELATION"
+    },
+    {
+      "feature_1": "population",
+      "feature_2": "depot_distance_km",
+      "pearson_r": -0.692,
+      "spearman_rho": -0.699,
+      "status": "MODERATE_CORRELATION"
+    },
+    {
+      "feature_1": "slum_share",
+      "feature_2": "dry_pipe_hours",
+      "pearson_r": 0.926,
+      "spearman_rho": 0.875,
+      "status": "HIGH_CORRELATION"
+    },
+    {
+      "feature_1": "slum_share",
+      "feature_2": "historical_deficit",
+      "pearson_r": 0.924,
+      "spearman_rho": 0.885,
+      "status": "HIGH_CORRELATION"
+    },
+    {
+      "feature_1": "slum_share",
+      "feature_2": "demand_liters",
+      "pearson_r": 0.931,
+      "spearman_rho": 0.847,
+      "status": "HIGH_CORRELATION"
+    },
+    {
+      "feature_1": "dry_pipe_hours",
+      "feature_2": "historical_deficit",
+      "pearson_r": 0.999,
+      "spearman_rho": 0.997,
+      "status": "HIGH_CORRELATION"
+    },
+    {
+      "feature_1": "dry_pipe_hours",
+      "feature_2": "demand_liters",
+      "pearson_r": 0.946,
+      "spearman_rho": 0.954,
+      "status": "HIGH_CORRELATION"
+    },
+    {
+      "feature_1": "historical_deficit",
+      "feature_2": "demand_liters",
+      "pearson_r": 0.943,
+      "spearman_rho": 0.951,
+      "status": "HIGH_CORRELATION"
+    },
+    {
+      "feature_1": "demand_liters",
+      "feature_2": "depot_distance_km",
+      "pearson_r": -0.486,
+      "spearman_rho": -0.683,
+      "status": "MODERATE_CORRELATION"
+    }
+  ]
+}

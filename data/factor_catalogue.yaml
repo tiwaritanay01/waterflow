@@ -1,0 +1,887 @@
+version: "3.0.0-research"
+title: "WaterFlow OS — Master Factor & Variable Catalogue"
+generated_at: "2026-09-18"
+total_domains: 32
+
+variables:
+  # A. HYDROLOGY
+  - variable_name: "catchment_inflow_rate"
+    definition: "Net volumetric inflow rate into municipal impoundment lakes (Tansa, Vaitarna, Bhatsa)"
+    domain: "A. HYDROLOGY"
+    classification: "PHYSICAL"
+    unit: "MLD (Million Liters per Day)"
+    spatial_scale: "Catchment basin"
+    temporal_scale: "Daily"
+    source: "BMC Hydraulic Engineer Department / Irrigation Dept"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Governs bulk municipal reservoir replenishment across Indian peninsular rivers"
+    mumbai_relevance: "Mumbai relies on 7 upstream lakes located 100-170 km outside municipal limits"
+    status_classification: "REAL_REFERENCE"
+    expected_relationship: "Higher inflow increases raw supply availability"
+    possible_use: ["supply_forecast", "planning"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Low"
+    double_counting_risk: "Moderate (correlates with catchment rainfall)"
+    data_quality: "High"
+    freshness: "Daily morning gauge readings"
+    justification: "Physical boundary constraint on raw water entering master treatment works"
+
+  # B. RAINFALL
+  - variable_name: "catchment_cumulative_rainfall"
+    definition: "Total cumulative precipitation recorded across the 7 lake catchment stations since June 1"
+    domain: "B. RAINFALL"
+    classification: "PHYSICAL"
+    unit: "mm"
+    spatial_scale: "Regional lake basins (Thane / Palghar / Nashik districts)"
+    temporal_scale: "Daily / Seasonal"
+    source: "IMD Mumbai Hydrology Section / BMC Lake Levels"
+    source_url: "https://mausam.imd.gov.in/"
+    india_relevance: "Primary driver of annual drinking water reserves across peninsular reservoirs"
+    mumbai_relevance: "Determines whether BMC enforces annual 5% to 15% citywide water cuts"
+    status_classification: "REAL"
+    expected_relationship: "Accumulation >= 14,47,363 ML by Oct 1 guarantees full year supply without cuts"
+    possible_use: ["supply_forecast", "scenario_modeling"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Low"
+    double_counting_risk: "High with reservoir storage level"
+    data_quality: "High"
+    freshness: "Daily 08:30 IST"
+    justification: "Direct seasonal trigger for municipal rationing policies"
+
+  - variable_name: "city_extreme_rainfall_event"
+    definition: "Localized urban precipitation exceeding IMD severe thresholds (>= 64.5 mm/day or heavy downpour)"
+    domain: "B. RAINFALL"
+    classification: "PHYSICAL"
+    unit: "mm/hr"
+    spatial_scale: "Ward / Automatic Weather Station (AWS)"
+    temporal_scale: "Hourly / Daily"
+    source: "IMD AWS Mumbai / BMC Disaster Management Cell"
+    source_url: "https://dmc.mcgm.gov.in/"
+    india_relevance: "Causes urban flooding and road corridor blockages across coastal cities"
+    mumbai_relevance: "Floods low-lying chronic bottlenecks (Hindmata, Kurla, Milan subway), blocking relief tankers"
+    status_classification: "REAL"
+    expected_relationship: "Severe rain disrupts road transit and increases localized turbidity"
+    possible_use: ["routing", "emergency_prediction"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: true
+    potential_bias: "None"
+    missing_data_risk: "Moderate"
+    double_counting_risk: "Low"
+    data_quality: "High"
+    freshness: "Hourly"
+    justification: "Constrains tanker delivery corridor transit speeds and impassable routes"
+
+  # C. CLIMATE
+  - variable_name: "ambient_temperature_max"
+    definition: "Daily maximum ambient surface air temperature"
+    domain: "C. CLIMATE"
+    classification: "PHYSICAL"
+    unit: "degrees Celsius"
+    spatial_scale: "Citywide (Santacruz / Colaba observatories)"
+    temporal_scale: "Daily"
+    source: "IMD Regional Meteorological Centre Mumbai"
+    source_url: "https://imdmumbai.gov.in/"
+    india_relevance: "Primary meteorological driver of domestic hydration and evaporative loss"
+    mumbai_relevance: "Temperatures >= 37C trigger IMD Coastal Heatwave warnings and surge domestic demand"
+    status_classification: "REAL"
+    expected_relationship: "High temperatures surge per-capita demand (+15-30%)"
+    possible_use: ["demand_prediction", "emergency_prediction"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Low"
+    double_counting_risk: "Moderate (correlates with Heat Index)"
+    data_quality: "High"
+    freshness: "Daily"
+    justification: "Key exogenous predictor for short-term demand elasticity"
+
+  - variable_name: "heatwave_condition_flag"
+    definition: "Binary indicator flag signaling active IMD coastal heatwave warning"
+    domain: "C. CLIMATE"
+    classification: "PHYSICAL"
+    unit: "Binary (0 or 1)"
+    spatial_scale: "Citywide"
+    temporal_scale: "Daily"
+    source: "IMD Heat Action Plan / BMC Health Dept"
+    source_url: "https://imdmumbai.gov.in/"
+    india_relevance: "National Disaster Management Authority (NDMA) heatwave threshold"
+    mumbai_relevance: "Coastal criterion: Max temp >= 37C and departure >= +4.5C"
+    status_classification: "REAL"
+    expected_relationship: "Active heatwave accelerates emergency water rationing and hydration demand"
+    possible_use: ["demand_prediction", "emergency_prediction", "allocation"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Low"
+    double_counting_risk: "High with max temperature"
+    data_quality: "High"
+    freshness: "Daily"
+    justification: "Triggers emergency medical pre-emption and tanker dispatch surges"
+
+  # D. SURFACE WATER
+  - variable_name: "lakes_useful_storage_pct"
+    definition: "Total active aggregate storage level of Mumbai's 7 supply lakes expressed as % of total capacity"
+    domain: "D. SURFACE WATER"
+    classification: "PHYSICAL"
+    unit: "%"
+    spatial_scale: "System bulk supply"
+    temporal_scale: "Daily 06:00 IST"
+    source: "BMC Hydraulic Engineer Dept Daily Lake Bulletin"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Standard reservoir storage monitoring metric across urban water utilities"
+    mumbai_relevance: "Full capacity is 14.47 lakh million liters; < 15% in May triggers critical municipal water rationing"
+    status_classification: "REAL"
+    expected_relationship: "Lower storage percentage triggers municipal supply curtailment"
+    possible_use: ["supply_forecast", "planning"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Zero"
+    double_counting_risk: "High with catchment rainfall"
+    data_quality: "High"
+    freshness: "Daily official bulletin"
+    justification: "Primary physical ceiling on citywide bulk water budget"
+
+  # E. GROUNDWATER
+  - variable_name: "groundwater_potability_status"
+    definition: "Saline intrusion and chemical contamination status of ward borewells / ring wells"
+    domain: "E. GROUNDWATER"
+    classification: "PHYSICAL"
+    unit: "Categorical (Non-Potable / Saline / Prohibited)"
+    spatial_scale: "Ward level"
+    temporal_scale: "Seasonal / Static"
+    source: "Central Ground Water Board (CGWB) Maharashtra Report"
+    source_url: "https://cgwb.gov.in/"
+    india_relevance: "Groundwater extraction is common in peri-urban India"
+    mumbai_relevance: "Mumbai groundwater in coastal wards (A, B, C, D, H/W, K/W) is hyper-saline and unfit for drinking"
+    status_classification: "REAL_REFERENCE"
+    expected_relationship: "Wards with saline groundwater cannot use borewells as backup drinking water"
+    possible_use: ["allocation", "water_reuse"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: false
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Moderate"
+    double_counting_risk: "Low"
+    data_quality: "High"
+    freshness: "Annual CGWB survey"
+    justification: "Groundwater cannot replace potable relief in coastal Mumbai wards"
+
+  # F. RESERVOIRS / STORAGE
+  - variable_name: "master_balancing_reservoir_level"
+    definition: "Water depth in municipal Master Balancing Reservoirs (Bhandup MBR, Veravali MBR, Malabar Hill)"
+    domain: "F. RESERVOIRS/STORAGE"
+    classification: "PHYSICAL"
+    unit: "meters"
+    spatial_scale: "Depot / Reservoir site"
+    temporal_scale: "Real-time SCADA (15 min)"
+    source: "BMC SCADA System / Hydraulic Engineer"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Primary urban terminal storage for gravity distribution"
+    mumbai_relevance: "Bhandup complex handles 2,800 MLD; water levels dictate tanker filling gantry flow rates"
+    status_classification: "SYNTHETIC_SEEDED"
+    expected_relationship: "Low MBR levels increase tanker queue turnaround times"
+    possible_use: ["supply_forecast", "routing"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: true
+    potential_bias: "None"
+    missing_data_risk: "Low"
+    double_counting_risk: "Low"
+    data_quality: "Medium"
+    freshness: "Real-time"
+    justification: "Physical operational constraint on relief tanker filling gantries"
+
+  # G. WATER QUALITY
+  - variable_name: "effluent_turbidity_ntu"
+    definition: "Turbidity of treated drinking water measured at distribution outlet"
+    domain: "G. WATER QUALITY"
+    classification: "PHYSICAL"
+    unit: "NTU (Nephelometric Turbidity Units)"
+    spatial_scale: "Treatment plant / Standpost sample"
+    temporal_scale: "Daily"
+    source: "BMC Water Quality Lab / Municipal Analyst Dept"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "BIS 10500:2012 standard requires <= 1.0 NTU (acceptable) and <= 5.0 NTU (max)"
+    mumbai_relevance: "Monsoon lake runoff causes high turbidity requiring alum coagulant increases"
+    status_classification: "SYNTHETIC_SEEDED"
+    expected_relationship: "Turbidity > 5.0 NTU triggers quality alerts and boil-water notices"
+    possible_use: ["emergency_prediction", "monitoring"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Low"
+    double_counting_risk: "Low"
+    data_quality: "High"
+    freshness: "Daily testing"
+    justification: "Water exceeding 5 NTU cannot be dispatched as potable drinking relief"
+
+  # H. TREATMENT
+  - variable_name: "bhandup_treatment_capacity"
+    definition: "Operational filtration throughput of the Bhandup Water Treatment Plant"
+    domain: "H. TREATMENT"
+    classification: "PHYSICAL"
+    unit: "MLD"
+    spatial_scale: "Central Treatment Plant"
+    temporal_scale: "Daily"
+    source: "BMC Water Treatment Division"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "One of the largest filtration plants in Asia (2,810 MLD)"
+    mumbai_relevance: "Supplies over 70% of Mumbai's treated potable water"
+    status_classification: "REAL_REFERENCE"
+    expected_relationship: "Limits maximum treatable water regardless of lake storage volume"
+    possible_use: ["supply_forecast"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: false
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Zero"
+    double_counting_risk: "Low"
+    data_quality: "High"
+    freshness: "Annual specification"
+    justification: "Hard physical capacity ceiling on total daily municipal potable production"
+
+  # I. TRANSMISSION
+  - variable_name: "trunk_main_flow_rate"
+    definition: "Flow rate through major steel/concrete transmission mains (Tansa, Vaitarna conduits)"
+    domain: "I. TRANSMISSION"
+    classification: "PHYSICAL"
+    unit: "m3/hr"
+    spatial_scale: "Transmission corridor"
+    temporal_scale: "Hourly SCADA"
+    source: "BMC SCADA Pipeline Telemetry"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Bulk long-distance transmission infrastructure monitoring"
+    mumbai_relevance: "Conduits travel 100+ km; bursts cause catastrophic supply cutoff to entire zones"
+    status_classification: "SYNTHETIC_SEEDED"
+    expected_relationship: "Flow drop signals burst or rupture, triggering emergency relief"
+    possible_use: ["emergency_prediction", "supply_forecast"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Moderate"
+    double_counting_risk: "Low"
+    data_quality: "Medium"
+    freshness: "Real-time"
+    justification: "Early indicator of structural pipeline failure causing acute local deficit"
+
+  # J. DISTRIBUTION NETWORK
+  - variable_name: "rationing_timetable_hours"
+    definition: "Scheduled municipal piped supply window duration for a given ward"
+    domain: "J. DISTRIBUTION NETWORK"
+    classification: "GOVERNANCE"
+    unit: "hours/day"
+    spatial_scale: "Ward zone"
+    temporal_scale: "Scheduled weekly"
+    source: "BMC Water Supply Timetable"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Intermittent water supply (IWS) is ubiquitous across 99% of Indian cities"
+    mumbai_relevance: "Wards receive between 2 to 4.5 hours of pressurized piped supply per day"
+    status_classification: "REAL"
+    expected_relationship: "Shorter supply windows correlate with higher citizen vulnerability and storage burden"
+    possible_use: ["allocation", "demand_prediction"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: true
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Low"
+    double_counting_risk: "Moderate with dry pipe hours"
+    data_quality: "High"
+    freshness: "Quarterly updates"
+    justification: "Structural baseline of piped water availability"
+
+  # K. PRESSURE
+  - variable_name: "distribution_line_pressure"
+    definition: "Residual hydrostatic pressure in local municipal feeder mains"
+    domain: "K. PRESSURE"
+    classification: "PHYSICAL"
+    unit: "bar (or kg/cm2)"
+    spatial_scale: "Ward distribution node"
+    temporal_scale: "Hourly during supply window"
+    source: "BMC SCADA Pressure Sensors"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Low pressure prevents water reaching tail-end users and elevated slums"
+    mumbai_relevance: "Tail-end areas in Govandi (M/E) and Kurla (L) suffer zero-pressure taps despite open valves"
+    status_classification: "SYNTHETIC_SEEDED"
+    expected_relationship: "Pressure < 0.5 bar indicates severe service failure regardless of timetable"
+    possible_use: ["allocation", "emergency_prediction"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: true
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Moderate"
+    double_counting_risk: "Low"
+    data_quality: "Medium"
+    freshness: "Hourly"
+    justification: "Direct physical indicator of tail-end hydraulic exclusion"
+
+  # L. LEAKAGE / NRW
+  - variable_name: "non_revenue_water_pct"
+    definition: "Estimated percentage of water lost to leaks, bursts, and unmetered unauthorized tappings"
+    domain: "L. LEAKAGE / NRW"
+    classification: "PHYSICAL_GOVERNANCE"
+    unit: "%"
+    spatial_scale: "Ward level"
+    temporal_scale: "Annual estimate"
+    source: "BMC Water Distribution Improvement Program / JICA NRW Study"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Urban Indian NRW ranges from 30% to 50%"
+    mumbai_relevance: "Estimated at 25% to 35% across Mumbai distribution networks"
+    status_classification: "ENGINEERING_ASSUMPTION"
+    expected_relationship: "High NRW areas experience greater actual delivery shortfall than nominal quota"
+    possible_use: ["supply_forecast", "planning"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: false
+    ml_feature_candidate: false
+    routing_feature_candidate: false
+    potential_bias: "Estimation model uncertainty"
+    missing_data_risk: "High"
+    double_counting_risk: "Low"
+    data_quality: "Low"
+    freshness: "Annual"
+    justification: "Deducts unaccounted losses in water balance models"
+
+  # M. POPULATION
+  - variable_name: "ward_population"
+    definition: "Current estimated resident population within administrative ward boundary"
+    domain: "M. POPULATION"
+    classification: "SOCIAL"
+    unit: "persons"
+    spatial_scale: "Ward level"
+    temporal_scale: "Annual projection (2026)"
+    source: "BMC Civic Diary 2026 / Census 2011"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Fundamental scale denominator for municipal per-capita resource allocation"
+    mumbai_relevance: "Ranges from 185,000 (Ward A) to 1,020,000 (Ward K/East)"
+    status_classification: "REAL"
+    expected_relationship: "Larger population increases total absolute water requirement"
+    possible_use: ["allocation", "demand_prediction"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: true
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Zero"
+    double_counting_risk: "High with household count"
+    data_quality: "High"
+    freshness: "Official 2026 publication"
+    justification: "Scale variable ensuring large wards receive proportionate aggregate relief"
+
+  # N. DEMOGRAPHICS
+  - variable_name: "child_and_elderly_dependency_pct"
+    definition: "Percentage of ward population under age 6 or over age 65"
+    domain: "N. DEMOGRAPHICS"
+    classification: "SOCIAL"
+    unit: "%"
+    spatial_scale: "Ward level"
+    temporal_scale: "Decennial (Census 2011)"
+    source: "Census India 2011 Primary Census Abstract"
+    source_url: "https://censusindia.gov.in/"
+    india_relevance: "High physiological vulnerability to dehydration and waterborne pathogens"
+    mumbai_relevance: "Concentrated in dense residential and resettlement colonies"
+    status_classification: "REAL_DERIVED"
+    expected_relationship: "Higher physiological sensitivity to water deprivation"
+    possible_use: ["allocation", "monitoring"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "Outdated Census 2011 base"
+    missing_data_risk: "Low"
+    double_counting_risk: "High with health vulnerability"
+    data_quality: "High"
+    freshness: "Decennial"
+    justification: "Captures physiological water sensitivity without identity-based bias"
+
+  # O. HOUSEHOLDS
+  - variable_name: "average_household_size"
+    definition: "Mean number of persons per domestic household"
+    domain: "O. HOUSEHOLDS"
+    classification: "SOCIAL"
+    unit: "persons/household"
+    spatial_scale: "Ward level"
+    temporal_scale: "Decennial"
+    source: "Census India 2011"
+    source_url: "https://censusindia.gov.in/"
+    india_relevance: "Determines domestic storage vessel sharing and rationing stress"
+    mumbai_relevance: "Averages 4.2 in island city vs 5.6 in informal eastern suburbs (M/E)"
+    status_classification: "REAL_DERIVED"
+    expected_relationship: "Larger household size increases per-dwelling storage depletion rate"
+    possible_use: ["demand_prediction"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Low"
+    double_counting_risk: "High with total population"
+    data_quality: "High"
+    freshness: "Decennial"
+    justification: "Modulates household consumption dynamics"
+
+  # P. SOCIOECONOMIC CONDITIONS
+  - variable_name: "informal_employment_share"
+    definition: "Percentage of ward workers engaged in daily-wage or unorganized labor"
+    domain: "P. SOCIOECONOMIC CONDITIONS"
+    classification: "ECONOMIC"
+    unit: "%"
+    spatial_scale: "Ward level"
+    temporal_scale: "Survey-based estimate"
+    source: "NSSO Urban Employment Survey / Mumbai Human Development Report"
+    source_url: "https://mospi.gov.in/"
+    india_relevance: "Daily wage earners lose livelihood if forced to queue hours for water"
+    mumbai_relevance: "Severe economic friction in M/East, L, and G/North"
+    status_classification: "REAL_REFERENCE"
+    expected_relationship: "High informal labor correlates with low financial buffer to purchase private tanker water"
+    possible_use: ["monitoring", "disparity_testing"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: false
+    ml_feature_candidate: false
+    routing_feature_candidate: false
+    potential_bias: "Survey sampling limitations"
+    missing_data_risk: "High"
+    double_counting_risk: "High with slum share"
+    data_quality: "Medium"
+    freshness: "Static reference"
+    justification: "Monitored for social equity audit, excluded from direct formula"
+
+  # Q. INFORMAL SETTLEMENTS
+  - variable_name: "slum_population_share"
+    definition: "Proportion of ward population residing in notified or non-notified informal settlements"
+    domain: "Q. INFORMAL SETTLEMENTS"
+    classification: "SOCIAL_INFRASTRUCTURE"
+    unit: "Ratio [0.0 to 1.0]"
+    spatial_scale: "Ward level"
+    temporal_scale: "Census 2011 / BMC Sankalan"
+    source: "Census India 2011 / BMC Slum Demographics"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Core structural proxy for lack of individual metered tap connections"
+    mumbai_relevance: "Ranges from 12% (Ward D) to 78% (Ward M/East); defines water poverty"
+    status_classification: "REAL_DERIVED"
+    expected_relationship: "Higher slum share directly correlates with physical lack of piped taps and dependence on tankers"
+    possible_use: ["allocation"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: true
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "Under-enumeration of non-notified post-2011 settlements"
+    missing_data_risk: "Zero"
+    double_counting_risk: "Moderate with poverty proxies"
+    data_quality: "High"
+    freshness: "Official Census base"
+    justification: "Primary objective proxy for structural exclusion from piped grid"
+
+  # R. HEALTH VULNERABILITY
+  - variable_name: "waterborne_disease_incidence"
+    definition: "Reported weekly cases of acute diarrheal disease, typhoid, and hepatitis A/E per 10,000 population"
+    domain: "R. HEALTH VULNERABILITY"
+    classification: "SOCIAL_HEALTH"
+    unit: "cases / 10k pop / week"
+    spatial_scale: "Ward level"
+    temporal_scale: "Weekly"
+    source: "BMC Public Health Department Epidemiology Cell"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Key public health consequence of intermittent and contaminated water"
+    mumbai_relevance: "Spikes during monsoon pipeline suction infiltration in dense settlements"
+    status_classification: "SYNTHETIC_SEEDED"
+    expected_relationship: "High incidence mandates urgent potable relief to prevent epidemic outbreak"
+    possible_use: ["allocation", "emergency_prediction"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: true
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "Under-reporting from private clinics"
+    missing_data_risk: "Moderate"
+    double_counting_risk: "Low"
+    data_quality: "Medium"
+    freshness: "Weekly"
+    justification: "Direct public health hazard trigger for emergency water dispatch"
+
+  # S. CRITICAL FACILITIES
+  - variable_name: "critical_hospital_reserve_hours"
+    definition: "Estimated hours of operational water storage remaining at government and municipal hospitals"
+    domain: "S. CRITICAL FACILITIES"
+    classification: "INFRASTRUCTURE"
+    unit: "hours"
+    spatial_scale: "Facility point coordinate"
+    temporal_scale: "Hourly / Real-time"
+    source: "Hospital Facility Telemetry / BMC Disaster Cell"
+    source_url: "https://dmc.mcgm.gov.in/"
+    india_relevance: "Hospitals require uninterrupted water for dialysis, sterilization, and surgery"
+    mumbai_relevance: "Major tertiary hubs (KEM, Sion, Nair) serve thousands of critical inpatients"
+    status_classification: "SYNTHETIC_SEEDED"
+    expected_relationship: "Storage < 6 hours creates life safety risk requiring immediate pre-emption"
+    possible_use: ["allocation", "emergency_prediction"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: false
+    routing_feature_candidate: true
+    potential_bias: "None"
+    missing_data_risk: "Moderate"
+    double_counting_risk: "Low"
+    data_quality: "High"
+    freshness: "Real-time"
+    justification: "Life-safety pre-emption constraint overriding normal residential rationing"
+
+  # T. WATER DEMAND
+  - variable_name: "unmet_demand_liters"
+    definition: "Total volume of requested potable water remaining unfulfilled within the current 24-hour cycle"
+    domain: "T. WATER DEMAND"
+    classification: "OPERATIONAL"
+    unit: "liters"
+    spatial_scale: "Ward level"
+    temporal_scale: "Daily"
+    source: "WaterFlow Request Engine / Municipal Quota Ledger"
+    source_url: "internal://waterflow/demand"
+    india_relevance: "Core volume target for municipal emergency dispatch"
+    mumbai_relevance: "Aggregated from verified citizen grievance tickets and ward standpost requests"
+    status_classification: "SYNTHETIC_SEEDED"
+    expected_relationship: "Higher unmet demand increases urgent allocation need"
+    possible_use: ["allocation", "routing"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: true
+    ml_feature_candidate: true
+    routing_feature_candidate: true
+    potential_bias: "Vocal communities submit more tickets"
+    missing_data_risk: "Zero"
+    double_counting_risk: "Low"
+    data_quality: "High"
+    freshness: "Continuous"
+    justification: "Fundamental target quantity for all allocation algorithms"
+
+  # U. HISTORICAL SERVICE
+  - variable_name: "consecutive_dry_days"
+    definition: "Number of consecutive days without scheduled municipal tap supply"
+    domain: "U. HISTORICAL SERVICE"
+    classification: "OPERATIONAL"
+    unit: "days"
+    spatial_scale: "Ward standpost"
+    temporal_scale: "Daily"
+    source: "BMC Water Service Logs / Citizen Reports"
+    source_url: "internal://waterflow/history"
+    india_relevance: "Measures chronic failure of intermittent supply networks"
+    mumbai_relevance: "Outages > 2 days exhaust all domestic vessel storage"
+    status_classification: "SYNTHETIC_SEEDED"
+    expected_relationship: "High dry days exponentially increases crisis urgency"
+    possible_use: ["allocation", "emergency_prediction"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: true
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Low"
+    double_counting_risk: "Moderate with dry pipe hours"
+    data_quality: "High"
+    freshness: "Daily"
+    justification: "Quantifies cumulative physiological deprivation"
+
+  # V. COMPLAINTS
+  - variable_name: "corroborated_complaint_velocity"
+    definition: "Rate of unique, deduplicated citizen complaints received per square kilometer per hour"
+    domain: "V. COMPLAINTS"
+    classification: "OPERATIONAL"
+    unit: "complaints / km2 / hr"
+    spatial_scale: "Ward level"
+    temporal_scale: "Hourly rolling (3h window)"
+    source: "WaterFlow Complaint Engine (Deduplicated WhatsApp + Web)"
+    source_url: "internal://waterflow/complaints"
+    india_relevance: "Real-time crowdsourced detection of infrastructure failure"
+    mumbai_relevance: "Rapid spike indicates trunk main burst or valve closure"
+    status_classification: "SYNTHETIC_SEEDED"
+    expected_relationship: "Sharp acceleration correlates with acute infrastructure burst"
+    possible_use: ["emergency_prediction", "allocation"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: true
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "Smartphones more prevalent in affluent areas (mitigated by deduplication & physical validation)"
+    missing_data_risk: "Low"
+    double_counting_risk: "Low after spatiotemporal clustering"
+    data_quality: "High"
+    freshness: "Real-time"
+    justification: "Provides dynamic operational corroboration of sensor failures"
+
+  # W. EMERGENCY CONDITIONS
+  - variable_name: "contamination_alert_flag"
+    definition: "Binary indicator flag signaling biological or chemical contamination in distribution main"
+    domain: "W. EMERGENCY CONDITIONS"
+    classification: "PHYSICAL_HEALTH"
+    unit: "Binary (0 or 1)"
+    spatial_scale: "Feeder main / Ward"
+    temporal_scale: "Immediate trigger"
+    source: "BMC Water Testing Laboratory / Public Health Dept"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Suction contamination during zero-pressure periods is common in aged pipes"
+    mumbai_relevance: "Sewage cross-contamination requires immediate valve isolation and emergency tanker deployment"
+    status_classification: "SCENARIO_PARAMETER"
+    expected_relationship: "Active contamination shuts piped main and requires 100% tanker reliance"
+    possible_use: ["emergency_prediction", "allocation"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: false
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Low"
+    double_counting_risk: "Low"
+    data_quality: "High"
+    freshness: "Real-time incident log"
+    justification: "Triggers immediate emergency pipeline isolation and relief tanker priority"
+
+  # X. GOVERNANCE / OPERATIONS
+  - variable_name: "ward_valve_isolation_status"
+    definition: "Operational status of primary municipal inlet sluice valves (Open / Throttled / Isolated)"
+    domain: "X. GOVERNANCE / OPERATIONS"
+    classification: "OPERATIONAL"
+    unit: "Categorical"
+    spatial_scale: "Valve chamber"
+    temporal_scale: "Real-time"
+    source: "BMC Valve Operations Roster"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Manual valve operation regulates intermittent zoning"
+    mumbai_relevance: "Operated twice daily by municipal 'chaviwallas' (keymen)"
+    status_classification: "SYNTHETIC_SEEDED"
+    expected_relationship: "Isolated valve cuts 100% piped supply to downstream sub-wards"
+    possible_use: ["supply_forecast", "emergency_prediction"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "Human logging latency"
+    missing_data_risk: "Moderate"
+    double_counting_risk: "Low"
+    data_quality: "Medium"
+    freshness: "Shift-based"
+    justification: "Direct cause of sudden localized dry pipe events"
+
+  # Y. TANKERS
+  - variable_name: "tanker_fleet_active_capacity"
+    definition: "Total cumulative volumetric capacity of available, non-defective municipal relief tankers"
+    domain: "Y. TANKERS"
+    classification: "LOGISTICAL"
+    unit: "liters"
+    spatial_scale: "Depot fleet"
+    temporal_scale: "Daily / Shift"
+    source: "BMC Tanker Depot Roster"
+    source_url: "internal://waterflow/fleet"
+    india_relevance: "Physical constraint on mobile relief delivery capacity"
+    mumbai_relevance: "BMC operates municipal fleet supplemented by contracted private tankers"
+    status_classification: "SYNTHETIC_SEEDED"
+    expected_relationship: "Sets the hard physical upper bound on water delivered per dispatch cycle"
+    possible_use: ["routing", "allocation"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: false
+    routing_feature_candidate: true
+    potential_bias: "None"
+    missing_data_risk: "Low"
+    double_counting_risk: "Low"
+    data_quality: "High"
+    freshness: "Shift-based"
+    justification: "Physical logistics constraint on delivery execution"
+
+  # Z. TRANSPORT
+  - variable_name: "corridor_transit_time_minutes"
+    definition: "Estimated one-way travel duration between filling depot and destination ward standpost"
+    domain: "Z. TRANSPORT"
+    classification: "LOGISTICAL"
+    unit: "minutes"
+    spatial_scale: "Depot-to-Ward route"
+    temporal_scale: "Dynamic / Hourly"
+    source: "OpenStreetMap Routing / Traffic Matrix"
+    source_url: "https://www.openstreetmap.org/"
+    india_relevance: "Severe urban traffic congestion affects tanker turnaround times"
+    mumbai_relevance: "WEH, EEH, and SCLR bottlenecks restrict daily round trips to 3-4 per tanker"
+    status_classification: "REAL"
+    expected_relationship: "Longer transit times reduce daily tanker turnaround and increase fleet requirement"
+    possible_use: ["routing"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: true
+    potential_bias: "Traffic speed variance"
+    missing_data_risk: "Low"
+    double_counting_risk: "High with route distance"
+    data_quality: "High"
+    freshness: "Hourly traffic speeds"
+    justification: "Primary cost function in Capacitated Vehicle Routing Optimization"
+
+  # AA. ENERGY
+  - variable_name: "pumping_station_power_status"
+    definition: "Operational grid power availability at municipal intermediate booster pumping stations"
+    domain: "AA. ENERGY"
+    classification: "PHYSICAL_INFRASTRUCTURE"
+    unit: "Binary (1 = Grid Active, 0 = Outage/Generator)"
+    spatial_scale: "Pumping station"
+    temporal_scale: "Real-time"
+    source: "MSEDCL / Adani Electricity / BMC Telemetry"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Power cuts disable booster pumps and drain overhead balancing tanks"
+    mumbai_relevance: "Pumping stations (Bhandup, Ghatkopar, Veravali) require continuous 110kV/22kV power"
+    status_classification: "SCENARIO_PARAMETER"
+    expected_relationship: "Power loss cuts pumping throughput by 70-100%, causing sudden grid de-pressurization"
+    possible_use: ["supply_forecast", "emergency_prediction"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Low"
+    double_counting_risk: "Low"
+    data_quality: "High"
+    freshness: "Real-time"
+    justification: "Upstream physical constraint on treated water transmission"
+
+  # AB. ECONOMICS
+  - variable_name: "commercial_water_tanker_price"
+    definition: "Prevailing spot price charged by private informal water tanker mafia for 10,000 L"
+    domain: "AB. ECONOMICS"
+    classification: "ECONOMIC"
+    unit: "INR / 10,000 L"
+    spatial_scale: "Ward level"
+    temporal_scale: "Weekly survey"
+    source: "Field survey / Media Reports / Civil Society Price Monitoring"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Reflects the market penalty paid by unserved citizens"
+    mumbai_relevance: "Surges from standard INR 1,200 to INR 4,500 during acute shortages in Govandi and Malad"
+    status_classification: "MONITOR_ONLY"
+    expected_relationship: "High private prices signal severe market failure and economic exploitation of the poor"
+    possible_use: ["monitoring", "disparity_testing"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: false
+    ml_feature_candidate: false
+    routing_feature_candidate: false
+    potential_bias: "Informal, un-regulated transaction reporting"
+    missing_data_risk: "High"
+    double_counting_risk: "Low"
+    data_quality: "Low"
+    freshness: "Weekly"
+    justification: "Monitored for economic fairness audits; excluded from core dispatch formula"
+
+  # AC. WATER REUSE
+  - variable_name: "reclaimed_water_availability"
+    definition: "Volume of secondary-treated non-potable water available from sewage treatment plants (STPs)"
+    domain: "AC. WATER REUSE"
+    classification: "PHYSICAL"
+    unit: "MLD"
+    spatial_scale: "STP location"
+    temporal_scale: "Daily"
+    source: "BMC Mumbai Sewage Disposal Project (MSDP)"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "National mandate to recycle treated wastewater for non-potable urban uses"
+    mumbai_relevance: "New STPs (Colaba, Worli, Dharavi) generate secondary effluent for construction and flushing"
+    status_classification: "SCENARIO_PARAMETER"
+    expected_relationship: "Supplying non-potable demand with reclaimed water preserves potable drinking water"
+    possible_use: ["water_reuse", "planning"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: false
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Moderate"
+    double_counting_risk: "Low"
+    data_quality: "Medium"
+    freshness: "Monthly"
+    justification: "Optimizes allocation by substituting non-potable relief with reclaimed supply"
+
+  # AD. AGRICULTURAL / INDUSTRIAL COMPETITION
+  - variable_name: "industrial_quota_allocation"
+    definition: "Scheduled municipal water quota allocated to industrial and commercial estates"
+    domain: "AD. AGRICULTURAL / INDUSTRIAL COMPETITION"
+    classification: "GOVERNANCE"
+    unit: "MLD"
+    spatial_scale: "Zone / Ward"
+    temporal_scale: "Daily"
+    source: "BMC Hydraulic Engineer Commercial Billing"
+    source_url: "https://portal.mcgm.gov.in/"
+    india_relevance: "Industry competes with domestic lifelines during droughts"
+    mumbai_relevance: "MIDC and port commercial connections are cut first during acute shortages to protect domestic lifelines"
+    status_classification: "ENGINEERING_ASSUMPTION"
+    expected_relationship: "Curtailing commercial quotas frees up additional potable water for domestic rationing"
+    possible_use: ["supply_forecast", "allocation"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: false
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Low"
+    double_counting_risk: "Low"
+    data_quality: "High"
+    freshness: "Monthly"
+    justification: "Represents policy mechanism to redirect bulk water during severe shortages"
+
+  # AE. ENVIRONMENTAL CONSTRAINTS
+  - variable_name: "ecological_minimum_river_release"
+    definition: "Mandated downstream environmental flow release from dam impoundments (Bhatsa / Vaitarna)"
+    domain: "AE. ENVIRONMENTAL CONSTRAINTS"
+    classification: "LEGAL_ENVIRONMENTAL"
+    unit: "cusecs / MLD"
+    spatial_scale: "River basin"
+    temporal_scale: "Seasonal"
+    source: "Central Water Commission (CWC) / Maharashtra Water Resources Regulatory Authority (MWRRA)"
+    source_url: "https://mwrra.mah.gov.in/"
+    india_relevance: "Statutory environmental flow requirements protect downstream river ecology"
+    mumbai_relevance: "Restricts 100% diversion of river inflow exclusively to Mumbai city"
+    status_classification: "ENGINEERING_ASSUMPTION"
+    expected_relationship: "Reduces net harvestable reservoir volume"
+    possible_use: ["supply_forecast", "planning"]
+    hard_constraint_candidate: true
+    policy_weight_candidate: false
+    ml_feature_candidate: false
+    routing_feature_candidate: false
+    potential_bias: "None"
+    missing_data_risk: "Low"
+    double_counting_risk: "Low"
+    data_quality: "High"
+    freshness: "Seasonal"
+    justification: "Legal constraint on maximum bulk withdrawal from surface reservoirs"
+
+  # AF. LONG-TERM CLIMATE / URBANIZATION
+  - variable_name: "urban_impervious_surface_fraction"
+    definition: "Fraction of ward area covered by asphalt, concrete, and high-density built structures"
+    domain: "AF. LONG-TERM CLIMATE / URBANIZATION"
+    classification: "ENVIRONMENTAL"
+    unit: "Ratio [0.0 to 1.0]"
+    spatial_scale: "Ward level"
+    temporal_scale: "Decennial satellite analysis"
+    source: "ISRO Bhuvan Urban Land Cover / Mumbai DP 2034"
+    source_url: "https://bhuvan.nrsc.gov.in/"
+    india_relevance: "Exacerbates urban heat island effect and runoff flash flooding"
+    mumbai_relevance: "Exceeds 0.85 in dense island city and suburban transit hubs"
+    status_classification: "REAL_DERIVED"
+    expected_relationship: "Amplifies local microclimate heat stress and water demand during dry spells"
+    possible_use: ["monitoring", "planning"]
+    hard_constraint_candidate: false
+    policy_weight_candidate: false
+    ml_feature_candidate: true
+    routing_feature_candidate: false
+    potential_bias: "Sensor resolution limits"
+    missing_data_risk: "Low"
+    double_counting_risk: "High with population density"
+    data_quality: "High"
+    freshness: "Multi-year"
+    justification: "Contextual environmental variable for long-term municipal planning"

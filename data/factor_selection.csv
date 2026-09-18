@@ -1,0 +1,36 @@
+variable_name,domain,decision,primary_role,selection_rationale,mitigation_or_guardrail
+catchment_inflow_rate,A. HYDROLOGY,INCLUDE,supply_forecast,Physical mass balance boundary on bulk water production,Derived from daily morning lake bulletins
+catchment_cumulative_rainfall,B. RAINFALL,INCLUDE,supply_forecast,Direct physical trigger for municipal annual water cuts,Monitored via IMD lake catchment gauges
+city_extreme_rainfall_event,B. RAINFALL,CONDITIONAL,routing,Blocks tanker delivery corridors during localized urban flooding,Only activates when AWS records >= 64.5 mm/day
+ambient_temperature_max,C. CLIMATE,INCLUDE,demand_prediction,Exogenous driver of domestic hydration and evaporative deficit,Standard IMD observatory reading
+heatwave_condition_flag,C. CLIMATE,SCENARIO_ONLY,allocation,Triggers emergency hydration surge and medical pre-emption,IMD coastal criteria (>= 37C and +4.5C departure)
+lakes_useful_storage_pct,D. SURFACE WATER,INCLUDE,hard_constraint,Physical supply ceiling on total daily municipal budget,Hard upper bound on usable water budget
+groundwater_potability_status,E. GROUNDWATER,INCLUDE,hard_constraint,Prevents substituting saline coastal groundwater for drinking relief,Enforces potable relief in coastal wards
+master_balancing_reservoir_level,F. RESERVOIRS/STORAGE,INCLUDE,routing,Constrains tanker filling gantry flow rates at depots,Physical turnaround parameter in dispatch
+effluent_turbidity_ntu,G. WATER QUALITY,INCLUDE,hard_constraint,Quality gate (BIS 10500 <= 5 NTU) for potable relief,Water exceeding 5 NTU is rejected
+bhandup_treatment_capacity,H. TREATMENT,INCLUDE,hard_constraint,Physical throughput ceiling on filtration (2810 MLD),Physical ceiling in supply model
+trunk_main_flow_rate,I. TRANSMISSION,CONDITIONAL,emergency_prediction,Sudden drop signals structural burst or rupture,Monitored via SCADA flow telemetry
+rationing_timetable_hours,J. DISTRIBUTION NETWORK,INCLUDE,allocation,Structural baseline of intermittent piped water access,Normalized access duration in deficit scoring
+distribution_line_pressure,K. PRESSURE,INCLUDE,emergency_prediction,Direct physical indicator of tail-end dry tap exclusion,Pressure < 0.5 bar indicates service failure
+non_revenue_water_pct,L. LEAKAGE / NRW,INCLUDE,supply_forecast,Accounts for physical transmission losses in water balance,Deducted from raw supply as engineering loss
+ward_population,M. POPULATION,INCLUDE,allocation,Scale variable ensuring relief scales with population size,Normalized against 1M reference cap
+child_and_elderly_dependency_pct,N. DEMOGRAPHICS,MONITOR_ONLY,monitoring,Physiological vulnerability monitored for equity audit,Excluded from direct allocation formula to prevent double counting
+average_household_size,O. HOUSEHOLDS,EXCLUDE,none,Redundant with ward population and household count,Excluded to prevent collinear inflation
+informal_employment_share,P. SOCIOECONOMIC CONDITIONS,MONITOR_ONLY,monitoring,High measurement uncertainty; monitored for disparity audit,Excluded from allocation score
+slum_population_share,Q. INFORMAL SETTLEMENTS,INCLUDE,allocation,Primary objective proxy for lack of individual piped connections,Normalized in vulnerability factor (0.30 weight)
+waterborne_disease_incidence,R. HEALTH VULNERABILITY,CONDITIONAL,emergency_prediction,Public health hazard flag triggering medical relief dispatch,Requires verified BMC health cell log
+critical_hospital_reserve_hours,S. CRITICAL FACILITIES,INCLUDE,hard_constraint,Life-safety pre-emption for hospitals (< 6h reserve),Pre-empts residential queue via hard priority
+unmet_demand_liters,T. WATER DEMAND,INCLUDE,allocation,Primary volume demand target for municipal tanker dispatch,Core objective in allocation and routing
+consecutive_dry_days,U. HISTORICAL SERVICE,INCLUDE,allocation,Captures cumulative physiological deprivation and memory,Exponential scaling in service deficit factor
+corroborated_complaint_velocity,V. COMPLAINTS,INCLUDE,emergency_prediction,Crowdsourced validation of sensor line failures,Deduplicated spatiotemporally (200m / 2h)
+contamination_alert_flag,W. EMERGENCY CONDITIONS,SCENARIO_ONLY,allocation,Triggers immediate pipeline isolation and 100% tanker relief,Emergency scenario parameter
+ward_valve_isolation_status,X. GOVERNANCE / OPERATIONS,INCLUDE,supply_forecast,Keyman valve closure directly causes local dry pipe events,Direct operational state input
+tanker_fleet_active_capacity,Y. TANKERS,INCLUDE,hard_constraint,Physical logistics ceiling on volume deliverable per trip,Hard upper bound in CVRP routing
+corridor_transit_time_minutes,Z. TRANSPORT,INCLUDE,routing,Primary cost metric in route optimization,Separated completely from equity scoring
+pumping_station_power_status,AA. ENERGY,SCENARIO_ONLY,supply_forecast,Power cut disables booster pumps and de-pressurizes grid,Emergency scenario parameter
+commercial_water_tanker_price,AB. ECONOMICS,MONITOR_ONLY,monitoring,Monitored for economic exploitation and market failure audits,Excluded from allocation formula
+reclaimed_water_availability,AC. WATER REUSE,CONDITIONAL,water_reuse,Substitutes non-potable demand to conserve drinking water,Only active when certified STP output is present
+industrial_quota_allocation,AD. AGRICULTURAL / INDUSTRIAL COMPETITION,SCENARIO_ONLY,supply_forecast,Policy mechanism to curtail industrial quotas during severe crisis,Scenario parameter in severe drought
+ecological_minimum_river_release,AE. ENVIRONMENTAL CONSTRAINTS,INCLUDE,hard_constraint,Statutory environmental flow constraint on river dams,Deducted as non-negotiable physical outflow
+urban_impervious_surface_fraction,AF. LONG-TERM CLIMATE / URBANIZATION,MONITOR_ONLY,monitoring,Contextual variable for long-term planning and heat island audit,Excluded from daily operational models
+caste_or_religious_identity,N. DEMOGRAPHICS,EXCLUDE,none,Violates non-discrimination ethics and legal principles,Strictly prohibited as allocation factor

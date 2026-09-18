@@ -1,0 +1,4 @@
+domain,evaluated_task,metric_evaluated,baseline_type,baseline_value,waterflow_value,delta_relative_pct,scientific_interpretation
+EQUITY_ALLOCATION,Protection of acute slum communities during 45% water shortage,High-Vulnerability (V >= 0.70) Fulfillment (%),First-Come First-Served (FCFS),42.4,100.0,57.6,"WaterFlow prioritizes acute service deficits over citizen arrival timestamp, preventing starvation of late-submitting slum residents."
+ROUTING_LOGISTICS,Multi-stop municipal tanker fleet dispatch across 24 wards,Emergency Delivery Latency (minutes),Nearest-Tanker Greedy Dispatch,21.0,21.0,0.0,Cluster-first route-second sequencing prioritizes emergency insertion before traversing standard multi-stop routes.
+DEMAND_FORECASTING,7-day chronological ward demand prediction,Mean Absolute Error (Liters),Naive Previous-Day Persistence (y_{t-1}),883.79,730.55,17.3,Random forest captures non-linear interactions between dry-pipe hours and slum density without lookahead leakage.

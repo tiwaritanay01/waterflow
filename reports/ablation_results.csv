@@ -1,0 +1,7 @@
+experiment_name,ablated_factor,spearman_rank_correlation,high_vuln_fulfillment_pct,critical_facility_fulfillment_pct,total_allocated_liters,interpretation
+Full Model (v3.0.0-research),NONE,1.0,100.0,100.0,115200.0,Ablating NONE causes rank correlation rho=1.00
+Minus Vulnerability Group,vulnerability,0.877,50.0,100.0,115200.0,Ablating vulnerability causes rank correlation rho=0.88
+Minus Historical Service Deficit,historical_deficit,0.757,100.0,100.0,115200.0,Ablating historical_deficit causes rank correlation rho=0.76
+Minus Corroborated Complaints,complaint_evidence,0.913,80.0,100.0,115200.0,Ablating complaint_evidence causes rank correlation rho=0.91
+Minus Critical Facility Lifeline,critical_facility,0.964,100.0,50.0,115200.0,Ablating critical_facility causes rank correlation rho=0.96
+Minus Reliability Deficit,reliability_deficit,0.923,100.0,100.0,115200.0,Ablating reliability_deficit causes rank correlation rho=0.92

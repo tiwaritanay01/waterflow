@@ -1,0 +1,44 @@
+{
+  "policies_evaluated": [
+    {
+      "policy_name": "Policy A (High Vulnerability)",
+      "total_allocated_liters": 129600.0,
+      "unserved_demand_liters": 158400.0,
+      "overall_fulfillment_pct": 45.0,
+      "high_vuln_fulfillment_pct": 100.0,
+      "allocation_gini_concentration": 0.549
+    },
+    {
+      "policy_name": "Policy B (High Unmet Demand)",
+      "total_allocated_liters": 129600.0,
+      "unserved_demand_liters": 158400.0,
+      "overall_fulfillment_pct": 45.0,
+      "high_vuln_fulfillment_pct": 100.0,
+      "allocation_gini_concentration": 0.549
+    },
+    {
+      "policy_name": "Policy C (Balanced)",
+      "total_allocated_liters": 129600.0,
+      "unserved_demand_liters": 158400.0,
+      "overall_fulfillment_pct": 45.0,
+      "high_vuln_fulfillment_pct": 100.0,
+      "allocation_gini_concentration": 0.549
+    },
+    {
+      "policy_name": "Policy D (High Historical Deficit)",
+      "total_allocated_liters": 129600.0,
+      "unserved_demand_liters": 158400.0,
+      "overall_fulfillment_pct": 45.0,
+      "high_vuln_fulfillment_pct": 100.0,
+      "allocation_gini_concentration": 0.549
+    },
+    {
+      "policy_name": "Policy E (Emergency & Lifeline Heavy)",
+      "total_allocated_liters": 129600.0,
+      "unserved_demand_liters": 158400.0,
+      "overall_fulfillment_pct": 45.0,
+      "high_vuln_fulfillment_pct": 100.0,
+      "allocation_gini_concentration": 0.549
+    }
+  ]
+}

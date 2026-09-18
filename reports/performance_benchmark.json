@@ -1,0 +1,44 @@
+{
+  "benchmarks": [
+    {
+      "request_count": 100,
+      "scoring_duration_ms": 5.4,
+      "allocation_duration_ms": 0.21,
+      "total_execution_ms": 5.61,
+      "latency_per_request_microseconds": 56.06,
+      "throughput_requests_per_sec": 17838.0
+    },
+    {
+      "request_count": 500,
+      "scoring_duration_ms": 32.8,
+      "allocation_duration_ms": 1.31,
+      "total_execution_ms": 34.11,
+      "latency_per_request_microseconds": 68.21,
+      "throughput_requests_per_sec": 14660.3
+    },
+    {
+      "request_count": 1000,
+      "scoring_duration_ms": 52.32,
+      "allocation_duration_ms": 8.13,
+      "total_execution_ms": 60.45,
+      "latency_per_request_microseconds": 60.45,
+      "throughput_requests_per_sec": 16543.1
+    },
+    {
+      "request_count": 5000,
+      "scoring_duration_ms": 337.58,
+      "allocation_duration_ms": 13.93,
+      "total_execution_ms": 351.51,
+      "latency_per_request_microseconds": 70.3,
+      "throughput_requests_per_sec": 14224.3
+    },
+    {
+      "request_count": 10000,
+      "scoring_duration_ms": 567.89,
+      "allocation_duration_ms": 49.24,
+      "total_execution_ms": 617.14,
+      "latency_per_request_microseconds": 61.71,
+      "throughput_requests_per_sec": 16203.9
+    }
+  ]
+}

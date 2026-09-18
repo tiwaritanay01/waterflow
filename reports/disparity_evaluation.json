@@ -1,0 +1,43 @@
+{
+  "audit_date": "2026-09-17",
+  "supply_budget_liters": 114559.65000000001,
+  "total_demand_liters": 254577.0,
+  "strata_breakdown": [
+    {
+      "strata": "HIGH_VULNERABILITY (V >= 0.70)",
+      "wards_count": 2,
+      "total_demand_liters": 59857.0,
+      "wf_delivered_liters": 59857.0,
+      "wf_fulfillment_pct": 100.0,
+      "wf_unmet_liters": 0.0,
+      "fcfs_delivered_liters": 24531.8,
+      "fcfs_fulfillment_pct": 41.0,
+      "fcfs_unmet_liters": 35325.2,
+      "fulfillment_delta_pct": 59.0
+    },
+    {
+      "strata": "LOW_VULNERABILITY (V < 0.40)",
+      "wards_count": 9,
+      "total_demand_liters": 42894.0,
+      "wf_delivered_liters": 0.0,
+      "wf_fulfillment_pct": 0.0,
+      "wf_unmet_liters": 42894.0,
+      "fcfs_delivered_liters": 20455.4,
+      "fcfs_fulfillment_pct": 47.7,
+      "fcfs_unmet_liters": 22438.6,
+      "fulfillment_delta_pct": -47.7
+    },
+    {
+      "strata": "MODERATE_VULNERABILITY (0.40 <= V < 0.70)",
+      "wards_count": 13,
+      "total_demand_liters": 151826.0,
+      "wf_delivered_liters": 54702.7,
+      "wf_fulfillment_pct": 36.0,
+      "wf_unmet_liters": 97123.4,
+      "fcfs_delivered_liters": 69572.4,
+      "fcfs_fulfillment_pct": 45.8,
+      "fcfs_unmet_liters": 82253.6,
+      "fulfillment_delta_pct": -9.8
+    }
+  ]
+}

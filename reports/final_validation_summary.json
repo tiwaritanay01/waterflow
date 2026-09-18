@@ -1,0 +1,179 @@
+{
+  "final_status": "PASS",
+  "total_stages": 17,
+  "passed_stages": 17,
+  "failed_stages": 0,
+  "total_duration_seconds": 27.45,
+  "stages": [
+    {
+      "stage_id": 1,
+      "name": "Data Files Presence & Integrity",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -c \nimport sys\nfrom pathlib import Path\nimport pandas as pd\nroot = Path('.')\nref_pop = root / 'data' / 'reference' / 'bmc' / 'ward_population_real.csv'\nref_geo = root / 'data' / 'reference' / 'bmc' / 'wards_real.csv'\nassert ref_pop.exists() and ref_geo.exists(), 'Missing reference files'\ndf = pd.read_csv(ref_pop)\nassert len(df) == 24, f'Expected 24 wards, got {len(df)}'\nprint('24 BMC reference wards validated with census populations.')\n",
+      "status": "PASS",
+      "duration_seconds": 0.83,
+      "summary": "24 BMC reference wards validated with census populations.",
+      "stdout_tail": "24 BMC reference wards validated with census populations.",
+      "stderr_tail": ""
+    },
+    {
+      "stage_id": 2,
+      "name": "Data Provenance Classification Audit",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -c \nimport yaml\nfrom pathlib import Path\ncat_path = Path('data/factor_catalogue.yaml')\nassert cat_path.exists(), 'Factor catalogue missing'\nwith open(cat_path, 'r', encoding='utf-8') as f:\n    data = yaml.safe_load(f)\nassert 'variables' in data and len(data['variables']) >= 30, 'Variables list missing or incomplete'\ndomains = set(v['domain'] for v in data['variables'])\nassert len(domains) >= 30, f'Expected >= 30 domains, got {len(domains)}'\nprint(f'Provenance confirmed: {len(domains)} unique domains across {len(data[\"variables\"])} variables documented.')\n",
+      "status": "PASS",
+      "duration_seconds": 1.22,
+      "summary": "Provenance confirmed: 32 unique domains across 34 variables documented.",
+      "stdout_tail": "Provenance confirmed: 32 unique domains across 34 variables documented.",
+      "stderr_tail": ""
+    },
+    {
+      "stage_id": 3,
+      "name": "Deterministic Reproducibility (Seed 42)",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe evaluation/multi_seed_evaluation.py",
+      "status": "PASS",
+      "duration_seconds": 1.03,
+      "summary": "Saved to reports/multi_seed_statistical_report.csv and .json",
+      "stdout_tail": "on Seed 42.\n\nMULTI-SEED DESCRIPTIVE STATISTICS (N=5 independent runs):\n  overall_fulfillment_pct        | Mean:   83.06 | StdDev:   0.62 | Range: [ 82.45,  83.87]\n  high_vuln_fulfillment_pct      | Mean:  100.00 | StdDev:   0.00 | Range: [100.00, 100.00]\n  total_routing_distance_km      | Mean:   15.09 | StdDev:   9.32 | Range: [  8.30,  33.41]\n  mean_response_time_minutes     | Mean:   13.72 | StdDev:   6.90 | Range: [  6.60,  26.70]\n\nSaved to reports/multi_seed_statistical_report.csv and .json",
+      "stderr_tail": ""
+    },
+    {
+      "stage_id": 4,
+      "name": "Unit Tests: Water Balance Model",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe tests/unit/test_supply_model.py",
+      "status": "PASS",
+      "duration_seconds": 1.29,
+      "summary": "OK",
+      "stdout_tail": "",
+      "stderr_tail": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.000s\n\nOK"
+    },
+    {
+      "stage_id": 5,
+      "name": "Known-Answer Tests (KAT v2 & v3)",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe tests/known_answer/test_v3_equity_known_answers.py",
+      "status": "PASS",
+      "duration_seconds": 0.39,
+      "summary": "ALL V3.0 KNOWN-ANSWER TESTS PASSED.",
+      "stdout_tail": "======================================================================\nWATERFLOW OS \ufffd V3.0 EQUITY KNOWN-ANSWER TESTS\n======================================================================\nPASS: Hand-calculated known-answer test cases match v3.0 equity engine ground truth.\nPASS: Constrained allocation known-answer match ground truth.\nALL V3.0 KNOWN-ANSWER TESTS PASSED.",
+      "stderr_tail": ""
+    },
+    {
+      "stage_id": 6,
+      "name": "Mathematical Invariant Property Tests",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe tests/property/test_allocation_properties.py",
+      "status": "PASS",
+      "duration_seconds": 1.43,
+      "summary": "ALL 10 MATHEMATICAL INVARIANT PROPERTIES CONFIRMED.",
+      "stdout_tail": "onotonicity holds for all need factors\nPASS: Property 4 \ufffd Invariant to unrelated metadata\nPASS: Property 5 \ufffd Documented missing data fallback holds\nPASS: Property 6 \ufffd Zero unmet demand receives zero allocation\nPASS: Property 7 \ufffd Allocation bounded by individual unmet demand\nPASS: Properties 8 & 9 \ufffd Total allocation strictly bounded by available supply budget\nPASS: Property 10 \ufffd Total allocation monotonically non-decreasing with available supply\nALL 10 MATHEMATICAL INVARIANT PROPERTIES CONFIRMED.",
+      "stderr_tail": ""
+    },
+    {
+      "stage_id": 7,
+      "name": "12-Scenario Matrix Experiments",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe evaluation/scenario_framework.py",
+      "status": "PASS",
+      "duration_seconds": 0.89,
+      "summary": "Artifacts generated: reports/scenario_matrix_results.csv and .json",
+      "stdout_tail": ",000 L | Overall:  70.2% | High-Vuln: 100.0%\n  [I] Duplicate Complaint Surge        | Supply: 228,000 L | Overall:  79.2% | High-Vuln: 100.0%\n  [J] Critical Hospital Shortage       | Supply: 204,000 L | Overall:  64.4% | High-Vuln: 100.0%\n  [K] Multiple Tanker Failures         | Supply: 240,000 L | Overall:  83.3% | High-Vuln: 100.0%\n  [L] High-Demand Festival / Event     | Supply: 228,000 L | Overall:  63.3% | High-Vuln: 100.0%\n\nArtifacts generated: reports/scenario_matrix_results.csv and .json",
+      "stderr_tail": ""
+    },
+    {
+      "stage_id": 8,
+      "name": "Regression Test Matrix",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe tests/regression/test_regression.py",
+      "status": "PASS",
+      "duration_seconds": 1.28,
+      "summary": "ALL REGRESSION TESTS PASSED.",
+      "stdout_tail": "======================================================================\nWATERFLOW OS \ufffd REGRESSION TEST MATRIX\n======================================================================\nPASS: Regression 1 \ufffd Zero unmet demand receives zero allocation\nPASS: Regression 2 \ufffd Distance completely decoupled from need formula\nPASS: Regression 3 \ufffd Storage-aware delivery prevents tank overflow\nPASS: Regression 4 \ufffd Duplicate complaints filtered deterministically\nALL REGRESSION TESTS PASSED.",
+      "stderr_tail": ""
+    },
+    {
+      "stage_id": 9,
+      "name": "Demand Forecasting ML Validation",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe evaluation/demand_forecast.py",
+      "status": "PASS",
+      "duration_seconds": 2.67,
+      "summary": "  JSON: C:\\Users\\tiwar\\Downloads\\stitch_waterflow_os_municipal_operations_dashboard\\reports\\demand_forecast_comparison.json",
+      "stdout_tail": "67%\n  Model 1: Autoregressive Ridge Regressor    | MAE:    761.7 L | RMSE:   940.57 L | MAPE: 13.94% | Delta: -13.81%\n  Model 2: Random Forest Ensemble (50 trees) | MAE:   730.55 L | RMSE:   911.41 L | MAPE: 13.78% | Delta: -17.34%\n\nArtifacts generated:\n  CSV:  C:\\Users\\tiwar\\Downloads\\stitch_waterflow_os_municipal_operations_dashboard\\reports\\demand_forecast_comparison.csv\n  JSON: C:\\Users\\tiwar\\Downloads\\stitch_waterflow_os_municipal_operations_dashboard\\reports\\demand_forecast_comparison.json",
+      "stderr_tail": ""
+    },
+    {
+      "stage_id": 10,
+      "name": "Emergency Outage Classifier Validation",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe evaluation/emergency_prediction.py",
+      "status": "PASS",
+      "duration_seconds": 3.5,
+      "summary": "Artifacts saved to reports/emergency_prediction_metrics.csv and .json",
+      "stdout_tail": " Positive emergency rate: 31.3%\n\nEVALUATION RESULTS (Class Imbalance ~8-10%):\n  Baseline: Operational Rule Heuristic       | Prec: 0.616 | Rec: 0.398 | F1: 0.484 | ROC-AUC: 0.683 | PR-AUC: 0.544\n  Model 1: Balanced Logistic Regression      | Prec: 0.553 | Rec:  0.69 | F1: 0.614 | ROC-AUC: 0.794 | PR-AUC:  0.67\n  Model 2: Balanced Random Forest (100 trees) | Prec: 0.576 | Rec: 0.708 | F1: 0.635 | ROC-AUC: 0.788 | PR-AUC: 0.644\n\nArtifacts saved to reports/emergency_prediction_metrics.csv and .json",
+      "stderr_tail": ""
+    },
+    {
+      "stage_id": 11,
+      "name": "Multi-Dimensional Disparity & Fairness Audit",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe evaluation/disparity_testing.py",
+      "status": "PASS",
+      "duration_seconds": 1.15,
+      "summary": "Artifacts saved to reports/disparity_evaluation.csv and .json",
+      "stdout_tail": "Fulfillment:       41.0% | Unmet:   35,325 L\n    Disparity Delta:       +59.0%\n  LOW_VULNERABILITY (V < 0.40)\n    WaterFlow Fulfillment:   0.0% | Unmet:   42,894 L\n    FCFS Fulfillment:       47.7% | Unmet:   22,439 L\n    Disparity Delta:       -47.7%\n  MODERATE_VULNERABILITY (0.40 <= V < 0.70)\n    WaterFlow Fulfillment:  36.0% | Unmet:   97,123 L\n    FCFS Fulfillment:       45.8% | Unmet:   82,254 L\n    Disparity Delta:        -9.8%\n\nArtifacts saved to reports/disparity_evaluation.csv and .json",
+      "stderr_tail": ""
+    },
+    {
+      "stage_id": 12,
+      "name": "Fleet Logistics & Routing Experiments",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe evaluation/routing_experiments.py",
+      "status": "PASS",
+      "duration_seconds": 2.39,
+      "summary": "Artifacts saved to reports/routing_experiments.csv and .json",
+      "stdout_tail": "nutes)           | Base:     16.6 | Opt:     16.6 | Delta:   +0.0%\n  95th Percentile Response Time (minutes)  | Base:     56.5 | Opt:     52.7 | Delta:  +6.73%\n  Emergency Mean Delay (minutes)           | Base:     29.2 | Opt:     21.3 | Delta: +27.05%\n  Water Delivered (Liters)                 | Base:  56572.0 | Opt:  56642.0 | Delta:  +0.12%\n  Water Use Efficiency (%)                 | Base:    90.17 | Opt:    90.96 | Delta:  +0.79%\n\nArtifacts saved to reports/routing_experiments.csv and .json",
+      "stderr_tail": ""
+    },
+    {
+      "stage_id": 13,
+      "name": "Policy Weight Sensitivity Analysis",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe evaluation/sensitivity_upgrade.py",
+      "status": "PASS",
+      "duration_seconds": 1.46,
+      "summary": "Saved to reports/sensitivity_analysis_v3.csv and .json",
+      "stdout_tail": "        | High-Vuln: 100.0% | Gini: 0.549 | Unserved: 158,400 L\n  Policy B (High Unmet Demand)         | High-Vuln: 100.0% | Gini: 0.549 | Unserved: 158,400 L\n  Policy C (Balanced)                  | High-Vuln: 100.0% | Gini: 0.549 | Unserved: 158,400 L\n  Policy D (High Historical Deficit)   | High-Vuln: 100.0% | Gini: 0.549 | Unserved: 158,400 L\n  Policy E (Emergency & Lifeline Heavy) | High-Vuln: 100.0% | Gini: 0.549 | Unserved: 158,400 L\n\nSaved to reports/sensitivity_analysis_v3.csv and .json",
+      "stderr_tail": ""
+    },
+    {
+      "stage_id": 14,
+      "name": "Factor Group Ablation Study",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe evaluation/ablation.py",
+      "status": "PASS",
+      "duration_seconds": 3.25,
+      "summary": "Saved to reports/ablation_results.csv and .json",
+      "stdout_tail": "roup           | Rank Rho: 0.877 | High-Vuln:  50.0% | Critical: 100.0%\n  Minus Historical Service Deficit    | Rank Rho: 0.757 | High-Vuln: 100.0% | Critical: 100.0%\n  Minus Corroborated Complaints       | Rank Rho: 0.913 | High-Vuln:  80.0% | Critical: 100.0%\n  Minus Critical Facility Lifeline    | Rank Rho: 0.964 | High-Vuln: 100.0% | Critical:  50.0%\n  Minus Reliability Deficit           | Rank Rho: 0.923 | High-Vuln: 100.0% | Critical: 100.0%\n\nSaved to reports/ablation_results.csv and .json",
+      "stderr_tail": ""
+    },
+    {
+      "stage_id": 15,
+      "name": "Noise Robustness & Missing Data Fallbacks",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe tests/robustness/test_robustness.py",
+      "status": "PASS",
+      "duration_seconds": 0.65,
+      "summary": "ALL ROBUSTNESS TESTS PASSED.",
+      "stdout_tail": "======================================================================\nWATERFLOW OS \ufffd ROBUSTNESS & MISSING DATA TESTS\n======================================================================\nPASS: Noise robustness confirmed (Max score deviation: 1.24 points)\nPASS: Documented missing data fallbacks verified\nPASS: Routing completes gracefully under degraded GPS state\nPASS: Storage boundary conditions prevent over-delivery\nALL ROBUSTNESS TESTS PASSED.",
+      "stderr_tail": ""
+    },
+    {
+      "stage_id": 16,
+      "name": "Authoritative FastAPI Engine Tests",
+      "command": "C:\\Users\\tiwar\\AppData\\Local\\Programs\\Python\\Python313\\python.exe tests/integration/test_pipeline.py",
+      "status": "PASS",
+      "duration_seconds": 2.01,
+      "summary": "OK",
+      "stdout_tail": "",
+      "stderr_tail": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.063s\n\nOK"
+    },
+    {
+      "stage_id": 17,
+      "name": "Production Frontend Bundle Build",
+      "command": "cmd /c npm --prefix frontend run build",
+      "status": "PASS",
+      "duration_seconds": 2.01,
+      "summary": "\u001b[32m\u2713 built in 698ms\u001b[39m",
+      "stdout_tail": "> frontend@0.0.0 build\n> vite build\n\n\u001b[36mvite v8.3.0 \u001b[32mbuilding client environment for production...\u001b[36m\u001b[39m\ntransforming...\n\u2713 1934 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   1.54 kB \u2502 gzip:   0.74 kB\ndist/assets/index-BaEGfQqE.css   93.93 kB \u2502 gzip:  19.46 kB\ndist/assets/index-s6WTIvUq.js   618.66 kB \u2502 gzip: 169.95 kB\n\n\u001b[32m\u2713 built in 698ms\u001b[39m",
+      "stderr_tail": "\u001b[33m[plugin builtin:vite-reporter] \n(!) Some chunks are larger than 500 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\u001b[39m"
+    }
+  ]
+}

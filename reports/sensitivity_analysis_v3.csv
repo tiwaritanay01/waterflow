@@ -1,0 +1,6 @@
+policy_name,total_allocated_liters,unserved_demand_liters,overall_fulfillment_pct,high_vuln_fulfillment_pct,allocation_gini_concentration
+Policy A (High Vulnerability),129600.0,158400.0,45.0,100.0,0.549
+Policy B (High Unmet Demand),129600.0,158400.0,45.0,100.0,0.549
+Policy C (Balanced),129600.0,158400.0,45.0,100.0,0.549
+Policy D (High Historical Deficit),129600.0,158400.0,45.0,100.0,0.549
+Policy E (Emergency & Lifeline Heavy),129600.0,158400.0,45.0,100.0,0.549

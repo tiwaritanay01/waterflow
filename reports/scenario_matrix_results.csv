@@ -1,0 +1,13 @@
+scenario_id,scenario_name,supply_factor,demand_factor,available_relief_supply_l,total_unmet_demand_l,total_allocated_l,overall_fulfillment_pct,high_vuln_fulfillment_pct,unserved_demand_l,emergency_handled
+A,Normal Monsoon,1.0,1.0,240000.0,288000.0,240000.0,83.3,100.0,48000.0,False
+B,Delayed Monsoon,0.75,1.15,180000.0,331200.0,180000.0,54.3,100.0,151200.0,False
+C,Severe Heatwave,0.85,1.3,204000.0,374400.0,204000.0,54.5,100.0,170400.0,False
+D,Reservoir Shortage,0.6,1.0,144000.0,288000.0,144000.0,50.0,100.0,144000.0,False
+E,Groundwater Restriction,0.9,1.1,216000.0,316800.0,216000.0,68.2,100.0,100800.0,False
+F,Major Pipe Failure,0.7,1.2,168000.0,345600.0,168000.0,48.6,100.0,177600.0,True
+G,Power / Pumping Failure,0.65,1.05,156000.0,302400.0,156000.0,51.6,100.0,146400.0,True
+H,Extreme Rainfall / Flood Disruption,0.8,0.95,192000.0,273600.0,192000.0,70.2,100.0,81600.0,True
+I,Duplicate Complaint Surge,0.95,1.0,228000.0,288000.0,228000.0,79.2,100.0,60000.0,False
+J,Critical Hospital Shortage,0.85,1.1,204000.0,316800.0,204000.0,64.4,100.0,112800.0,True
+K,Multiple Tanker Failures,1.0,1.0,240000.0,288000.0,240000.0,83.3,100.0,48000.0,False
+L,High-Demand Festival / Event,0.95,1.25,228000.0,360000.0,228000.0,63.3,100.0,132000.0,True

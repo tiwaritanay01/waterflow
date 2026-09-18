@@ -1,0 +1,5 @@
+model_name,model_family,mae_liters,rmse_liters,mape_pct,vs_baseline_pct
+Baseline 1: Naive Previous-Day (y_{t-1}),HEURISTIC_PERSISTENCE,883.79,1085.02,16.44,0.0
+Baseline 2: 7-Day Rolling Mean,STATISTICAL_ROLLING,824.81,1118.35,13.97,-6.67
+Model 1: Autoregressive Ridge Regressor,MACHINE_LEARNING_LINEAR,761.7,940.57,13.94,-13.81
+Model 2: Random Forest Ensemble (50 trees),MACHINE_LEARNING_TREE,730.55,911.41,13.78,-17.34

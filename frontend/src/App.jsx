@@ -9,6 +9,7 @@ import {
   Search,
   Clock,
   ShieldAlert,
+  ShieldCheck,
   Bell,
   Droplet,
   Smartphone,
@@ -27,6 +28,7 @@ import CitizenApp from "./components/CitizenApp";
 import WorkerApp from "./components/WorkerApp";
 import LandingPage from "./components/LandingPage";
 import LoginPage from "./components/LoginPage";
+import EvidencePanelModal from "./components/EvidencePanelModal";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
 const API_URL = "http://localhost:3001";
@@ -63,6 +65,7 @@ function AppContent() {
   const [serviceBalance, setServiceBalance] = useState([]);
   const [unmetStats, setUnmetStats] = useState(null);
   const [provenanceTag, setProvenanceTag] = useState("SYNTHETIC_SEEDED");
+  const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
 
   // Automatically synchronize view and portal mode when user is logged in
   useEffect(() => {
@@ -282,6 +285,14 @@ function AppContent() {
             </span>
           </div>
 
+          <button
+            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold hover:bg-blue-100 transition-colors shadow-2xs"
+            onClick={() => setIsEvidenceModalOpen(true)}
+            title="Inspect Data Provenance, Policy Weights & Algorithmic Methodology"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+            <span className="hidden lg:inline">Evidence & Methodology</span>
+          </button>
           <button
             className="flex items-center space-x-1 px-2 py-1 rounded-lg bg-red-50 border border-red-200 text-crit-red text-xs font-bold hover:bg-red-100 transition-colors"
             onClick={() => setActiveTab("alerts")}
@@ -848,6 +859,7 @@ function AppContent() {
           </div>
         </main>
       </div>
+      <EvidencePanelModal isOpen={isEvidenceModalOpen} onClose={() => setIsEvidenceModalOpen(false)} />
     </div>
   );
 }

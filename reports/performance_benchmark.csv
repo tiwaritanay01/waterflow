@@ -1,0 +1,6 @@
+request_count,scoring_duration_ms,allocation_duration_ms,total_execution_ms,latency_per_request_microseconds,throughput_requests_per_sec
+100,5.4,0.21,5.61,56.06,17838.0
+500,32.8,1.31,34.11,68.21,14660.3
+1000,52.32,8.13,60.45,60.45,16543.1
+5000,337.58,13.93,351.51,70.3,14224.3
+10000,567.89,49.24,617.14,61.71,16203.9

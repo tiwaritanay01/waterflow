@@ -1,0 +1,58 @@
+{
+  "ablation_experiments": [
+    {
+      "experiment_name": "Full Model (v3.0.0-research)",
+      "ablated_factor": "NONE",
+      "spearman_rank_correlation": 1.0,
+      "high_vuln_fulfillment_pct": 100.0,
+      "critical_facility_fulfillment_pct": 100.0,
+      "total_allocated_liters": 115200.0,
+      "interpretation": "Ablating NONE causes rank correlation rho=1.00"
+    },
+    {
+      "experiment_name": "Minus Vulnerability Group",
+      "ablated_factor": "vulnerability",
+      "spearman_rank_correlation": 0.877,
+      "high_vuln_fulfillment_pct": 50.0,
+      "critical_facility_fulfillment_pct": 100.0,
+      "total_allocated_liters": 115200.0,
+      "interpretation": "Ablating vulnerability causes rank correlation rho=0.88"
+    },
+    {
+      "experiment_name": "Minus Historical Service Deficit",
+      "ablated_factor": "historical_deficit",
+      "spearman_rank_correlation": 0.757,
+      "high_vuln_fulfillment_pct": 100.0,
+      "critical_facility_fulfillment_pct": 100.0,
+      "total_allocated_liters": 115200.0,
+      "interpretation": "Ablating historical_deficit causes rank correlation rho=0.76"
+    },
+    {
+      "experiment_name": "Minus Corroborated Complaints",
+      "ablated_factor": "complaint_evidence",
+      "spearman_rank_correlation": 0.913,
+      "high_vuln_fulfillment_pct": 80.0,
+      "critical_facility_fulfillment_pct": 100.0,
+      "total_allocated_liters": 115200.0,
+      "interpretation": "Ablating complaint_evidence causes rank correlation rho=0.91"
+    },
+    {
+      "experiment_name": "Minus Critical Facility Lifeline",
+      "ablated_factor": "critical_facility",
+      "spearman_rank_correlation": 0.964,
+      "high_vuln_fulfillment_pct": 100.0,
+      "critical_facility_fulfillment_pct": 50.0,
+      "total_allocated_liters": 115200.0,
+      "interpretation": "Ablating critical_facility causes rank correlation rho=0.96"
+    },
+    {
+      "experiment_name": "Minus Reliability Deficit",
+      "ablated_factor": "reliability_deficit",
+      "spearman_rank_correlation": 0.923,
+      "high_vuln_fulfillment_pct": 100.0,
+      "critical_facility_fulfillment_pct": 100.0,
+      "total_allocated_liters": 115200.0,
+      "interpretation": "Ablating reliability_deficit causes rank correlation rho=0.92"
+    }
+  ]
+}

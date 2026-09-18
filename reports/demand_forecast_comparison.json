@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "dataset_split": {
+    "total_samples": 792,
+    "train_samples": 624,
+    "test_samples": 168,
+    "test_period_days": 7,
+    "test_start_date": "2026-09-11",
+    "leakage_audited": true
+  },
+  "models_evaluated": [
+    {
+      "model_name": "Baseline 1: Naive Previous-Day (y_{t-1})",
+      "model_family": "HEURISTIC_PERSISTENCE",
+      "mae_liters": 883.79,
+      "rmse_liters": 1085.02,
+      "mape_pct": 16.44,
+      "vs_baseline_pct": 0.0
+    },
+    {
+      "model_name": "Baseline 2: 7-Day Rolling Mean",
+      "model_family": "STATISTICAL_ROLLING",
+      "mae_liters": 824.81,
+      "rmse_liters": 1118.35,
+      "mape_pct": 13.97,
+      "vs_baseline_pct": -6.67
+    },
+    {
+      "model_name": "Model 1: Autoregressive Ridge Regressor",
+      "model_family": "MACHINE_LEARNING_LINEAR",
+      "mae_liters": 761.7,
+      "rmse_liters": 940.57,
+      "mape_pct": 13.94,
+      "vs_baseline_pct": -13.81
+    },
+    {
+      "model_name": "Model 2: Random Forest Ensemble (50 trees)",
+      "model_family": "MACHINE_LEARNING_TREE",
+      "mae_liters": 730.55,
+      "rmse_liters": 911.41,
+      "mape_pct": 13.78,
+      "vs_baseline_pct": -17.34
+    }
+  ]
+}

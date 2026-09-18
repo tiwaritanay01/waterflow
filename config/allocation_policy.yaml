@@ -1,21 +1,55 @@
-policy_version: "2.4.0-hardened"
-policy_name: "BMC Municipal Equity Allocation Policy"
+policy_version: "3.0.0-research"
+policy_name: "BMC Municipal Need-Based Equity Allocation Policy"
 last_updated: "2026-09-18"
-framework: "Explainable Multi-Criteria Allocation Model (Non-ML)"
+framework: "Decoupled Multi-Criteria Service Deficit Model"
+
+factors:
+  vulnerability:
+    symbol: "V"
+    name: "Socio-Spatial Vulnerability Index"
+    description: "Physical infrastructure deficit proxy (slum share, lack of piped connection). No demographic identity variables."
+    default_weight: 0.25
+  unmet_demand:
+    symbol: "U"
+    name: "Normalized Unmet Demand Ratio"
+    description: "Ratio of daily required demand unsatisfied by primary piped distribution."
+    default_weight: 0.25
+  historical_deficit:
+    symbol: "H"
+    name: "Historical Service Deficit"
+    description: "Cumulative supply deficit ratio over trailing 14-day window."
+    default_weight: 0.20
+  reliability_deficit:
+    symbol: "R"
+    name: "Service Reliability Deficit"
+    description: "Frequency of pipe-dry events and delivery failures (1 - delivery_reliability)."
+    default_weight: 0.10
+  complaint_evidence:
+    symbol: "C"
+    name: "Corroborated Complaint Evidence"
+    description: "Deduplicated, velocity-weighted citizen complaint signal."
+    default_weight: 0.10
+  critical_facility:
+    symbol: "F"
+    name: "Critical Facility Requirement"
+    description: "Urgent lifeline facility reserve deficit (hospitals, dialysis centers, schools)."
+    default_weight: 0.10
 
 weights:
-  vulnerability: 0.30
+  vulnerability: 0.25
   unmet_demand: 0.25
-  population: 0.20
-  historical_deficit: 0.15
-  depot_distance: 0.10
+  historical_deficit: 0.20
+  reliability_deficit: 0.10
+  complaint_evidence: 0.10
+  critical_facility: 0.10
 
 normalization:
-  max_dry_pipe_hours: 72.0
-  max_population_reference: 1000000.0  # 1 Million residents (scaled for Mumbai mega-wards)
-  max_depot_distance_km: 20.0          # Maximum transit radius in MCGM jurisdiction
   vulnerability_scale: [0.0, 1.0]
+  unmet_demand_max_liters: 25000.0
   historical_deficit_scale: [0.0, 1.0]
+  reliability_deficit_scale: [0.0, 1.0]
+  complaint_evidence_max_score: 10.0
+  critical_facility_scale: [0.0, 1.0]
 
 tier_thresholds:
   tier_1_critical: 75.0
@@ -23,15 +57,33 @@ tier_thresholds:
   tier_3_moderate: 35.0
   tier_4_nominal: 0.0
 
+missing_data_policy:
+  vulnerability: "ward_median_imputation"
+  unmet_demand: "conservative_scenario_default"
+  historical_deficit: "neutral_default_0.5"
+  reliability_deficit: "neutral_default_0.5"
+  complaint_evidence: "zero_evidence"
+  critical_facility: "zero_facility"
+
 constraints:
   allocation_non_negative: true
   allocation_not_above_unmet_demand: true
   total_allocation_not_above_available_water: true
   tanker_load_not_above_capacity: true
-  require_valid_route: true
+  zero_unmet_demand_prevents_allocation: true
+  storage_aware_clamping: true
+
+emergency_override_policy:
+  allow_preemptive_override: true
+  critical_triggers:
+    - "contamination_incident"
+    - "hospital_reserve_under_4_hours"
+    - "severe_aqueduct_burst"
+  override_action: "immediate_rank_1_dispatch"
+  audit_logging_required: true
 
 routing_policy:
-  solver: "Google OR-Tools CVRP (with Greedy Capacity Fallback)"
-  max_search_seconds: 5
+  separate_from_need: true
+  solver: "Constrained Vehicle Routing (CVRP with greedy heuristic fallback)"
   depot_node_id: 0
-  allow_drop_nodes_penalty: 100000
+  objective: "minimize_travel_time_and_delay"
