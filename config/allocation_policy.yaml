@@ -1,0 +1,37 @@
+policy_version: "2.4.0-hardened"
+policy_name: "BMC Municipal Equity Allocation Policy"
+last_updated: "2026-09-18"
+framework: "Explainable Multi-Criteria Allocation Model (Non-ML)"
+
+weights:
+  vulnerability: 0.30
+  unmet_demand: 0.25
+  population: 0.20
+  historical_deficit: 0.15
+  depot_distance: 0.10
+
+normalization:
+  max_dry_pipe_hours: 72.0
+  max_population_reference: 1000000.0  # 1 Million residents (scaled for Mumbai mega-wards)
+  max_depot_distance_km: 20.0          # Maximum transit radius in MCGM jurisdiction
+  vulnerability_scale: [0.0, 1.0]
+  historical_deficit_scale: [0.0, 1.0]
+
+tier_thresholds:
+  tier_1_critical: 75.0
+  tier_2_elevated: 55.0
+  tier_3_moderate: 35.0
+  tier_4_nominal: 0.0
+
+constraints:
+  allocation_non_negative: true
+  allocation_not_above_unmet_demand: true
+  total_allocation_not_above_available_water: true
+  tanker_load_not_above_capacity: true
+  require_valid_route: true
+
+routing_policy:
+  solver: "Google OR-Tools CVRP (with Greedy Capacity Fallback)"
+  max_search_seconds: 5
+  depot_node_id: 0
+  allow_drop_nodes_penalty: 100000

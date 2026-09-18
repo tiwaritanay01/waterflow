@@ -1,0 +1,6 @@
+profile_id,profile_name,vuln_weight,unmet_demand_weight,vulnerable_coverage_pct,equity_index_sei,unmet_demand_liters,total_travel_km,top_ranked_ward
+POLICY_A_EQUAL,Equal Weighting Profile,0.2,0.2,29.18%,4.44,106800,188.23,L (66.9 pts)
+POLICY_B_VULNERABILITY_CENTRIC,Pro-Poor / Slum Priority Profile,0.5,0.2,29.18%,3.01,106800,162.67,M/E (72.3 pts)
+POLICY_C_ACUTE_OUTAGE_CENTRIC,Dry Pipe Emergency Response Profile,0.2,0.5,29.18%,3.21,106800,166.88,M/E (67.4 pts)
+POLICY_D_BMC_BALANCED,Default BMC Balanced Municipal Policy (Canonical),0.3,0.25,29.18%,4.0,106800,165.05,M/E (70.4 pts)
+POLICY_E_LOGISTICS_CONSERVATIVE,Transit Distance Conservative Profile,0.2,0.2,29.18%,4.21,106800,199.8,G/N (67.0 pts)

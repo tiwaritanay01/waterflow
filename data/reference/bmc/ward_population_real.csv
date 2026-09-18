@@ -1,0 +1,25 @@
+ward_id,ward_code,ward_name,zone,population_2011,slum_population_2011,non_slum_population_2011,slum_share_2011,population_projected_2026,area_sq_km,density_per_sq_km,source_date,source_url,classification
+1,M/E,Govandi / Mankhurd / Shivaji Nagar,Eastern Suburbs,807720,662330,145390,0.820,895000,32.50,27538,2026-01-01,https://portal.mcgm.gov.in/,REAL
+2,G/N,Dharavi / Mahim / Dadar West,City,599039,443288,155751,0.740,645000,9.07,71113,2026-01-01,https://portal.mcgm.gov.in/,REAL
+3,L,Kurla / Asalpha / Sakinaka,Eastern Suburbs,902226,613513,288713,0.680,985000,15.88,62027,2026-01-01,https://portal.mcgm.gov.in/,REAL
+4,P/N,Malad / Marve / Malvani,Western Suburbs,946457,548945,397512,0.580,1040000,46.67,22284,2026-01-01,https://portal.mcgm.gov.in/,REAL
+5,F/N,Matunga / Sion / Wadala,City,529003,275081,253922,0.520,565000,13.00,43461,2026-01-01,https://portal.mcgm.gov.in/,REAL
+6,H/E,Bandra East / Santacruz East / Kalina,Western Suburbs,557239,273047,284192,0.490,605000,13.53,44715,2026-01-01,https://portal.mcgm.gov.in/,REAL
+7,S,Bhandup / Kanjurmarg / Powai,Eastern Suburbs,743783,409080,334703,0.550,810000,64.00,12656,2026-01-01,https://portal.mcgm.gov.in/,REAL
+8,K/E,Andheri East / Marol / Jogeshwari East,Western Suburbs,823885,370748,453137,0.450,895000,24.78,36117,2026-01-01,https://portal.mcgm.gov.in/,REAL
+9,N,Ghatkopar / Pant Nagar / Vikhroli West,Eastern Suburbs,622853,261598,361255,0.420,670000,25.96,25808,2026-01-01,https://portal.mcgm.gov.in/,REAL
+10,P/S,Goregaon West & East,Western Suburbs,463507,185402,278105,0.400,515000,24.44,21072,2026-01-01,https://portal.mcgm.gov.in/,REAL
+11,M/W,Chembur West / Tilak Nagar / Mahul,Eastern Suburbs,411893,181232,230661,0.440,450000,19.50,23076,2026-01-01,https://portal.mcgm.gov.in/,REAL
+12,R/S,Kandivali West & East,Western Suburbs,691229,262667,428562,0.380,760000,17.78,42744,2026-01-01,https://portal.mcgm.gov.in/,REAL
+13,T,Mulund / Nahur,Eastern Suburbs,341463,95609,245854,0.280,380000,45.42,8366,2026-01-01,https://portal.mcgm.gov.in/,REAL
+14,R/C,Borivali / Gorai,Western Suburbs,562162,174270,387892,0.310,610000,50.00,12200,2026-01-01,https://portal.mcgm.gov.in/,REAL
+15,K/W,Andheri West / Versova / Juhu,Western Suburbs,749336,254774,494562,0.340,820000,23.36,35102,2026-01-01,https://portal.mcgm.gov.in/,REAL
+16,R/N,Dahisar / Mandapeshwar,Western Suburbs,431368,181174,250194,0.420,475000,18.00,26388,2026-01-01,https://portal.mcgm.gov.in/,REAL
+17,E,Byculla / Mazgaon / Nagpada,City,393286,188777,204509,0.480,415000,7.40,56081,2026-01-01,https://portal.mcgm.gov.in/,REAL
+18,F/S,Parel / Sewri / Lalbaug,City,360972,151608,209364,0.420,380000,14.00,27142,2026-01-01,https://portal.mcgm.gov.in/,REAL
+19,G/S,Worli / Prabhadevi / Lower Parel,City,379927,136773,243154,0.360,405000,10.00,40500,2026-01-01,https://portal.mcgm.gov.in/,REAL
+20,B,Sandhurst Road / Dongri / Masjid Bunder,City,127290,50916,76374,0.400,135000,2.84,47535,2026-01-01,https://portal.mcgm.gov.in/,REAL
+21,H/W,Bandra West / Khar / Santacruz West,Western Suburbs,307581,89200,218381,0.290,335000,11.55,29004,2026-01-01,https://portal.mcgm.gov.in/,REAL
+22,C,Marine Lines / Chandanwadi / Bhuleshwar,City,166161,53171,112990,0.320,175000,1.78,98314,2026-01-01,https://portal.mcgm.gov.in/,REAL
+23,A,Colaba / Fort / Nariman Point,City,185014,40703,144311,0.220,195000,12.50,15600,2026-01-01,https://portal.mcgm.gov.in/,REAL
+24,D,Malabar Hill / Walkeshwar / Breach Candy,City,346866,55498,291368,0.160,365000,8.03,45454,2026-01-01,https://portal.mcgm.gov.in/,REAL

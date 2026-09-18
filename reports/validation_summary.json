@@ -1,0 +1,68 @@
+{
+  "timestamp": "2026-09-18T11:12:36.107384+00:00",
+  "overall_status": "PASS",
+  "duration_seconds": 10.18,
+  "total_suites": 8,
+  "passed_suites": 8,
+  "failed_suites": 0,
+  "policy_version": "2.4.0-hardened",
+  "random_seed": 42,
+  "synthetic_data_hashes": {
+    "complaints.csv": "70d25365c93ca392dadc79b58800d18f",
+    "daily_water_balance.csv": "6553c29248af681e0bee5713462793b0",
+    "demand_history.csv": "a3b0faa93a9f4341493ac5a91cfec4fd",
+    "requests.csv": "38e94178dc5295f8a806ec87b30a9de4",
+    "service_history.csv": "5099355faf780d103b61f8f380357fe9",
+    "tankers.csv": "265b2aba80265a8f1184211a613a0ef9"
+  },
+  "suites": [
+    {
+      "name": "Known-Answer Tests",
+      "script": "tests/known_answer/test_known_answer.py",
+      "status": "PASS",
+      "details": "PASS: Known-Answer Priority Scores match hand-calculated ground truth.\nPASS: Known-Answer Allocations match constrained ground truth.\nPASS: Anti-FCFS inversion test confirms vulnerable protection under WaterFlow.\nALL KNOWN-ANSWER TESTS PASSED."
+    },
+    {
+      "name": "Mathematical Invariant Tests",
+      "script": "tests/property/test_invariants.py",
+      "status": "PASS",
+      "details": "PASS: Invariant 1 (0 <= priority <= 100)\nPASS: Invariants 2 & 3 (0 <= allocation <= unmet_demand)\nPASS: Invariant 4 (total allocation <= available water)\nPASS: Invariant 5 (tanker load <= tanker capacity)\nPASS: Invariant 6 (policy weights sum to 1.0)\nPASS: Invariant 7 (monotonicity in vulnerability)\nPASS: Invariant 8 (monotonicity in dry pipe hours)\nPASS: Invariant 9 (monotonicity in historical deficit)\nPASS: Invariant 10 (non-increasing allocation with decreasing supply)\nPASS: Invariant 11 (zero demand yields zero allocation)\nPASS: Invariant 12 (priority dominates arrival timestamp)\nPASS: Invariant 13 (deterministic deduplication keying)\nALL 13 MATHEMATICAL INVARIANT TESTS PASSED."
+    },
+    {
+      "name": "Operational Scenario Tests",
+      "script": "tests/scenarios/test_scenarios.py",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Pipeline Integration Tests",
+      "script": "tests/integration/test_pipeline.py",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Demand Forecast Validation",
+      "script": "evaluation/forecast_validation.py",
+      "status": "PASS",
+      "details": "=== Chronological Demand Forecast Validation Results ===\nNaive Previous-Day:   MAE = 4,224.0 L | RMSE = 5,258.9 L\n7-Day Rolling Mean:   MAE = 7,377.8 L | RMSE = 10,268.0 L\nML Predictive Model:  MAE = 3,099.2 L | RMSE = 4,014.2 L"
+    },
+    {
+      "name": "WaterFlow Benchmark",
+      "script": "evaluation/waterflow_benchmark.py",
+      "status": "PASS",
+      "details": "\u2705 Benchmark completed successfully. Saved to reports\\benchmark_results.json and reports\\benchmark_results.csv"
+    },
+    {
+      "name": "Sensitivity Analysis",
+      "script": "evaluation/sensitivity.py",
+      "status": "PASS",
+      "details": "\u2705 Sensitivity analysis completed across 5 policy families.\n   Outputs: reports\\sensitivity_analysis.json and reports\\sensitivity_analysis.csv"
+    },
+    {
+      "name": "Deterministic Reproducibility Check",
+      "script": "scripts/generate_benchmark_data.py (double-run seed 42)",
+      "status": "PASS",
+      "details": "Verified 6 dataset checksums are identical."
+    }
+  ]
+}

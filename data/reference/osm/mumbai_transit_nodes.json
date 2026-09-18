@@ -1,0 +1,88 @@
+{
+  "source": "OpenStreetMap Contributors",
+  "license": "Open Database License (ODbL) 1.0",
+  "attribution": "© OpenStreetMap contributors",
+  "source_url": "https://www.openstreetmap.org/copyright",
+  "classification": "REAL_REFERENCE",
+  "geographic_extent": "Greater Mumbai (MCGM Jurisdiction, 18.89°N to 19.30°N, 72.77°E to 72.98°E)",
+  "depot_nodes": [
+    {
+      "node_id": "DEPOT-01",
+      "name": "Bhandup Master Treatment Plant",
+      "type": "Primary Mega Treatment Plant",
+      "capacity_liters": 450000,
+      "lat": 19.1480,
+      "lng": 72.9350,
+      "osm_feature": "amenity=water_works"
+    },
+    {
+      "node_id": "DEPOT-02",
+      "name": "Veravali High Reservoir Depot",
+      "type": "Suburban Booster Reservoir",
+      "capacity_liters": 220000,
+      "lat": 19.1290,
+      "lng": 72.8680,
+      "osm_feature": "man_made=storage_tank"
+    },
+    {
+      "node_id": "DEPOT-03",
+      "name": "Dadar Pumping & Dispatch Station",
+      "type": "City Division Pumping Station",
+      "capacity_liters": 180000,
+      "lat": 19.0180,
+      "lng": 72.8420,
+      "osm_feature": "amenity=pumping_station"
+    },
+    {
+      "node_id": "DEPOT-04",
+      "name": "Trombay High Level Reservoir",
+      "type": "Eastern Sector Reservoir",
+      "capacity_liters": 150000,
+      "lat": 19.0350,
+      "lng": 72.9150,
+      "osm_feature": "man_made=reservoir_covered"
+    }
+  ],
+  "monsoon_bottleneck_nodes": [
+    {
+      "node_id": "FL-01",
+      "name": "Hindmata Junction (Dadar)",
+      "lat": 19.0142,
+      "lng": 72.8428,
+      "osm_feature": "highway=traffic_signals",
+      "risk_profile": "Chronic tidal lowlands depression"
+    },
+    {
+      "node_id": "FL-02",
+      "name": "Milan Subway (Santacruz)",
+      "lat": 19.0815,
+      "lng": 72.8415,
+      "osm_feature": "tunnel=yes;highway=secondary",
+      "risk_profile": "Under-rail subway waterlogging"
+    },
+    {
+      "node_id": "FL-03",
+      "name": "Andheri Subway (S.V. Road)",
+      "lat": 19.1197,
+      "lng": 72.8464,
+      "osm_feature": "tunnel=yes;highway=secondary",
+      "risk_profile": "Western express rail crossing sump"
+    },
+    {
+      "node_id": "FL-04",
+      "name": "Kurla Depot Lowlands (LBS Marg)",
+      "lat": 19.0652,
+      "lng": 72.8790,
+      "osm_feature": "highway=primary",
+      "risk_profile": "Mithi river backflow corridor"
+    },
+    {
+      "node_id": "FL-05",
+      "name": "Sion Circle / Gandhi Market",
+      "lat": 19.0365,
+      "lng": 72.8612,
+      "osm_feature": "highway=primary",
+      "risk_profile": "Highway intersection depression"
+    }
+  ]
+}

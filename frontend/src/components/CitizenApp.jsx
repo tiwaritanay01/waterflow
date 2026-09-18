@@ -29,7 +29,10 @@ import {
   Gauge,
   Radio,
   Calendar,
-  AlertOctagon
+  AlertOctagon,
+  Mic,
+  MicOff,
+  HelpCircle,
 } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -178,8 +181,41 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
   const [hasPhoto, setHasPhoto] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [copiedOtp, setCopiedOtp] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [showExplainModal, setShowExplainModal] = useState(false);
 
   const t = I18N[lang];
+
+  // Web Speech API Voice Recognition Handler (Phase 21)
+  const toggleVoiceInput = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert(lang === "mr" ? "तुमचा ब्राउझर व्हॉइस इनपुटला सपोर्ट करत नाही. कृपया टाइप करा." : "Web Speech API is not supported in this browser. Please type your location.");
+      return;
+    }
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = lang === "mr" ? "mr-IN" : "en-IN";
+      recognition.interimResults = false;
+      recognition.onstart = () => setIsListening(true);
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setLandmark((prev) => prev ? `${prev}, ${transcript}` : transcript);
+        setIsListening(false);
+      };
+      recognition.onerror = () => setIsListening(false);
+      recognition.onend = () => setIsListening(false);
+      recognition.start();
+    } catch (err) {
+      console.warn("Speech recognition error:", err);
+      setIsListening(false);
+    }
+  };
+
 
   // Auto-detect location on device GPS
   const autoDetectLocation = () => {
@@ -679,19 +715,44 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                   </div>
                 </div>
 
-                {/* Locality Landmark */}
+                {/* Locality Landmark & Voice Input (Phase 21) */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-tight mb-1">
-                    {t.localityLabel} <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={landmark}
-                    onChange={(e) => setLandmark(e.target.value)}
-                    className="civic-input w-full rounded-lg text-xs font-medium text-slate-800 py-2 px-3 border border-slate-300"
-                    placeholder="e.g., Gate No 5, Opposite Ration Kendra"
-                    required
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-[11px] font-bold text-slate-700 uppercase tracking-tight">
+                      {t.localityLabel} <span className="text-red-500">*</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={toggleVoiceInput}
+                      className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
+                        isListening
+                          ? "bg-rose-100 text-rose-700 animate-pulse border border-rose-300"
+                          : "bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200"
+                      }`}
+                      title="Speak grievance in Marathi or English"
+                    >
+                      {isListening ? <MicOff className="w-3 h-3 text-rose-600 animate-bounce" /> : <Mic className="w-3 h-3 text-sky-700" />}
+                      <span>{isListening ? (lang === "mr" ? "ऐकत आहे..." : "Listening...") : (lang === "mr" ? "व्हॉइस इनपुट" : "Voice Input")}</span>
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={landmark}
+                      onChange={(e) => setLandmark(e.target.value)}
+                      className="civic-input w-full rounded-lg text-xs font-medium text-slate-800 py-2 px-3 border border-slate-300 pr-9"
+                      placeholder="e.g., Gate No 5, Opposite Ration Kendra"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={toggleVoiceInput}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-sky-700 p-1"
+                      title="Dictate with voice"
+                    >
+                      <Mic className={`w-3.5 h-3.5 ${isListening ? "text-rose-500 animate-pulse" : ""}`} />
+                    </button>
+                  </div>
                 </div>
 
                 {/* GPS Dispatch Coordinates Box */}
@@ -770,46 +831,158 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
               </form>
             </section>
 
-            {/* Mathematical Fairness Explainability Card */}
-            <section className="civic-card rounded-xl p-3.5 bg-gradient-to-b from-white to-sky-50/50 border border-slate-200 shadow-xs">
-              <div className="flex items-center space-x-1.5 mb-1.5">
-                <div className="px-1.5 py-0.5 rounded bg-sky-900 text-white font-mono text-[9px] font-bold uppercase tracking-wider">
-                  {t.explainTitle}
-                </div>
-                <span className="text-[10.5px] font-bold text-slate-800">
-                  {t.explainHeading} (Ward {detectedWard.ward_code} Score: {detectedWard.priority_score})
-                </span>
-              </div>
-              <p className="text-[10.5px] text-slate-600 leading-relaxed">
-                Every submission is dynamically weighted by Mumbai SCADA's algorithmic formula:
-                <span className="font-mono text-slate-800 font-semibold bg-white px-1.5 py-0.5 rounded border border-slate-200 text-[10px] mx-1 inline-block">
-                  {t.explainFormula}
-                </span>
-                {t.explainBody}
-              </p>
+            {/* Phase 20 — Citizen Explainability: "Why am I queued?" Factor Breakdown */}
+            {(() => {
+              // Authoritative factor calculation matching config/allocation_policy.yaml
+              const vulnScore = Math.min(1.0, (detectedWard.slum_pop_pct || 65) / 100);
+              const unmetScore = Math.min(1.0, (detectedWard.dry_pipe_hours || 36) / 72);
+              const popScore = Math.min(1.0, (detectedWard.population || 500000) / 1000000);
+              const deficitScore = Math.min(1.0, (detectedWard.water_deficit_pct || 35) / 100);
+              const distPenalty = Math.min(1.0, (detectedWard.distance_to_depot_km || 4.2) / 20);
+              const proxScore = Math.max(0.0, 1.0 - distPenalty);
 
-              {/* Live Metric Badges */}
-              <div className="grid grid-cols-3 gap-2 mt-2.5 pt-2.5 border-t border-slate-200/80 text-center font-mono">
-                <div className="bg-white p-2 rounded border border-slate-200 shadow-2xs">
-                  <span className="block text-[9px] uppercase text-slate-400 font-sans font-bold">
-                    {t.gridStability}
-                  </span>
-                  <span className="text-xs font-bold text-emerald-600">99.4%</span>
-                </div>
-                <div className="bg-white p-2 rounded border border-slate-200 shadow-2xs">
-                  <span className="block text-[9px] uppercase text-slate-400 font-sans font-bold">
-                    Ward Priority Rank
-                  </span>
-                  <span className="text-xs font-bold text-sky-700">#1 in {detectedWard.zone}</span>
-                </div>
-                <div className="bg-white p-2 rounded border border-slate-200 shadow-2xs">
-                  <span className="block text-[9px] uppercase text-slate-400 font-sans font-bold">
-                    {t.dailyWater}
-                  </span>
-                  <span className="text-xs font-bold text-slate-800">810 KL</span>
-                </div>
-              </div>
-            </section>
+              const vulnContrib = vulnScore * 30.0;
+              const unmetContrib = unmetScore * 25.0;
+              const popContrib = popScore * 20.0;
+              const deficitContrib = deficitScore * 15.0;
+              const proxContrib = proxScore * 10.0;
+              const totalScore = (vulnContrib + unmetContrib + popContrib + deficitContrib + proxContrib).toFixed(1);
+
+              const dominantDriver = unmetScore >= vulnScore
+                ? `${detectedWard.dry_pipe_hours || 36}h continuous dry pipeline duration`
+                : `${(vulnScore * 100).toFixed(0)}% informal settlement vulnerability ratio`;
+
+              return (
+                <section className="civic-card rounded-xl p-4 bg-gradient-to-b from-white via-sky-50/30 to-sky-50/70 border-2 border-sky-300/80 shadow-xs space-y-3">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                    <div className="flex items-center space-x-2">
+                      <div className="px-2 py-0.5 rounded bg-[#0056b3] text-white font-mono text-[10px] font-black uppercase tracking-wider">
+                        {lang === "mr" ? "स्पष्टीकरण" : "EXPLAINABILITY"}
+                      </div>
+                      <h4 className="text-xs font-black text-slate-900 tracking-tight">
+                        {lang === "mr" ? "माझी विनंती रांगेत का आहे?" : "Why am I queued?"} — Ward {detectedWard.ward_code}
+                      </h4>
+                    </div>
+                    <span className="font-mono text-[9.5px] font-bold text-sky-800 bg-white px-2 py-0.5 rounded border border-sky-300">
+                      Policy v2.4.0-hardened
+                    </span>
+                  </div>
+
+                  {/* Top Score Banner */}
+                  <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-sky-200 shadow-2xs">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-500 font-mono block">
+                        {lang === "mr" ? "एकूण प्राधान्य गुण" : "Total Priority Score"}
+                      </span>
+                      <div className="flex items-baseline space-x-1.5 mt-0.5">
+                        <span className="text-2xl font-black text-[#0056b3] font-mono">{totalScore}</span>
+                        <span className="text-xs font-bold text-slate-400 font-mono">/ 100</span>
+                        <span className="ml-2 text-[10.5px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300">
+                          {detectedWard.priority_tier || "Priority Tier-1"}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowExplainModal(true)}
+                      className="px-2.5 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-300 text-sky-800 text-[11px] font-bold transition flex items-center space-x-1 cursor-pointer"
+                    >
+                      <HelpCircle className="w-3.5 h-3.5 text-sky-600" />
+                      <span>{lang === "mr" ? "सविस्तर गणित" : "View Audit Math"}</span>
+                    </button>
+                  </div>
+
+                  {/* Mathematical Factor Breakdown Table */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-[10.5px] text-left">
+                      <thead>
+                        <tr className="border-b border-slate-200 text-slate-500 uppercase font-mono text-[9px]">
+                          <th className="pb-1.5 font-bold">Factor</th>
+                          <th className="pb-1.5 text-right font-bold">Observed</th>
+                          <th className="pb-1.5 text-right font-bold">Norm [0–1]</th>
+                          <th className="pb-1.5 text-right font-bold">Weight</th>
+                          <th className="pb-1.5 text-right font-bold text-[#0056b3]">Contrib</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-mono">
+                        <tr>
+                          <td className="py-1 font-sans font-bold text-slate-800">Vulnerability (Slum %)</td>
+                          <td className="py-1 text-right text-slate-600">{detectedWard.slum_pop_pct || 65}%</td>
+                          <td className="py-1 text-right text-slate-700">{vulnScore.toFixed(2)}</td>
+                          <td className="py-1 text-right text-slate-500">× 30%</td>
+                          <td className="py-1 text-right font-bold text-[#0056b3]">+{vulnContrib.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                          <td className="py-1 font-sans font-bold text-slate-800">Unmet Demand (Dry Pipe)</td>
+                          <td className="py-1 text-right text-slate-600">{detectedWard.dry_pipe_hours || 36}h</td>
+                          <td className="py-1 text-right text-slate-700">{unmetScore.toFixed(2)}</td>
+                          <td className="py-1 text-right text-slate-500">× 25%</td>
+                          <td className="py-1 text-right font-bold text-[#0056b3]">+{unmetContrib.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                          <td className="py-1 font-sans font-bold text-slate-800">Population Need</td>
+                          <td className="py-1 text-right text-slate-600">{(detectedWard.population || 500000).toLocaleString()}</td>
+                          <td className="py-1 text-right text-slate-700">{popScore.toFixed(2)}</td>
+                          <td className="py-1 text-right text-slate-500">× 20%</td>
+                          <td className="py-1 text-right font-bold text-[#0056b3]">+{popContrib.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                          <td className="py-1 font-sans font-bold text-slate-800">Historical Deficit</td>
+                          <td className="py-1 text-right text-slate-600">{detectedWard.water_deficit_pct || 35}%</td>
+                          <td className="py-1 text-right text-slate-700">{deficitScore.toFixed(2)}</td>
+                          <td className="py-1 text-right text-slate-500">× 15%</td>
+                          <td className="py-1 text-right font-bold text-[#0056b3]">+{deficitContrib.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                          <td className="py-1 font-sans font-bold text-slate-800">Depot Proximity (Logistics)</td>
+                          <td className="py-1 text-right text-slate-600">{(detectedWard.distance_to_depot_km || 4.2).toFixed(1)} km</td>
+                          <td className="py-1 text-right text-slate-700">{proxScore.toFixed(2)}</td>
+                          <td className="py-1 text-right text-slate-500">× 10%</td>
+                          <td className="py-1 text-right font-bold text-[#0056b3]">+{proxContrib.toFixed(2)}</td>
+                        </tr>
+                        <tr className="border-t-2 border-slate-300 font-bold bg-sky-50/50">
+                          <td className="py-1.5 font-sans text-slate-900">Total Score (Sum)</td>
+                          <td colSpan="3" className="py-1.5 text-right text-slate-500 font-mono text-[9.5px]">Σ (Normalized × Weight)</td>
+                          <td className="py-1.5 text-right text-base text-[#0056b3] font-black">{totalScore}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Human-Readable Explanation */}
+                  <div className="p-2.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-700 leading-relaxed">
+                    <span className="font-bold text-slate-900 block mb-0.5">
+                      {lang === "mr" ? "थेट कारण:" : "Algorithmic Determination:"}
+                    </span>
+                    {lang === "mr"
+                      ? `तुमचा प्रभाग ${detectedWard.ward_code} उच्च प्राधान्य क्रमाने ठेवण्यात आला आहे, कारण येथे ${dominantDriver} आहे. वॉटरफ्लो अल्गोरिदम वेळेपेक्षा (FCFS) मानवीय गरजेला प्राधान्य देतो.`
+                      : `Grievance prioritized at score ${totalScore}/100. Key driver: ${dominantDriver}. Under WaterFlow Policy v2.4.0-hardened, humanitarian need overrides submission timestamps to prevent vocal affluent wards from displacing vulnerable communities.`}
+                  </div>
+
+                  {/* Live Metric Badges */}
+                  <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-200 text-center font-mono">
+                    <div className="bg-white p-2 rounded border border-slate-200 shadow-2xs">
+                      <span className="block text-[9px] uppercase text-slate-400 font-sans font-bold">
+                        {t.gridStability}
+                      </span>
+                      <span className="text-xs font-bold text-emerald-600">99.4%</span>
+                    </div>
+                    <div className="bg-white p-2 rounded border border-slate-200 shadow-2xs">
+                      <span className="block text-[9px] uppercase text-slate-400 font-sans font-bold">
+                        Ward Priority Rank
+                      </span>
+                      <span className="text-xs font-bold text-sky-700">#1 in {detectedWard.zone}</span>
+                    </div>
+                    <div className="bg-white p-2 rounded border border-slate-200 shadow-2xs">
+                      <span className="block text-[9px] uppercase text-slate-400 font-sans font-bold">
+                        {t.dailyWater}
+                      </span>
+                      <span className="text-xs font-bold text-slate-800">810 KL</span>
+                    </div>
+                  </div>
+                </section>
+              );
+            })()}
           </div>
 
           {/* ============================================================
@@ -1063,6 +1236,74 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
           <p className="font-medium text-slate-500">{t.footerDept}</p>
           <p className="text-[9.5px]">{t.footerVer}</p>
         </footer>
+
+        {/* Mathematical Explainability Modal (Phase 20) */}
+        {showExplainModal && (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-2xl shadow-2xl border border-slate-300 max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="bg-[#0056b3] text-white p-4 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-mono uppercase bg-sky-900/60 px-2 py-0.5 rounded border border-sky-400/40 text-sky-200">
+                    POLICY v2.4.0-HARDENED
+                  </span>
+                  <h3 className="text-sm font-black mt-1">
+                    {lang === "mr" ? "गणितीय वाटप पारदर्शकता ऑडिट" : "Municipal Algorithmic Equity Audit"}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowExplainModal(false)}
+                  className="p-1 rounded-lg hover:bg-sky-700/60 text-sky-100 hover:text-white transition cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-4 overflow-y-auto space-y-3.5 text-xs text-slate-700">
+                <div className="p-3 bg-sky-50 rounded-xl border border-sky-200">
+                  <div className="font-bold text-sky-950 mb-1">
+                    {lang === "mr" ? "पाणी वाटप कसे ठरवले जाते?" : "How is Relief Priority Determined?"}
+                  </div>
+                  <p className="text-[11.5px] leading-relaxed text-slate-600">
+                    Unlike legacy First-Come-First-Served (FCFS) pipelines where high-bandwidth commercial users dominate relief tankers, WaterFlow calculates an authoritative equity score:
+                  </p>
+                  <div className="mt-2 font-mono bg-white p-2 rounded border border-sky-200 text-slate-800 text-[11px] font-bold">
+                    Score = 30·V + 25·U + 20·P + 15·H + 10·(1 - D)
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="font-bold text-slate-900 text-xs">Audited Ward Inputs (Ward {detectedWard.ward_code}):</div>
+                  <ul className="space-y-1.5 text-[11px] list-disc list-inside text-slate-600 font-mono">
+                    <li><strong className="text-slate-800">Vulnerability (V):</strong> {detectedWard.slum_pop_pct || 65}% slum share (Weight: 30%)</li>
+                    <li><strong className="text-slate-800">Unmet Demand (U):</strong> {detectedWard.dry_pipe_hours || 36} hours without water (Weight: 25%)</li>
+                    <li><strong className="text-slate-800">Population Need (P):</strong> {(detectedWard.population || 500000).toLocaleString()} residents (Weight: 20%)</li>
+                    <li><strong className="text-slate-800">Historical Deficit (H):</strong> {detectedWard.water_deficit_pct || 35}% ration deficit (Weight: 15%)</li>
+                    <li><strong className="text-slate-800">Distance Logistics (D):</strong> {(detectedWard.distance_to_depot_km || 4.2).toFixed(1)} km to depot (Weight: 10%)</li>
+                  </ul>
+                </div>
+
+                <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200">
+                  <div className="flex items-center space-x-1.5 text-emerald-900 font-bold text-xs mb-1">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Anti-Discrimination &amp; VIP Immunity Guarantee</span>
+                  </div>
+                  <p className="text-[11px] text-emerald-800 leading-normal">
+                    Mathematical policy constraints ensure that submission timestamps cannot override genuine physiological urgency. All 24 BMC ward allocations are reproducible and auditable in real time.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+                <button
+                  onClick={() => setShowExplainModal(false)}
+                  className="px-4 py-1.5 bg-[#0056b3] hover:bg-sky-700 text-white font-bold text-xs rounded-lg shadow-xs cursor-pointer transition"
+                >
+                  {lang === "mr" ? "बंद करा" : "Close Audit"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

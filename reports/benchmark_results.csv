@@ -1,0 +1,7 @@
+metric,legacy_fcfs,waterflow_os,net_improvement,unit
+Service Equity Index,34.02,100.0,+65.98 pts,0-100 Score
+Vulnerable Area Coverage,13.2%,20.45%,+7.25%,Percent of Supply
+High-Vulnerability Fulfillment,44.47%,100.0%,+55.53%,Percent Demand Fulfilled
+Total Travel Distance,847.14 km,253.55 km,-70.07%,Kilometers
+Allocation Variance,0.1088,0.0,-100.0%,Fulfillment Variance
+Duplicate Complaints Consolidated,0,132,+132 resolved,Tickets Consolidated

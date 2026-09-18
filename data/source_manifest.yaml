@@ -1,0 +1,193 @@
+version: "1.0.0"
+governance:
+  classifications:
+    - REAL: "Direct unedited observation or official publication from government or authoritative statutory body."
+    - REAL_DERIVED: "Mathematical calculation directly derived from official REAL indicators without introducing synthetic noise."
+    - SYNTHETIC_SEEDED: "Generated programmatically from a deterministic pseudo-random seed (seed=42)."
+    - ENGINEERING_ASSUMPTION: "Heuristic threshold or operational constant calibrated from standard municipal engineering practices."
+    - SCENARIO_PARAMETER: "Controlled parameter injected to simulate extreme stress conditions (e.g. heatwave, pipe burst)."
+
+sources:
+  - id: bmc_civic_diary
+    name: "BMC Civic Diary & Official Ward Profiles"
+    organization: "Brihanmumbai Municipal Corporation (BMC / MCGM)"
+    url: "https://portal.mcgm.gov.in/"
+    publication_date: "2026-01-01"
+    geographic_level: "Ward level (24 BMC Administrative Wards)"
+    license: "Government Public Portal Reference"
+
+  - id: census_india_2011
+    name: "Census of India 2011 — District Census Handbook / PCA Greater Mumbai"
+    organization: "Office of the Registrar General & Census Commissioner, India"
+    url: "https://censusindia.gov.in/"
+    publication_date: "2011-05-01"
+    geographic_level: "Ward level"
+    license: "Open Government Data (OGD) India"
+
+  - id: imd_mumbai
+    name: "IMD Weather Criteria & Coastal Guidelines"
+    organization: "India Meteorological Department, Ministry of Earth Sciences"
+    url: "https://mausam.imd.gov.in/"
+    publication_date: "2024-03-15"
+    geographic_level: "Regional Coastal Station (Santacruz / Colaba)"
+    license: "Public Weather Service"
+
+  - id: osm_geofabrik
+    name: "OpenStreetMap Mumbai Geographic Network"
+    organization: "OpenStreetMap Contributors"
+    url: "https://www.openstreetmap.org/"
+    publication_date: "2026-01-01"
+    geographic_level: "Street and node level"
+    license: "Open Database License (ODbL) 1.0"
+
+manifest:
+  # --- Reference Ward Datasets ---
+  - field: "ward_id"
+    dataset: "ward_population_real"
+    source: "bmc_civic_diary"
+    unit: "Integer ID (1-24)"
+    classification: "REAL"
+    used_by_algorithm: true
+    used_only_for_viz: false
+    limitations: "Arbitrary internal database index ordered by municipal prioritization priority."
+
+  - field: "ward_code"
+    dataset: "ward_population_real"
+    source: "bmc_civic_diary"
+    unit: "String (e.g. M/E, G/N)"
+    classification: "REAL"
+    used_by_algorithm: true
+    used_only_for_viz: false
+    limitations: "BMC standard code nomenclature."
+
+  - field: "population_2011"
+    dataset: "ward_population_real"
+    source: "census_india_2011"
+    unit: "Persons"
+    classification: "REAL"
+    used_by_algorithm: false
+    used_only_for_viz: true
+    limitations: "Decennial baseline, out-of-date for current operational dispatch."
+
+  - field: "slum_population_2011"
+    dataset: "ward_population_real"
+    source: "census_india_2011"
+    unit: "Persons"
+    classification: "REAL"
+    used_by_algorithm: false
+    used_only_for_viz: true
+    limitations: "Informal settlements expand rapidly; historical snapshot."
+
+  - field: "slum_share_2011"
+    dataset: "ward_population_real"
+    source: "census_india_2011"
+    unit: "Ratio (0.0 to 1.0)"
+    transformation: "slum_population_2011 / population_2011"
+    classification: "REAL_DERIVED"
+    used_by_algorithm: true
+    used_only_for_viz: false
+    limitations: "Derived indicator; not published as an official standalone metric."
+
+  - field: "population_projected_2026"
+    dataset: "ward_population_real"
+    source: "bmc_civic_diary"
+    unit: "Persons"
+    classification: "REAL"
+    used_by_algorithm: true
+    used_only_for_viz: false
+    limitations: "Municipal estimation based on electoral rolls and utility meters."
+
+  - field: "area_sq_km"
+    dataset: "ward_population_real"
+    source: "bmc_civic_diary"
+    unit: "Square Kilometers"
+    classification: "REAL"
+    used_by_algorithm: false
+    used_only_for_viz: true
+    limitations: "Administrative boundaries periodically undergo minor ward trifurcations."
+
+  - field: "density_per_sq_km"
+    dataset: "ward_population_real"
+    source: "bmc_civic_diary"
+    unit: "Persons / sq km"
+    transformation: "population_2011 / area_sq_km"
+    classification: "REAL_DERIVED"
+    used_by_algorithm: false
+    used_only_for_viz: true
+    limitations: "Spatial average across ward area."
+
+  # --- Operational Ward Telemetry ---
+  - field: "vulnerability_index"
+    dataset: "wards"
+    source: "internal_policy_model"
+    unit: "Normalized index [0.0, 1.0]"
+    transformation: "Weighted composite of slum_share and informal settlement density"
+    classification: "ENGINEERING_ASSUMPTION"
+    used_by_algorithm: true
+    used_only_for_viz: false
+    limitations: "Policy proxy representing structural vulnerability to water outages."
+
+  - field: "dry_pipe_hours"
+    dataset: "wards"
+    source: "synthetic_seeded"
+    unit: "Hours"
+    classification: "SYNTHETIC_SEEDED"
+    used_by_algorithm: true
+    used_only_for_viz: false
+    limitations: "Synthetic operational variable in prototype; in production, fed by SCADA pressure logs."
+
+  - field: "historical_deficit"
+    dataset: "wards"
+    source: "synthetic_seeded"
+    unit: "Fraction [0.0, 1.0]"
+    classification: "SYNTHETIC_SEEDED"
+    used_by_algorithm: true
+    used_only_for_viz: false
+    limitations: "Fraction of unmet ration over previous 7 days."
+
+  - field: "demand_liters"
+    dataset: "wards"
+    source: "synthetic_seeded"
+    unit: "Liters"
+    classification: "SYNTHETIC_SEEDED"
+    used_by_algorithm: true
+    used_only_for_viz: false
+    limitations: "Daily deficit volume required for emergency tanker mitigation."
+
+  - field: "depot_distance_km"
+    dataset: "wards"
+    source: "osm_geofabrik"
+    unit: "Kilometers"
+    transformation: "Haversine / OSM road distance from nearest active municipal reservoir depot"
+    classification: "REAL_DERIVED"
+    used_by_algorithm: true
+    used_only_for_viz: false
+    limitations: "Great circle or street path; ignores dynamic traffic congestion."
+
+  # --- Fleets & Events ---
+  - field: "tanker_capacity"
+    dataset: "tankers"
+    source: "bmc_procurement_tenders"
+    unit: "Liters"
+    classification: "REAL_REFERENCE"
+    used_by_algorithm: true
+    used_only_for_viz: false
+    limitations: "Standard municipal tanker capacities (8,000L, 10,000L, 12,000L)."
+
+  - field: "tanker_telemetry"
+    dataset: "tankers"
+    source: "synthetic_seeded"
+    unit: "GPS coordinate, status, current_load"
+    classification: "SYNTHETIC_SEEDED"
+    used_by_algorithm: true
+    used_only_for_viz: false
+    limitations: "Simulated fleet for testing dispatch optimization."
+
+  - field: "citizen_complaints"
+    dataset: "complaints"
+    source: "synthetic_seeded"
+    unit: "Event record"
+    classification: "SYNTHETIC_SEEDED"
+    used_by_algorithm: true
+    used_only_for_viz: false
+    limitations: "Simulated citizen grievances based on realistic Mumbai ward demographic distributions."

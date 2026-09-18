@@ -1,0 +1,49 @@
+{
+  "timestamp": "2026-09-18T12:00:00Z",
+  "seed": 42,
+  "policy_version": "2.4.0-hardened",
+  "total_wards_evaluated": 24,
+  "total_emergency_supply_liters": 367677,
+  "waterflow_ai": {
+    "total_demand_liters": 356800,
+    "total_allocated_liters": 356800,
+    "total_unmet_demand_liters": 0,
+    "average_fulfillment_ratio_pct": 100.0,
+    "vulnerable_area_coverage_pct": 20.45,
+    "high_vulnerability_fulfillment_ratio_pct": 100.0,
+    "service_distribution_variance": 0.0,
+    "service_distribution_stddev": 0.0,
+    "equity_index_sei": 100.0,
+    "gini_coefficient": 0.2507,
+    "total_travel_distance_km": 253.55,
+    "average_route_distance_km": 10.56,
+    "duplicate_complaints_detected": 132,
+    "duplicate_complaints_consolidated": 132,
+    "method": "WaterFlow OS (FairShare Multi-Criteria AI)"
+  },
+  "legacy_fcfs": {
+    "total_demand_liters": 356800,
+    "total_allocated_liters": 234800,
+    "total_unmet_demand_liters": 122000,
+    "average_fulfillment_ratio_pct": 71.85,
+    "vulnerable_area_coverage_pct": 13.2,
+    "high_vulnerability_fulfillment_ratio_pct": 44.47,
+    "service_distribution_variance": 0.1088,
+    "service_distribution_stddev": 0.3299,
+    "equity_index_sei": 34.02,
+    "gini_coefficient": 0.3764,
+    "total_travel_distance_km": 847.14,
+    "average_route_distance_km": 13.24,
+    "duplicate_complaints_detected": 0,
+    "duplicate_complaints_consolidated": 0,
+    "method": "First-Come-First-Served (Legacy FCFS)"
+  },
+  "improvements": {
+    "equity_index_gain_pts": 65.98,
+    "vulnerable_coverage_gain_pct": 7.25,
+    "high_vuln_fulfillment_gain_pct": 55.53,
+    "transit_distance_reduction_pct": 70.07,
+    "variance_reduction_pct": 100.0,
+    "duplicates_consolidated": 132
+  }
+}

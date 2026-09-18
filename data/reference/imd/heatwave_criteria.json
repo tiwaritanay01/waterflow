@@ -1,0 +1,30 @@
+{
+  "source": "India Meteorological Department (IMD)",
+  "source_url": "https://mausam.imd.gov.in/",
+  "classification": "REAL_REFERENCE",
+  "criteria_document": "IMD Heatwave Warnings & Guidelines for Coastal & Island Stations",
+  "thresholds": {
+    "coastal_station_criteria": {
+      "definition": "For coastal stations, heatwave is declared when maximum temperature departure is 4.5°C or more from normal, provided actual maximum temperature is 37°C or more.",
+      "max_temp_threshold_celsius": 37.0,
+      "departure_threshold_celsius": 4.5
+    },
+    "plains_criteria": {
+      "definition": "Heatwave is considered when maximum temperature of a station reaches at least 40°C or more for plains and at least 30°C for hilly regions.",
+      "min_temp_plains_celsius": 40.0,
+      "min_temp_hilly_celsius": 30.0
+    },
+    "severity_levels": {
+      "heatwave": "Departure from normal is 4.5°C to 6.4°C or actual max temp >= 45°C",
+      "severe_heatwave": "Departure from normal is > 6.4°C or actual max temp >= 47°C"
+    }
+  },
+  "waterflow_scenario_mapping": {
+    "classification": "SCENARIO_PARAMETER",
+    "description": "Engineered sensitivity curve mapping IMD coastal alerts to informal settlement domestic hydration and relief tanker surge factor.",
+    "baseline_temperature_celsius": 32.0,
+    "heat_surge_rate_per_celsius": 0.015,
+    "heatwave_alert_bonus": 0.18,
+    "slum_exposure_multiplier": 1.4
+  }
+}

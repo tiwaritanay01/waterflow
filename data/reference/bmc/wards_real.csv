@@ -1,0 +1,25 @@
+ward_id,ward_code,ward_name,zone,ward_office_address,centroid_lat,centroid_lng,source_url,classification
+1,M/E,M/East Ward,Eastern Suburbs,"Ward Office Building, Subhash Nagar, Deonar, Mumbai 400043",19.0550,72.9180,https://portal.mcgm.gov.in/,REAL
+2,G/N,G/North Ward,City,"Harishchandra Yelve Marg, Dadar West, Mumbai 400028",19.0430,72.8460,https://portal.mcgm.gov.in/,REAL
+3,L,L Ward,Eastern Suburbs,"L.B.S. Marg, Near Kurla Railway Station, Kurla West, Mumbai 400070",19.0720,72.8820,https://portal.mcgm.gov.in/,REAL
+4,P/N,P/North Ward,Western Suburbs,"Liberty Garden, Mamletdarwadi, Malad West, Mumbai 400064",19.1860,72.8480,https://portal.mcgm.gov.in/,REAL
+5,F/N,F/North Ward,City,"96, Bhau Daji Road, Matunga East, Mumbai 400019",19.0270,72.8570,https://portal.mcgm.gov.in/,REAL
+6,H/E,H/East Ward,Western Suburbs,"Plot No. 137, TPS-V, Prabhat Colony, Santacruz East, Mumbai 400055",19.0620,72.8510,https://portal.mcgm.gov.in/,REAL
+7,S,S Ward,Eastern Suburbs,"L.B.S. Marg, Near Mangatram Petrol Pump, Bhandup West, Mumbai 400078",19.1410,72.9280,https://portal.mcgm.gov.in/,REAL
+8,K/E,K/East Ward,Western Suburbs,"Gundavali, Azad Road, Andheri East, Mumbai 400069",19.1136,72.8697,https://portal.mcgm.gov.in/,REAL
+9,N,N Ward,Eastern Suburbs,"Jawahar Road, Ghatkopar East, Mumbai 400077",19.0830,72.9080,https://portal.mcgm.gov.in/,REAL
+10,P/S,P/South Ward,Western Suburbs,"C.T.S. No. 744, S.V. Road, Goregaon West, Mumbai 400104",19.1620,72.8440,https://portal.mcgm.gov.in/,REAL
+11,M/W,M/West Ward,Eastern Suburbs,"Sharadbhau Acharya Marg, Chembur, Mumbai 400071",19.0610,72.8980,https://portal.mcgm.gov.in/,REAL
+12,R/S,R/South Ward,Western Suburbs,"Mahatma Gandhi Cross Road No. 2, Kandivali West, Mumbai 400067",19.2060,72.8510,https://portal.mcgm.gov.in/,REAL
+13,T,T Ward,Eastern Suburbs,"Devi Dayal Road, Mulund West, Mumbai 400080",19.1720,72.9560,https://portal.mcgm.gov.in/,REAL
+14,R/C,R/Central Ward,Western Suburbs,"Chandavarkar Road, Borivali West, Mumbai 400092",19.2290,72.8570,https://portal.mcgm.gov.in/,REAL
+15,K/W,K/West Ward,Western Suburbs,"Paliram Path, Near S.V. Road, Andheri West, Mumbai 400058",19.1280,72.8300,https://portal.mcgm.gov.in/,REAL
+16,R/N,R/North Ward,Western Suburbs,"Rangaswar Natyagruha, Dahisar West, Mumbai 400068",19.2540,72.8590,https://portal.mcgm.gov.in/,REAL
+17,E,E Ward,City,"Ramchandra Bhatt Marg, Sankli Street, Byculla West, Mumbai 400008",18.9720,72.8320,https://portal.mcgm.gov.in/,REAL
+18,F/S,F/South Ward,City,"Dr. B. Ambedkar Road, Parel, Mumbai 400012",18.9980,72.8440,https://portal.mcgm.gov.in/,REAL
+19,G/S,G/South Ward,City,"N.M. Joshi Marg, Dhanmill Naka, Lower Parel, Mumbai 400013",19.0060,72.8210,https://portal.mcgm.gov.in/,REAL
+20,B,B Ward,City,"121, Ramchandra Bhatt Marg, Babula Tank Cross Lane, Mumbai 400009",18.9515,72.8380,https://portal.mcgm.gov.in/,REAL
+21,H/W,H/West Ward,Western Suburbs,"Saint Martin Road, Bandra West, Mumbai 400050",19.0580,72.8320,https://portal.mcgm.gov.in/,REAL
+22,C,C Ward,City,"76, Shrikant Palekar Marg, Chandanwadi, Mumbai 400002",18.9480,72.8250,https://portal.mcgm.gov.in/,REAL
+23,A,A Ward,City,"134-E, Shahid Bhagat Singh Road, Fort, Mumbai 400001",18.9220,72.8340,https://portal.mcgm.gov.in/,REAL
+24,D,D Ward,City,"Jobanputra Compound, Nana Chowk, Grant Road West, Mumbai 400007",18.9610,72.8120,https://portal.mcgm.gov.in/,REAL

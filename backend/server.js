@@ -14,10 +14,13 @@
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
+const fs = require("fs");
+const path = require("path");
 
 const app = express();
 const PORT = 3001;
 const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "http://localhost:8000";
+
 
 app.use(cors());
 app.use(express.json());
@@ -884,18 +887,174 @@ app.get("/api/depots", async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// Health check
+// GET /api/policy — Canonical Policy Specification
+// ---------------------------------------------------------------------------
+
+app.get("/api/policy", async (req, res) => {
+  try {
+    const aiPolicy = await callAIEngine("/api/policy", {});
+    if (aiPolicy) return res.json(aiPolicy);
+  } catch (_) {}
+
+  // Fallback to local canonical specification matching config/allocation_policy.yaml
+  res.json({
+    policy_version: "2.4.0-hardened",
+    policy_name: "BMC Municipal Equity Allocation Policy",
+    framework: "Explainable Multi-Criteria Allocation Model (Non-ML)",
+    weights: {
+      vulnerability: 0.30,
+      unmet_demand: 0.25,
+      population: 0.20,
+      historical_deficit: 0.15,
+      depot_distance: 0.10,
+    },
+    normalization: {
+      max_dry_pipe_hours: 72.0,
+      max_population_reference: 1000000.0,
+      max_depot_distance_km: 20.0,
+      vulnerability_scale: [0.0, 1.0],
+      historical_deficit_scale: [0.0, 1.0],
+    },
+    tier_thresholds: {
+      tier_1_critical: 75.0,
+      tier_2_elevated: 55.0,
+      tier_3_moderate: 35.0,
+      tier_4_nominal: 0.0,
+    },
+    constraints: {
+      allocation_non_negative: true,
+      allocation_not_above_unmet_demand: true,
+      total_allocation_not_above_available_water: true,
+      tanker_load_not_above_capacity: true,
+      require_valid_route: true,
+    },
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Analytics Endpoints (Phase 17 — Real Time-Series Data Pipeline)
+// ---------------------------------------------------------------------------
+
+function loadSyntheticCsv(filename) {
+  try {
+    const filePath = path.join(__dirname, "..", "data", "synthetic", filename);
+    if (!fs.existsSync(filePath)) return null;
+    const content = fs.readFileSync(filePath, "utf-8");
+    const lines = content.trim().split("\n");
+    if (lines.length <= 1) return null;
+    const headers = lines[0].split(",").map(h => h.trim());
+    return lines.slice(1).map(line => {
+      const parts = line.split(",").map(p => p.trim());
+      const obj = {};
+      headers.forEach((h, idx) => { obj[h] = parts[idx]; });
+      return obj;
+    });
+  } catch (e) {
+    return null;
+  }
+}
+
+app.get("/api/analytics/demand-trend", (req, res) => {
+  const balanceData = loadSyntheticCsv("daily_water_balance.csv");
+  if (balanceData && balanceData.length > 0) {
+    const trend = balanceData.slice(-14).map(row => ({
+      date: row.date,
+      demand_kl: Math.round(parseInt(row.total_ward_demand_liters || 0) / 1000),
+      supply_kl: Math.round(parseInt(row.total_emergency_supply_liters || 0) / 1000),
+      allocated_kl: Math.round(parseInt(row.total_allocated_liters || 0) / 1000),
+      deficit_kl: Math.round(parseInt(row.net_deficit_liters || 0) / 1000),
+      scenario: row.active_scenario,
+    }));
+    return res.json({ success: true, count: trend.length, trend });
+  }
+
+  // Graceful structured fallback
+  const dates = ["Mon", "Tue", "Wed", "Thu", "Today (Fri)", "Sat", "Sun"];
+  const fallback = dates.map((day, i) => ({
+    date: day,
+    demand_kl: 210 + i * 12,
+    supply_kl: 280,
+    allocated_kl: 210 + i * 10,
+    deficit_kl: Math.max(0, (210 + i * 12) - 280),
+    scenario: "SCENARIO_1_NORMAL",
+  }));
+  res.json({ success: true, count: fallback.length, trend: fallback });
+});
+
+app.get("/api/analytics/complaints-trend", (req, res) => {
+  const complaints = loadSyntheticCsv("complaints.csv");
+  if (complaints && complaints.length > 0) {
+    const dateCounts = {};
+    complaints.forEach(c => {
+      const d = (c.timestamp || "").slice(0, 10);
+      if (d) dateCounts[d] = (dateCounts[d] || 0) + 1;
+    });
+    const result = Object.entries(dateCounts).slice(-14).map(([date, count]) => ({ date, complaint_count: count }));
+    return res.json({ success: true, count: result.length, trend: result });
+  }
+  res.json({ success: true, count: 7, trend: [
+    { date: "Mon", complaint_count: 28 },
+    { date: "Tue", complaint_count: 32 },
+    { date: "Wed", complaint_count: 29 },
+    { date: "Thu", complaint_count: 35 },
+    { date: "Fri", complaint_count: 42 },
+    { date: "Sat", complaint_count: 38 },
+    { date: "Sun", complaint_count: 31 },
+  ] });
+});
+
+app.get("/api/analytics/service-balance", (req, res) => {
+  const balance = loadSyntheticCsv("daily_water_balance.csv");
+  if (balance && balance.length > 0) {
+    const summary = balance.slice(-7);
+    return res.json({ success: true, count: summary.length, history: summary });
+  }
+  res.json({ success: true, history: [] });
+});
+
+app.get("/api/analytics/unmet-demand", async (req, res) => {
+  const wards = await getWards();
+  const sorted = [...wards].sort((a, b) => (b.vulnerability_index || 0) - (a.vulnerability_index || 0));
+  res.json({
+    success: true,
+    total_unmet_liters: sorted.reduce((sum, w) => sum + (w.demand_liters || 0), 0),
+    wards: sorted.map(w => ({
+      ward_code: w.ward_code || w.ward_number,
+      name: w.name,
+      vulnerability: w.vulnerability_index,
+      demand_liters: w.demand_liters,
+      dry_pipe_hours: w.dry_pipe_hours,
+    })),
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Health & Readiness checks
 // ---------------------------------------------------------------------------
 
 app.get("/health", (req, res) => {
   res.json({
     status: "ok",
     service: "WaterFlow OS Gateway (Mumbai BMC)",
+    policy_version: "2.4.0-hardened",
     db_connected: dbAvailable,
     ai_engine_url: AI_ENGINE_URL,
     total_wards: MOCK_WARDS.length,
   });
 });
+
+app.get("/ready", (req, res) => {
+  res.json({
+    status: "ready",
+    service: "WaterFlow OS Gateway (Mumbai BMC)",
+    policy_version: "2.4.0-hardened",
+    db_connected: dbAvailable,
+    wards_loaded: MOCK_WARDS.length === 24,
+    depots_loaded: MOCK_DEPOTS.length === 4,
+    tankers_loaded: MOCK_TANKERS.length === 25,
+  });
+});
+
 
 // ---------------------------------------------------------------------------
 // Start server

@@ -1,0 +1,11 @@
+tanker_id,transponder_id,capacity_liters,home_depot,assigned_driver,status,synthetic,seed,generator_version,generated_at
+1,T-01,10000,Bhandup Hub,Anil Deshmukh,available,true,42,2.0.0,2026-09-18T12:00:00Z
+2,T-02,12000,Dadar Station,Suresh Sawant,available,true,42,2.0.0,2026-09-18T12:00:00Z
+3,T-03,8000,Veravali Booster,Ramesh Gaikwad,available,true,42,2.0.0,2026-09-18T12:00:00Z
+4,T-04,10000,Dadar Station,Santosh More,available,true,42,2.0.0,2026-09-18T12:00:00Z
+5,T-05,8000,Trombay Reservoir,Vinod Jadhav,available,true,42,2.0.0,2026-09-18T12:00:00Z
+6,T-06,12000,Bhandup Hub,Manoj Shinde,available,true,42,2.0.0,2026-09-18T12:00:00Z
+7,T-07,10000,Veravali Booster,Kailash Chavan,available,true,42,2.0.0,2026-09-18T12:00:00Z
+8,T-08,10000,Trombay Reservoir,Rajesh Patil,available,true,42,2.0.0,2026-09-18T12:00:00Z
+9,T-09,8000,Trombay Reservoir,Dinesh Pawar,available,true,42,2.0.0,2026-09-18T12:00:00Z
+10,T-10,10000,Bhandup Hub,Vikram Solanki,available,true,42,2.0.0,2026-09-18T12:00:00Z

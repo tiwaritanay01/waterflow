@@ -1,0 +1,167 @@
+[
+  {
+    "profile_id": "POLICY_A_EQUAL",
+    "name": "Equal Weighting Profile",
+    "rationale": "Flat baseline giving equal priority to all operational dimensions.",
+    "weights": {
+      "vulnerability": 0.2,
+      "unmet_demand": 0.2,
+      "population": 0.2,
+      "historical_deficit": 0.2,
+      "depot_distance": 0.2
+    },
+    "top_3_wards": [
+      "L (66.9 pts)",
+      "G/N (65.3 pts)",
+      "M/E (64.8 pts)"
+    ],
+    "metrics": {
+      "total_demand_liters": 356800,
+      "total_allocated_liters": 250000,
+      "total_unmet_demand_liters": 106800,
+      "average_fulfillment_ratio_pct": 60.76,
+      "vulnerable_area_coverage_pct": 29.18,
+      "high_vulnerability_fulfillment_ratio_pct": 100.0,
+      "service_distribution_variance": 0.2283,
+      "service_distribution_stddev": 0.4778,
+      "equity_index_sei": 4.44,
+      "gini_coefficient": 0.512,
+      "total_travel_distance_km": 188.23,
+      "average_route_distance_km": 12.55,
+      "duplicate_complaints_detected": 0,
+      "duplicate_complaints_consolidated": 0
+    }
+  },
+  {
+    "profile_id": "POLICY_B_VULNERABILITY_CENTRIC",
+    "name": "Pro-Poor / Slum Priority Profile",
+    "rationale": "Maximizes direct protection for informal settlements and dense slum clusters.",
+    "weights": {
+      "vulnerability": 0.5,
+      "unmet_demand": 0.2,
+      "population": 0.1,
+      "historical_deficit": 0.1,
+      "depot_distance": 0.1
+    },
+    "top_3_wards": [
+      "M/E (72.3 pts)",
+      "G/N (68.7 pts)",
+      "L (67.1 pts)"
+    ],
+    "metrics": {
+      "total_demand_liters": 356800,
+      "total_allocated_liters": 250000,
+      "total_unmet_demand_liters": 106800,
+      "average_fulfillment_ratio_pct": 59.13,
+      "vulnerable_area_coverage_pct": 29.18,
+      "high_vulnerability_fulfillment_ratio_pct": 100.0,
+      "service_distribution_variance": 0.2352,
+      "service_distribution_stddev": 0.485,
+      "equity_index_sei": 3.01,
+      "gini_coefficient": 0.494,
+      "total_travel_distance_km": 162.67,
+      "average_route_distance_km": 10.84,
+      "duplicate_complaints_detected": 0,
+      "duplicate_complaints_consolidated": 0
+    }
+  },
+  {
+    "profile_id": "POLICY_C_ACUTE_OUTAGE_CENTRIC",
+    "name": "Dry Pipe Emergency Response Profile",
+    "rationale": "Responds primarily to immediate hydrologic pipe dry hours regardless of tenure.",
+    "weights": {
+      "vulnerability": 0.2,
+      "unmet_demand": 0.5,
+      "population": 0.1,
+      "historical_deficit": 0.1,
+      "depot_distance": 0.1
+    },
+    "top_3_wards": [
+      "M/E (67.4 pts)",
+      "G/N (64.3 pts)",
+      "L (63.0 pts)"
+    ],
+    "metrics": {
+      "total_demand_liters": 356800,
+      "total_allocated_liters": 250000,
+      "total_unmet_demand_liters": 106800,
+      "average_fulfillment_ratio_pct": 59.26,
+      "vulnerable_area_coverage_pct": 29.18,
+      "high_vulnerability_fulfillment_ratio_pct": 100.0,
+      "service_distribution_variance": 0.2342,
+      "service_distribution_stddev": 0.4839,
+      "equity_index_sei": 3.21,
+      "gini_coefficient": 0.4977,
+      "total_travel_distance_km": 166.88,
+      "average_route_distance_km": 11.13,
+      "duplicate_complaints_detected": 0,
+      "duplicate_complaints_consolidated": 0
+    }
+  },
+  {
+    "profile_id": "POLICY_D_BMC_BALANCED",
+    "name": "Default BMC Balanced Municipal Policy (Canonical)",
+    "rationale": "Production balance calibrating equity against municipal logistics and population scale.",
+    "weights": {
+      "vulnerability": 0.3,
+      "unmet_demand": 0.25,
+      "population": 0.2,
+      "historical_deficit": 0.15,
+      "depot_distance": 0.1
+    },
+    "top_3_wards": [
+      "M/E (70.4 pts)",
+      "L (67.7 pts)",
+      "G/N (65.7 pts)"
+    ],
+    "metrics": {
+      "total_demand_liters": 356800,
+      "total_allocated_liters": 250000,
+      "total_unmet_demand_liters": 106800,
+      "average_fulfillment_ratio_pct": 59.91,
+      "vulnerable_area_coverage_pct": 29.18,
+      "high_vulnerability_fulfillment_ratio_pct": 100.0,
+      "service_distribution_variance": 0.2304,
+      "service_distribution_stddev": 0.48,
+      "equity_index_sei": 4.0,
+      "gini_coefficient": 0.4918,
+      "total_travel_distance_km": 165.05,
+      "average_route_distance_km": 11.0,
+      "duplicate_complaints_detected": 0,
+      "duplicate_complaints_consolidated": 0
+    }
+  },
+  {
+    "profile_id": "POLICY_E_LOGISTICS_CONSERVATIVE",
+    "name": "Transit Distance Conservative Profile",
+    "rationale": "Emphasizes transit proximity and outer ward logistical reach.",
+    "weights": {
+      "vulnerability": 0.2,
+      "unmet_demand": 0.2,
+      "population": 0.15,
+      "historical_deficit": 0.1,
+      "depot_distance": 0.35
+    },
+    "top_3_wards": [
+      "G/N (67.0 pts)",
+      "L (66.1 pts)",
+      "M/E (58.3 pts)"
+    ],
+    "metrics": {
+      "total_demand_liters": 356800,
+      "total_allocated_liters": 250000,
+      "total_unmet_demand_liters": 106800,
+      "average_fulfillment_ratio_pct": 61.57,
+      "vulnerable_area_coverage_pct": 29.18,
+      "high_vulnerability_fulfillment_ratio_pct": 100.0,
+      "service_distribution_variance": 0.2294,
+      "service_distribution_stddev": 0.4789,
+      "equity_index_sei": 4.21,
+      "gini_coefficient": 0.5628,
+      "total_travel_distance_km": 199.8,
+      "average_route_distance_km": 13.32,
+      "duplicate_complaints_detected": 0,
+      "duplicate_complaints_consolidated": 0
+    }
+  }
+]

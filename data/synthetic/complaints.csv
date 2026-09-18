@@ -1,0 +1,994 @@
+complaint_id,timestamp,ward_code,ward_name,issue_type,phone_number,latitude,longitude,status,is_duplicate,duplicate_parent_id,synthetic,seed,generator_version,generated_at
+10001,2026-08-14T15:15:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9895029959,19.0527,72.9133,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10002,2026-08-14T07:16:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9827364756,19.0534,72.9163,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10003,2026-08-14T15:01:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9836234004,19.1323,72.83,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10004,2026-08-14T20:18:00Z,G/S,Worli / Lower Parel,low_pressure,+91-9816120364,19.01,72.8203,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10005,2026-08-14T17:48:00Z,G/S,Worli / Lower Parel,low_pressure,+91-9816125981,19.0109,72.8237,resolved,true,10004,true,42,2.0.0,2026-09-18T12:00:00Z
+10006,2026-08-14T20:16:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9869060667,19.131,72.831,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10007,2026-08-14T07:45:00Z,N,Ghatkopar / Pant Nagar,contaminated_water,+91-9834833145,19.0825,72.9057,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10008,2026-08-14T12:02:00Z,H/W,Bandra West / Khar,severe_dry_pipe,+91-9889147055,19.0573,72.8303,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10009,2026-08-14T12:28:00Z,G/N,Dharavi / Mahim / Dadar West,contaminated_water,+91-9833163507,19.0415,72.8467,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10010,2026-08-14T19:57:00Z,R/S,Kandivali West & East,tanker_delay,+91-9833104958,19.2107,72.8544,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10011,2026-08-14T20:31:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9830405720,19.1256,72.8343,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10012,2026-08-14T19:21:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9860747615,19.129,72.8332,resolved,true,10003,true,42,2.0.0,2026-09-18T12:00:00Z
+10013,2026-08-14T14:30:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9816283089,19.1324,72.8339,resolved,true,10003,true,42,2.0.0,2026-09-18T12:00:00Z
+10014,2026-08-14T16:15:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9839093929,19.0544,72.9146,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10015,2026-08-14T17:59:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9838302810,19.1322,72.8259,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10016,2026-08-14T19:35:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9893666895,19.1266,72.8295,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10017,2026-08-14T09:33:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9890853783,19.1093,72.8651,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10018,2026-08-14T11:35:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9868991344,19.0745,72.8858,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10019,2026-08-14T19:19:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9888245532,19.1236,72.8287,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10020,2026-08-14T14:39:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9844732915,19.0563,72.9169,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10021,2026-08-14T14:59:00Z,E,Byculla / Mazgaon / Nagpada,severe_dry_pipe,+91-9879467447,18.9767,72.8322,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10022,2026-08-14T18:21:00Z,C,Marine Lines / Chandanwadi,contaminated_water,+91-9815284681,18.9529,72.8246,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10023,2026-08-14T13:33:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9873386564,19.1302,72.8337,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10024,2026-08-14T20:36:00Z,G/S,Worli / Lower Parel,low_pressure,+91-9863175529,19.0014,72.8216,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10025,2026-08-14T19:09:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9887431129,19.0519,72.9164,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10026,2026-08-14T09:41:00Z,K/E,Andheri East / Marol,pipeline_burst,+91-9818422464,19.1106,72.8676,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10027,2026-08-14T17:35:00Z,P/N,Malad / Marve / Malvani,severe_dry_pipe,+91-9864946979,19.1814,72.8503,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10028,2026-08-15T06:57:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9875654557,19.1277,72.8299,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10029,2026-08-15T11:47:00Z,L,Kurla / Asalpha / Sakinaka,contaminated_water,+91-9856954278,19.076,72.887,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10030,2026-08-15T12:23:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9878596926,19.1247,72.8326,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10031,2026-08-15T15:55:00Z,N,Ghatkopar / Pant Nagar,severe_dry_pipe,+91-9895765991,19.0788,72.9056,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10032,2026-08-15T11:12:00Z,G/N,Dharavi / Mahim / Dadar West,severe_dry_pipe,+91-9821982442,19.0438,72.8448,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10033,2026-08-15T10:08:00Z,R/C,Borivali / Gorai,contaminated_water,+91-9818627647,19.2277,72.8577,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10034,2026-08-15T17:19:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9825328717,19.1259,72.8322,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10035,2026-08-15T21:51:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9816781627,19.1236,72.8335,resolved,true,10015,true,42,2.0.0,2026-09-18T12:00:00Z
+10036,2026-08-15T07:28:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9859344598,19.0549,72.918,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10037,2026-08-15T08:34:00Z,P/S,Goregaon West & East,severe_dry_pipe,+91-9884763353,19.1659,72.8457,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10038,2026-08-15T10:49:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9847671730,19.0056,72.8193,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10039,2026-08-15T10:51:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9842854251,19.007,72.8173,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10040,2026-08-15T19:05:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9831378210,18.9565,72.8146,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10041,2026-08-15T06:20:00Z,S,Bhandup / Kanjurmarg / Powai,severe_dry_pipe,+91-9877326385,19.1436,72.9266,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10042,2026-08-15T10:35:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9897402869,19.1242,72.8306,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10043,2026-08-15T09:47:00Z,S,Bhandup / Kanjurmarg / Powai,low_pressure,+91-9852106842,19.1385,72.9286,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10044,2026-08-15T19:19:00Z,C,Marine Lines / Chandanwadi,pipeline_burst,+91-9858546164,18.9472,72.8254,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10045,2026-08-15T11:06:00Z,E,Byculla / Mazgaon / Nagpada,severe_dry_pipe,+91-9897904247,18.9763,72.8282,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10046,2026-08-15T14:45:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9878878909,19.0573,72.9137,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10047,2026-08-15T16:15:00Z,H/W,Bandra West / Khar,low_pressure,+91-9878161448,19.0589,72.8302,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10048,2026-08-15T21:03:00Z,F/N,Matunga / Sion / Wadala,low_pressure,+91-9862876959,19.0296,72.862,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10049,2026-08-15T06:12:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9840404744,19.1235,72.829,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10050,2026-08-15T18:35:00Z,R/S,Kandivali West & East,low_pressure,+91-9865928576,19.2089,72.8522,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10051,2026-08-15T06:36:00Z,F/S,Parel / Sewri / Lalbaug,severe_dry_pipe,+91-9819414052,19.0017,72.8458,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10052,2026-08-15T10:23:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9863304744,19.1313,72.8309,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10053,2026-08-15T11:43:00Z,K/E,Andheri East / Marol,pipeline_burst,+91-9850162501,19.1138,72.8684,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10054,2026-08-15T18:08:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9824454846,19.1281,72.8273,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10055,2026-08-15T11:13:00Z,K/W,Andheri West / Versova,low_pressure,+91-9840447496,19.1307,72.833,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10056,2026-08-15T20:36:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9826844628,19.1322,72.8338,resolved,true,10042,true,42,2.0.0,2026-09-18T12:00:00Z
+10057,2026-08-15T21:33:00Z,P/S,Goregaon West & East,severe_dry_pipe,+91-9877203735,19.1573,72.8458,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10058,2026-08-16T19:42:00Z,R/S,Kandivali West & East,severe_dry_pipe,+91-9834947832,19.2104,72.8513,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10059,2026-08-16T13:40:00Z,C,Marine Lines / Chandanwadi,pipeline_burst,+91-9847778882,18.9453,72.8284,resolved,true,10044,true,42,2.0.0,2026-09-18T12:00:00Z
+10060,2026-08-16T06:13:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9899534953,19.1286,72.8287,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10061,2026-08-16T10:54:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9896642904,19.0653,72.8523,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10062,2026-08-16T15:38:00Z,C,Marine Lines / Chandanwadi,low_pressure,+91-9857394588,18.9489,72.8278,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10063,2026-08-16T11:00:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9838462747,19.0534,72.9155,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10064,2026-08-16T20:22:00Z,T,Mulund / Nahur,tanker_delay,+91-9849986788,19.1699,72.9564,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10065,2026-08-16T07:38:00Z,F/N,Matunga / Sion / Wadala,tanker_delay,+91-9839320244,19.0223,72.8546,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10066,2026-08-16T19:01:00Z,S,Bhandup / Kanjurmarg / Powai,contaminated_water,+91-9865367996,19.1412,72.929,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10067,2026-08-16T13:02:00Z,E,Byculla / Mazgaon / Nagpada,severe_dry_pipe,+91-9851272534,18.9672,72.8326,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10068,2026-08-16T13:49:00Z,R/N,Dahisar / Mandapeshwar,contaminated_water,+91-9824266410,19.2576,72.8552,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10069,2026-08-16T12:01:00Z,K/W,Andheri West / Versova,low_pressure,+91-9841949073,19.123,72.8295,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10070,2026-08-16T09:09:00Z,G/N,Dharavi / Mahim / Dadar West,contaminated_water,+91-9817844983,19.0469,72.8475,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10071,2026-08-16T12:49:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9836585171,19.1271,72.8344,resolved,true,10052,true,42,2.0.0,2026-09-18T12:00:00Z
+10072,2026-08-16T12:50:00Z,M/W,Chembur West / Tilak Nagar,contaminated_water,+91-9870065719,19.0563,72.8944,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10073,2026-08-16T09:47:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9869944706,18.9547,72.8379,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10074,2026-08-16T10:08:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9854483379,19.0752,72.886,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10075,2026-08-16T21:21:00Z,C,Marine Lines / Chandanwadi,pipeline_burst,+91-9830550260,18.9472,72.8256,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10076,2026-08-16T10:40:00Z,G/N,Dharavi / Mahim / Dadar West,severe_dry_pipe,+91-9831718290,19.0469,72.8473,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10077,2026-08-16T12:14:00Z,F/N,Matunga / Sion / Wadala,severe_dry_pipe,+91-9851796145,19.024,72.8592,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10078,2026-08-16T15:17:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9887663372,18.9633,72.815,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10079,2026-08-16T19:04:00Z,F/N,Matunga / Sion / Wadala,contaminated_water,+91-9899378896,19.0294,72.8565,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10080,2026-08-16T12:24:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9860891931,19.0654,72.85,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10081,2026-08-16T09:10:00Z,R/C,Borivali / Gorai,low_pressure,+91-9854244929,19.2247,72.8577,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10082,2026-08-16T15:34:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9850254811,19.1144,72.8697,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10083,2026-08-16T19:41:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9877108318,19.0095,72.8175,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10084,2026-08-16T10:47:00Z,R/N,Dahisar / Mandapeshwar,severe_dry_pipe,+91-9876525508,19.2516,72.8591,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10085,2026-08-16T12:03:00Z,P/S,Goregaon West & East,tanker_delay,+91-9888816462,19.1587,72.8472,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10086,2026-08-16T21:23:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9886634097,19.1269,72.8331,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10087,2026-08-16T06:28:00Z,E,Byculla / Mazgaon / Nagpada,pipeline_burst,+91-9837994658,18.9734,72.8367,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10088,2026-08-16T09:18:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9832470333,19.0523,72.918,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10089,2026-08-16T06:25:00Z,P/S,Goregaon West & East,contaminated_water,+91-9860083747,19.1606,72.8431,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10090,2026-08-17T19:47:00Z,F/N,Matunga / Sion / Wadala,severe_dry_pipe,+91-9824372519,19.022,72.855,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10091,2026-08-17T06:20:00Z,P/S,Goregaon West & East,severe_dry_pipe,+91-9863405302,19.1623,72.8461,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10092,2026-08-17T21:05:00Z,R/S,Kandivali West & East,low_pressure,+91-9858020815,19.2046,72.8538,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10093,2026-08-17T08:46:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9826799589,19.0523,72.9202,resolved,true,10088,true,42,2.0.0,2026-09-18T12:00:00Z
+10094,2026-08-17T07:34:00Z,L,Kurla / Asalpha / Sakinaka,low_pressure,+91-9889386992,19.074,72.8837,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10095,2026-08-17T16:45:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9892719868,19.0567,72.9024,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10096,2026-08-17T16:03:00Z,L,Kurla / Asalpha / Sakinaka,tanker_delay,+91-9885700804,19.075,72.8859,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10097,2026-08-17T09:45:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9869043364,19.1256,72.8264,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10098,2026-08-17T16:47:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9819299057,19.1252,72.8319,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10099,2026-08-17T14:34:00Z,F/S,Parel / Sewri / Lalbaug,severe_dry_pipe,+91-9894146202,18.9938,72.8464,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10100,2026-08-17T19:04:00Z,B,Sandhurst Road / Dongri,contaminated_water,+91-9862169824,18.9533,72.8407,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10101,2026-08-17T13:36:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9815517365,19.0524,72.9163,resolved,true,10088,true,42,2.0.0,2026-09-18T12:00:00Z
+10102,2026-08-17T08:54:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9824917765,18.9534,72.8334,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10103,2026-08-17T13:33:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9878991298,19.1322,72.8279,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10104,2026-08-17T15:03:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9897672805,19.1277,72.8272,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10105,2026-08-17T14:44:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9887442864,18.9643,72.8138,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10106,2026-08-17T21:38:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9857052656,19.0639,72.8973,resolved,true,10095,true,42,2.0.0,2026-09-18T12:00:00Z
+10107,2026-08-17T18:14:00Z,N,Ghatkopar / Pant Nagar,severe_dry_pipe,+91-9843353633,19.0786,72.9107,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10108,2026-08-17T15:22:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9838067263,19.1306,72.8344,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10109,2026-08-17T21:25:00Z,B,Sandhurst Road / Dongri,low_pressure,+91-9810595853,18.9518,72.8362,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10110,2026-08-17T13:24:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9847336680,19.1286,72.8343,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10111,2026-08-17T18:37:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9811515687,19.1242,72.8272,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10112,2026-08-17T06:08:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9846117569,19.0516,72.9139,resolved,true,10093,true,42,2.0.0,2026-09-18T12:00:00Z
+10113,2026-08-17T11:28:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9859355795,19.118,72.8658,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10114,2026-08-17T09:08:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9861267499,19.1329,72.8259,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10115,2026-08-17T12:12:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9860631363,19.1323,72.8265,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10116,2026-08-17T13:22:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9836935721,19.0652,72.8987,resolved,true,10106,true,42,2.0.0,2026-09-18T12:00:00Z
+10117,2026-08-17T19:08:00Z,D,Malabar Hill / Walkeshwar,contaminated_water,+91-9823715597,18.9575,72.8094,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10118,2026-08-18T06:16:00Z,C,Marine Lines / Chandanwadi,tanker_delay,+91-9873797586,18.9446,72.8267,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10119,2026-08-18T08:35:00Z,K/W,Andheri West / Versova,low_pressure,+91-9847058672,19.13,72.8309,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10120,2026-08-18T15:54:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,pipeline_burst,+91-9860682198,19.0547,72.9162,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10121,2026-08-18T20:14:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9824014401,19.1311,72.8267,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10122,2026-08-18T17:25:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9858476071,18.9648,72.8085,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10123,2026-08-18T09:08:00Z,B,Sandhurst Road / Dongri,pipeline_burst,+91-9881604539,18.9481,72.8331,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10124,2026-08-18T14:40:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9892261804,19.051,72.9189,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10125,2026-08-18T20:32:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9885407922,19.0518,72.9177,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10126,2026-08-18T10:07:00Z,S,Bhandup / Kanjurmarg / Powai,pipeline_burst,+91-9894140563,19.1425,72.9301,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10127,2026-08-18T15:52:00Z,T,Mulund / Nahur,contaminated_water,+91-9884667497,19.1731,72.9517,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10128,2026-08-18T10:29:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9815463646,19.0561,72.9209,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10129,2026-08-18T10:54:00Z,P/N,Malad / Marve / Malvani,contaminated_water,+91-9859405907,19.1876,72.8451,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10130,2026-08-18T07:37:00Z,G/S,Worli / Lower Parel,contaminated_water,+91-9884629901,19.0085,72.8168,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10131,2026-08-18T15:32:00Z,R/N,Dahisar / Mandapeshwar,severe_dry_pipe,+91-9819967528,19.2519,72.8629,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10132,2026-08-18T17:31:00Z,M/W,Chembur West / Tilak Nagar,low_pressure,+91-9835074544,19.0569,72.8963,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10133,2026-08-18T12:23:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9863338718,19.0531,72.9144,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10134,2026-08-18T13:50:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9887371226,19.0579,72.9136,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10135,2026-08-18T12:13:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,tanker_delay,+91-9821598028,19.05,72.9148,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10136,2026-08-18T20:22:00Z,E,Byculla / Mazgaon / Nagpada,pipeline_burst,+91-9870568904,18.9745,72.8368,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10137,2026-08-18T11:38:00Z,G/S,Worli / Lower Parel,pipeline_burst,+91-9881029544,19.002,72.8225,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10138,2026-08-18T15:36:00Z,H/E,Bandra East / Santacruz East,contaminated_water,+91-9851513913,19.0592,72.8487,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10139,2026-08-18T18:26:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9824811625,19.1275,72.8291,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10140,2026-08-18T20:08:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,pipeline_burst,+91-9875846430,19.0596,72.9212,resolved,true,10120,true,42,2.0.0,2026-09-18T12:00:00Z
+10141,2026-08-18T19:00:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9891612651,19.0731,72.8797,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10142,2026-08-18T09:06:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9837226532,19.0532,72.9151,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10143,2026-08-18T17:32:00Z,G/S,Worli / Lower Parel,pipeline_burst,+91-9845156268,19.0095,72.8256,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10144,2026-08-18T20:02:00Z,H/W,Bandra West / Khar,severe_dry_pipe,+91-9838914628,19.0547,72.8365,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10145,2026-08-18T12:03:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9896344133,19.0568,72.9163,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10146,2026-08-18T08:01:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9894393487,19.0631,72.8996,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10147,2026-08-18T16:09:00Z,R/S,Kandivali West & East,low_pressure,+91-9824354376,19.2037,72.8476,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10148,2026-08-19T18:27:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9871509530,19.1099,72.8716,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10149,2026-08-19T07:25:00Z,F/N,Matunga / Sion / Wadala,pipeline_burst,+91-9858581269,19.0292,72.8596,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10150,2026-08-19T15:03:00Z,L,Kurla / Asalpha / Sakinaka,low_pressure,+91-9813474147,19.0687,72.887,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10151,2026-08-19T12:16:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9884430720,19.1301,72.8336,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10152,2026-08-19T11:00:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9837070137,19.0519,72.9163,resolved,true,10133,true,42,2.0.0,2026-09-18T12:00:00Z
+10153,2026-08-19T11:51:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9815122188,19.1328,72.8346,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10154,2026-08-19T06:42:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9815828071,19.1249,72.8258,resolved,true,10139,true,42,2.0.0,2026-09-18T12:00:00Z
+10155,2026-08-19T10:59:00Z,E,Byculla / Mazgaon / Nagpada,low_pressure,+91-9825655189,18.9738,72.8274,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10156,2026-08-19T17:21:00Z,F/S,Parel / Sewri / Lalbaug,severe_dry_pipe,+91-9813346335,18.9956,72.8439,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10157,2026-08-19T14:01:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9815192340,19.1316,72.8264,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10158,2026-08-19T09:36:00Z,S,Bhandup / Kanjurmarg / Powai,contaminated_water,+91-9812417019,19.1425,72.9269,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10159,2026-08-19T07:33:00Z,R/C,Borivali / Gorai,pipeline_burst,+91-9823887334,19.2332,72.8612,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10160,2026-08-19T20:50:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9847503368,19.1681,72.952,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10161,2026-08-19T17:58:00Z,F/N,Matunga / Sion / Wadala,pipeline_burst,+91-9881158391,19.0295,72.8555,resolved,true,10149,true,42,2.0.0,2026-09-18T12:00:00Z
+10162,2026-08-19T19:16:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9885219175,19.1306,72.832,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10163,2026-08-19T10:47:00Z,K/W,Andheri West / Versova,low_pressure,+91-9882705051,19.1295,72.8298,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10164,2026-08-19T07:07:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9856647384,19.0583,72.8555,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10165,2026-08-19T11:43:00Z,H/E,Bandra East / Santacruz East,pipeline_burst,+91-9838987254,19.0662,72.849,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10166,2026-08-19T20:33:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9835351342,19.1277,72.8347,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10167,2026-08-19T12:16:00Z,B,Sandhurst Road / Dongri,contaminated_water,+91-9870729451,18.9475,72.8361,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10168,2026-08-19T09:02:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9872650471,19.0548,72.9164,resolved,true,10152,true,42,2.0.0,2026-09-18T12:00:00Z
+10169,2026-08-19T13:11:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9841012117,19.0596,72.9189,resolved,true,10152,true,42,2.0.0,2026-09-18T12:00:00Z
+10170,2026-08-19T17:42:00Z,A,Colaba / Fort / Nariman Point,low_pressure,+91-9859954410,18.9223,72.8322,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10171,2026-08-19T19:38:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9869817616,19.1239,72.8269,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10172,2026-08-19T16:08:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9847894941,19.0535,72.9202,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10173,2026-08-19T13:14:00Z,R/C,Borivali / Gorai,tanker_delay,+91-9853828386,19.229,72.8568,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10174,2026-08-19T08:56:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9850145487,19.1302,72.8255,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10175,2026-08-19T10:12:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9812295140,19.1323,72.8344,resolved,true,10157,true,42,2.0.0,2026-09-18T12:00:00Z
+10176,2026-08-19T15:26:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9836270495,19.002,72.8169,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10177,2026-08-19T06:58:00Z,K/E,Andheri East / Marol,low_pressure,+91-9849063204,19.1146,72.8732,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10178,2026-08-19T19:53:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9855582597,19.0697,72.8773,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10179,2026-08-19T13:22:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9840052035,19.0529,72.9182,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10180,2026-08-19T17:49:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9827269820,19.1737,72.959,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10181,2026-08-20T18:19:00Z,C,Marine Lines / Chandanwadi,severe_dry_pipe,+91-9845343904,18.9434,72.8233,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10182,2026-08-20T11:33:00Z,K/E,Andheri East / Marol,contaminated_water,+91-9860453952,19.1153,72.8679,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10183,2026-08-20T15:51:00Z,S,Bhandup / Kanjurmarg / Powai,severe_dry_pipe,+91-9863678921,19.1429,72.9295,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10184,2026-08-20T11:26:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9857510095,19.1246,72.8301,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10185,2026-08-20T15:00:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,pipeline_burst,+91-9857358728,19.0529,72.9217,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10186,2026-08-20T16:33:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9860584335,19.0654,72.8974,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10187,2026-08-20T16:52:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9822445829,19.0503,72.9204,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10188,2026-08-20T07:43:00Z,H/W,Bandra West / Khar,low_pressure,+91-9819915303,19.0537,72.8353,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10189,2026-08-20T20:02:00Z,R/S,Kandivali West & East,low_pressure,+91-9889019178,19.2035,72.8511,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10190,2026-08-20T18:39:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9858603632,19.126,72.8273,resolved,true,10171,true,42,2.0.0,2026-09-18T12:00:00Z
+10191,2026-08-20T07:47:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9815826234,19.1704,72.9576,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10192,2026-08-20T11:09:00Z,H/W,Bandra West / Khar,contaminated_water,+91-9870980683,19.0622,72.8352,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10193,2026-08-20T08:33:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9850325998,19.0726,72.8803,resolved,true,10178,true,42,2.0.0,2026-09-18T12:00:00Z
+10194,2026-08-20T13:00:00Z,H/E,Bandra East / Santacruz East,contaminated_water,+91-9838400702,19.0574,72.8496,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10195,2026-08-20T08:20:00Z,S,Bhandup / Kanjurmarg / Powai,low_pressure,+91-9872937083,19.1442,72.9299,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10196,2026-08-20T16:00:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9824307900,19.0104,72.825,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10197,2026-08-20T21:04:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9881266255,19.1231,72.8279,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10198,2026-08-20T18:04:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9865774313,19.0767,72.8814,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10199,2026-08-20T14:28:00Z,B,Sandhurst Road / Dongri,contaminated_water,+91-9846855209,18.9548,72.8421,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10200,2026-08-20T15:17:00Z,K/E,Andheri East / Marol,low_pressure,+91-9849793369,19.1142,72.8717,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10201,2026-08-20T16:18:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9877152019,19.0629,72.846,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10202,2026-08-20T15:22:00Z,T,Mulund / Nahur,low_pressure,+91-9821622269,19.1746,72.9549,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10203,2026-08-20T12:58:00Z,C,Marine Lines / Chandanwadi,severe_dry_pipe,+91-9861345823,18.9502,72.8257,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10204,2026-08-20T18:36:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9871323543,19.0631,72.9029,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10205,2026-08-20T20:53:00Z,M/W,Chembur West / Tilak Nagar,contaminated_water,+91-9877983437,19.0614,72.9007,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10206,2026-08-21T19:06:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9881947103,19.1681,72.9525,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10207,2026-08-21T21:29:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9898098586,19.1686,72.9581,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10208,2026-08-21T15:13:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9883090131,19.0589,72.9184,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10209,2026-08-21T13:13:00Z,P/N,Malad / Marve / Malvani,severe_dry_pipe,+91-9868796400,19.191,72.8441,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10210,2026-08-21T13:51:00Z,R/S,Kandivali West & East,contaminated_water,+91-9835336337,19.2039,72.854,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10211,2026-08-21T14:55:00Z,N,Ghatkopar / Pant Nagar,contaminated_water,+91-9848528578,19.083,72.912,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10212,2026-08-21T14:17:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9897601380,19.0548,72.9214,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10213,2026-08-21T18:59:00Z,F/N,Matunga / Sion / Wadala,severe_dry_pipe,+91-9822640514,19.0252,72.8559,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10214,2026-08-21T10:43:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9877075304,19.0639,72.897,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10215,2026-08-21T20:53:00Z,P/S,Goregaon West & East,severe_dry_pipe,+91-9882064166,19.1648,72.8419,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10216,2026-08-21T11:13:00Z,G/N,Dharavi / Mahim / Dadar West,severe_dry_pipe,+91-9882539151,19.048,72.8497,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10217,2026-08-21T21:14:00Z,K/E,Andheri East / Marol,low_pressure,+91-9849448467,19.1136,72.8669,resolved,true,10200,true,42,2.0.0,2026-09-18T12:00:00Z
+10218,2026-08-21T06:30:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9822887706,19.0033,72.8226,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10219,2026-08-21T15:00:00Z,T,Mulund / Nahur,contaminated_water,+91-9890123213,19.1707,72.9526,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10220,2026-08-21T21:30:00Z,S,Bhandup / Kanjurmarg / Powai,severe_dry_pipe,+91-9865963023,19.1444,72.9297,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10221,2026-08-21T20:12:00Z,G/S,Worli / Lower Parel,contaminated_water,+91-9870519560,19.0021,72.8257,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10222,2026-08-21T12:28:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9863011873,19.0032,72.824,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10223,2026-08-21T10:42:00Z,R/N,Dahisar / Mandapeshwar,low_pressure,+91-9812718895,19.2495,72.8616,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10224,2026-08-21T12:16:00Z,H/E,Bandra East / Santacruz East,pipeline_burst,+91-9832236082,19.0591,72.8491,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10225,2026-08-21T18:19:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9855180149,19.0588,72.9136,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10226,2026-08-21T08:54:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,pipeline_burst,+91-9891751109,19.0524,72.9172,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10227,2026-08-21T11:07:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9819664396,19.0561,72.916,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10228,2026-08-21T20:47:00Z,R/C,Borivali / Gorai,pipeline_burst,+91-9843593964,19.2268,72.8525,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10229,2026-08-21T06:10:00Z,K/E,Andheri East / Marol,contaminated_water,+91-9875489692,19.1095,72.8682,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10230,2026-08-21T15:36:00Z,R/S,Kandivali West & East,severe_dry_pipe,+91-9871719371,19.2019,72.8514,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10231,2026-08-21T21:25:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9863334317,19.0543,72.9218,resolved,true,10212,true,42,2.0.0,2026-09-18T12:00:00Z
+10232,2026-08-21T06:25:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9861664994,19.0515,72.9163,resolved,true,10212,true,42,2.0.0,2026-09-18T12:00:00Z
+10233,2026-08-21T13:52:00Z,B,Sandhurst Road / Dongri,pipeline_burst,+91-9876077555,18.9564,72.8405,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10234,2026-08-21T19:22:00Z,C,Marine Lines / Chandanwadi,low_pressure,+91-9875723917,18.9478,72.8264,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10235,2026-08-22T08:25:00Z,T,Mulund / Nahur,low_pressure,+91-9880054985,19.1695,72.9581,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10236,2026-08-22T14:56:00Z,B,Sandhurst Road / Dongri,pipeline_burst,+91-9850320413,18.9482,72.8427,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10237,2026-08-22T15:28:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9875226258,19.0521,72.9149,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10238,2026-08-22T14:00:00Z,B,Sandhurst Road / Dongri,low_pressure,+91-9818112328,18.9553,72.8361,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10239,2026-08-22T19:05:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9878172503,19.0546,72.9164,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10240,2026-08-22T13:16:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,pipeline_burst,+91-9835033206,19.0599,72.9163,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10241,2026-08-22T11:14:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9848290323,19.1264,72.8316,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10242,2026-08-22T16:56:00Z,G/S,Worli / Lower Parel,tanker_delay,+91-9846064488,19.0089,72.8209,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10243,2026-08-22T15:04:00Z,E,Byculla / Mazgaon / Nagpada,low_pressure,+91-9819409693,18.9754,72.8363,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10244,2026-08-22T21:21:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,pipeline_burst,+91-9857233006,19.0513,72.9165,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10245,2026-08-22T09:41:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9839229356,19.0556,72.9195,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10246,2026-08-22T18:38:00Z,R/S,Kandivali West & East,severe_dry_pipe,+91-9847375326,19.2031,72.8491,resolved,true,10230,true,42,2.0.0,2026-09-18T12:00:00Z
+10247,2026-08-22T10:01:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9850763129,19.1324,72.833,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10248,2026-08-22T19:08:00Z,R/N,Dahisar / Mandapeshwar,contaminated_water,+91-9829938082,19.2529,72.8583,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10249,2026-08-22T06:08:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9871724739,19.0563,72.9184,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10250,2026-08-22T14:43:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9835746620,19.1324,72.8312,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10251,2026-08-22T12:37:00Z,S,Bhandup / Kanjurmarg / Powai,contaminated_water,+91-9860930276,19.1404,72.9299,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10252,2026-08-22T13:45:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9881552465,19.1294,72.8315,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10253,2026-08-22T21:53:00Z,G/N,Dharavi / Mahim / Dadar West,low_pressure,+91-9855750974,19.0404,72.8438,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10254,2026-08-22T10:56:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9843006878,19.1692,72.959,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10255,2026-08-22T17:26:00Z,E,Byculla / Mazgaon / Nagpada,low_pressure,+91-9817329823,18.9738,72.8304,resolved,true,10243,true,42,2.0.0,2026-09-18T12:00:00Z
+10256,2026-08-22T11:16:00Z,R/C,Borivali / Gorai,severe_dry_pipe,+91-9860742530,19.2287,72.8557,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10257,2026-08-22T08:06:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9862345686,19.05,72.9225,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10258,2026-08-22T21:48:00Z,K/W,Andheri West / Versova,low_pressure,+91-9847672750,19.1301,72.8296,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10259,2026-08-22T06:34:00Z,H/E,Bandra East / Santacruz East,low_pressure,+91-9898820297,19.0595,72.8474,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10260,2026-08-22T14:42:00Z,R/S,Kandivali West & East,pipeline_burst,+91-9857085115,19.2041,72.85,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10261,2026-08-22T14:11:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9876127025,19.1283,72.8287,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10262,2026-08-22T07:48:00Z,B,Sandhurst Road / Dongri,pipeline_burst,+91-9857472792,18.9516,72.8377,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10263,2026-08-22T10:23:00Z,R/C,Borivali / Gorai,severe_dry_pipe,+91-9826027116,19.2294,72.8586,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10264,2026-08-23T09:51:00Z,R/S,Kandivali West & East,severe_dry_pipe,+91-9888015784,19.2031,72.8516,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10265,2026-08-23T19:05:00Z,F/S,Parel / Sewri / Lalbaug,pipeline_burst,+91-9822496624,18.9989,72.8441,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10266,2026-08-23T15:29:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9850368157,19.128,72.8259,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10267,2026-08-23T11:55:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9826709192,19.1248,72.8338,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10268,2026-08-23T17:05:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,pipeline_burst,+91-9887086853,19.0596,72.9224,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10269,2026-08-23T07:04:00Z,K/E,Andheri East / Marol,contaminated_water,+91-9828153894,19.1097,72.8687,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10270,2026-08-23T14:07:00Z,D,Malabar Hill / Walkeshwar,low_pressure,+91-9899127808,18.9569,72.812,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10271,2026-08-23T10:11:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9848888137,19.1244,72.8302,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10272,2026-08-23T15:04:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9891856359,19.0549,72.9195,resolved,true,10257,true,42,2.0.0,2026-09-18T12:00:00Z
+10273,2026-08-23T06:35:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9849691675,19.1267,72.8257,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10274,2026-08-23T08:28:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,tanker_delay,+91-9852386372,19.0542,72.9138,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10275,2026-08-23T06:14:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9870172353,18.9594,72.8088,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10276,2026-08-23T10:21:00Z,L,Kurla / Asalpha / Sakinaka,pipeline_burst,+91-9847173576,19.0688,72.882,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10277,2026-08-23T09:24:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9824542076,19.1247,72.8343,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10278,2026-08-23T12:33:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9868366234,19.1239,72.8322,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10279,2026-08-23T10:58:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9827404682,19.058,72.9225,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10280,2026-08-23T16:36:00Z,E,Byculla / Mazgaon / Nagpada,pipeline_burst,+91-9853202789,18.9706,72.8334,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10281,2026-08-23T07:03:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9845345286,18.9503,72.8412,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10282,2026-08-23T18:41:00Z,T,Mulund / Nahur,pipeline_burst,+91-9822175373,19.1696,72.9534,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10283,2026-08-23T11:22:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9849689426,19.0555,72.9175,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10284,2026-08-23T11:50:00Z,A,Colaba / Fort / Nariman Point,severe_dry_pipe,+91-9837960339,18.925,72.8387,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10285,2026-08-23T18:09:00Z,A,Colaba / Fort / Nariman Point,contaminated_water,+91-9828762811,18.9198,72.836,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10286,2026-08-23T20:10:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9846280993,19.0687,72.8773,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10287,2026-08-23T12:38:00Z,R/N,Dahisar / Mandapeshwar,contaminated_water,+91-9815260884,19.2527,72.8567,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10288,2026-08-23T07:18:00Z,P/N,Malad / Marve / Malvani,contaminated_water,+91-9889245520,19.1872,72.8437,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10289,2026-08-23T20:28:00Z,K/W,Andheri West / Versova,low_pressure,+91-9819085607,19.1249,72.8272,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10290,2026-08-23T15:08:00Z,H/E,Bandra East / Santacruz East,low_pressure,+91-9865961656,19.06,72.8526,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10291,2026-08-24T11:54:00Z,R/C,Borivali / Gorai,severe_dry_pipe,+91-9896587168,19.2332,72.8572,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10292,2026-08-24T15:49:00Z,F/S,Parel / Sewri / Lalbaug,low_pressure,+91-9864879437,18.9957,72.8449,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10293,2026-08-24T21:19:00Z,T,Mulund / Nahur,contaminated_water,+91-9873148432,19.1759,72.9549,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10294,2026-08-24T15:09:00Z,A,Colaba / Fort / Nariman Point,contaminated_water,+91-9882512694,18.9261,72.8363,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10295,2026-08-24T06:25:00Z,R/S,Kandivali West & East,contaminated_water,+91-9822884958,19.206,72.8546,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10296,2026-08-24T08:47:00Z,T,Mulund / Nahur,pipeline_burst,+91-9810037357,19.1708,72.9557,resolved,true,10282,true,42,2.0.0,2026-09-18T12:00:00Z
+10297,2026-08-24T14:03:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9812811688,19.0542,72.9155,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10298,2026-08-24T13:28:00Z,K/E,Andheri East / Marol,contaminated_water,+91-9852658602,19.1177,72.8654,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10299,2026-08-24T09:39:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9857140412,19.061,72.8524,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10300,2026-08-24T17:01:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9845883187,19.0596,72.9201,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10301,2026-08-24T10:17:00Z,T,Mulund / Nahur,low_pressure,+91-9821572569,19.1769,72.9575,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10302,2026-08-24T08:43:00Z,R/C,Borivali / Gorai,severe_dry_pipe,+91-9889317905,19.2332,72.8601,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10303,2026-08-24T17:54:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9822052407,19.1238,72.8322,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10304,2026-08-24T19:54:00Z,K/W,Andheri West / Versova,low_pressure,+91-9835181620,19.1318,72.8268,resolved,true,10289,true,42,2.0.0,2026-09-18T12:00:00Z
+10305,2026-08-24T16:12:00Z,K/W,Andheri West / Versova,low_pressure,+91-9886265940,19.1305,72.8325,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10306,2026-08-24T07:40:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9815546159,19.057,72.9166,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10307,2026-08-24T07:33:00Z,S,Bhandup / Kanjurmarg / Powai,severe_dry_pipe,+91-9861079525,19.1367,72.9328,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10308,2026-08-24T08:18:00Z,R/S,Kandivali West & East,severe_dry_pipe,+91-9811268518,19.2032,72.8547,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10309,2026-08-24T08:57:00Z,C,Marine Lines / Chandanwadi,severe_dry_pipe,+91-9860099345,18.9433,72.8273,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10310,2026-08-24T07:33:00Z,E,Byculla / Mazgaon / Nagpada,severe_dry_pipe,+91-9825468242,18.9724,72.8336,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10311,2026-08-24T19:08:00Z,D,Malabar Hill / Walkeshwar,contaminated_water,+91-9852865608,18.9586,72.8155,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10312,2026-08-24T21:11:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9834701917,19.1249,72.8303,resolved,true,10303,true,42,2.0.0,2026-09-18T12:00:00Z
+10313,2026-08-24T16:04:00Z,N,Ghatkopar / Pant Nagar,severe_dry_pipe,+91-9860447456,19.0808,72.9126,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10314,2026-08-24T12:16:00Z,R/S,Kandivali West & East,low_pressure,+91-9893593251,19.2052,72.8542,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10315,2026-08-24T06:45:00Z,E,Byculla / Mazgaon / Nagpada,tanker_delay,+91-9852454933,18.9756,72.8291,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10316,2026-08-24T13:30:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9846427355,19.13,72.8251,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10317,2026-08-24T15:46:00Z,P/N,Malad / Marve / Malvani,pipeline_burst,+91-9821678146,19.1901,72.8452,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10318,2026-08-24T15:11:00Z,C,Marine Lines / Chandanwadi,severe_dry_pipe,+91-9817591040,18.9489,72.8281,resolved,true,10309,true,42,2.0.0,2026-09-18T12:00:00Z
+10319,2026-08-25T08:35:00Z,P/S,Goregaon West & East,contaminated_water,+91-9836913282,19.1641,72.849,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10320,2026-08-25T17:00:00Z,E,Byculla / Mazgaon / Nagpada,severe_dry_pipe,+91-9845195489,18.9764,72.8333,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10321,2026-08-25T20:47:00Z,R/C,Borivali / Gorai,severe_dry_pipe,+91-9880516223,19.2302,72.8613,resolved,true,10302,true,42,2.0.0,2026-09-18T12:00:00Z
+10322,2026-08-25T06:51:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9863059420,18.9527,72.8336,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10323,2026-08-25T19:53:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9859586796,19.0584,72.9222,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10324,2026-08-25T16:56:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9888793325,19.1237,72.8252,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10325,2026-08-25T13:47:00Z,K/W,Andheri West / Versova,low_pressure,+91-9856014321,19.1242,72.8307,resolved,true,10305,true,42,2.0.0,2026-09-18T12:00:00Z
+10326,2026-08-25T14:43:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,pipeline_burst,+91-9899302037,19.0552,72.9213,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10327,2026-08-25T18:59:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9816151310,19.0589,72.9199,resolved,true,10323,true,42,2.0.0,2026-09-18T12:00:00Z
+10328,2026-08-25T11:41:00Z,T,Mulund / Nahur,low_pressure,+91-9853754247,19.1724,72.9576,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10329,2026-08-25T17:35:00Z,D,Malabar Hill / Walkeshwar,contaminated_water,+91-9820631776,18.9575,72.8113,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10330,2026-08-25T07:24:00Z,C,Marine Lines / Chandanwadi,severe_dry_pipe,+91-9856083773,18.9447,72.8272,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10331,2026-08-25T17:53:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9896300135,19.0523,72.9177,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10332,2026-08-25T14:54:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9856342282,19.1728,72.953,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10333,2026-08-25T10:31:00Z,P/N,Malad / Marve / Malvani,low_pressure,+91-9814408948,19.1828,72.8506,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10334,2026-08-25T11:50:00Z,K/W,Andheri West / Versova,low_pressure,+91-9880047232,19.1232,72.8277,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10335,2026-08-25T15:33:00Z,C,Marine Lines / Chandanwadi,severe_dry_pipe,+91-9843436451,18.9467,72.8205,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10336,2026-08-25T09:09:00Z,C,Marine Lines / Chandanwadi,severe_dry_pipe,+91-9894742043,18.9431,72.82,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10337,2026-08-25T10:18:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9856310200,19.0069,72.8198,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10338,2026-08-25T15:34:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9822429426,19.0531,72.922,resolved,true,10323,true,42,2.0.0,2026-09-18T12:00:00Z
+10339,2026-08-25T11:44:00Z,L,Kurla / Asalpha / Sakinaka,contaminated_water,+91-9861825025,19.0694,72.88,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10340,2026-08-25T06:16:00Z,M/W,Chembur West / Tilak Nagar,pipeline_burst,+91-9838321907,19.0571,72.8976,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10341,2026-08-25T13:17:00Z,R/S,Kandivali West & East,severe_dry_pipe,+91-9859924756,19.2107,72.8525,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10342,2026-08-25T14:14:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9840084606,19.109,72.8729,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10343,2026-08-25T12:21:00Z,R/N,Dahisar / Mandapeshwar,tanker_delay,+91-9839445376,19.2505,72.8557,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10344,2026-08-25T21:53:00Z,D,Malabar Hill / Walkeshwar,pipeline_burst,+91-9831192765,18.9625,72.8074,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10345,2026-08-25T16:22:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9858268779,19.0767,72.8816,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10346,2026-08-25T18:42:00Z,H/W,Bandra West / Khar,pipeline_burst,+91-9831734015,19.0608,72.8281,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10347,2026-08-26T21:31:00Z,S,Bhandup / Kanjurmarg / Powai,pipeline_burst,+91-9829078582,19.1387,72.9266,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10348,2026-08-26T06:29:00Z,D,Malabar Hill / Walkeshwar,contaminated_water,+91-9818150881,18.9606,72.8132,resolved,true,10329,true,42,2.0.0,2026-09-18T12:00:00Z
+10349,2026-08-26T06:07:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9881492702,19.0086,72.8192,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10350,2026-08-26T18:30:00Z,P/S,Goregaon West & East,pipeline_burst,+91-9897710291,19.16,72.8433,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10351,2026-08-26T15:45:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9876024315,19.0747,72.8855,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10352,2026-08-26T06:33:00Z,L,Kurla / Asalpha / Sakinaka,low_pressure,+91-9897005020,19.0725,72.8847,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10353,2026-08-26T15:39:00Z,E,Byculla / Mazgaon / Nagpada,contaminated_water,+91-9855161971,18.9737,72.8357,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10354,2026-08-26T14:06:00Z,K/W,Andheri West / Versova,low_pressure,+91-9842949509,19.1329,72.8299,resolved,true,10334,true,42,2.0.0,2026-09-18T12:00:00Z
+10355,2026-08-26T10:42:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9898201137,19.1698,72.9517,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10356,2026-08-26T06:28:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9870817365,19.0647,72.8532,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10357,2026-08-26T11:42:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9899774827,19.1311,72.8266,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10358,2026-08-26T21:45:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9867025412,19.06,72.8548,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10359,2026-08-26T14:42:00Z,K/W,Andheri West / Versova,low_pressure,+91-9842777523,19.1312,72.8258,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10360,2026-08-26T07:40:00Z,K/W,Andheri West / Versova,low_pressure,+91-9871011321,19.1328,72.8317,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10361,2026-08-26T14:25:00Z,G/N,Dharavi / Mahim / Dadar West,contaminated_water,+91-9892146320,19.0404,72.846,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10362,2026-08-26T09:24:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,tanker_delay,+91-9829020581,19.0518,72.9163,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10363,2026-08-26T15:20:00Z,M/W,Chembur West / Tilak Nagar,tanker_delay,+91-9893071318,19.063,72.8962,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10364,2026-08-26T09:43:00Z,C,Marine Lines / Chandanwadi,tanker_delay,+91-9819574258,18.946,72.8268,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10365,2026-08-26T11:33:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9835809678,18.951,72.8381,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10366,2026-08-26T16:56:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,tanker_delay,+91-9892937943,19.0562,72.9215,resolved,true,10362,true,42,2.0.0,2026-09-18T12:00:00Z
+10367,2026-08-26T13:11:00Z,C,Marine Lines / Chandanwadi,severe_dry_pipe,+91-9842920864,18.9463,72.8227,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10368,2026-08-26T21:03:00Z,S,Bhandup / Kanjurmarg / Powai,severe_dry_pipe,+91-9815944111,19.1382,72.925,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10369,2026-08-26T17:00:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9852639097,19.1329,72.8342,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10370,2026-08-26T18:18:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9828073900,19.0513,72.9142,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10371,2026-08-26T18:52:00Z,H/W,Bandra West / Khar,pipeline_burst,+91-9819980935,19.0546,72.8339,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10372,2026-08-26T12:27:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9849406542,19.0751,72.8804,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10373,2026-08-26T17:16:00Z,R/C,Borivali / Gorai,severe_dry_pipe,+91-9850413698,19.2268,72.8586,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10374,2026-08-26T10:02:00Z,K/W,Andheri West / Versova,low_pressure,+91-9820022847,19.1317,72.8344,resolved,true,10354,true,42,2.0.0,2026-09-18T12:00:00Z
+10375,2026-08-26T11:45:00Z,K/W,Andheri West / Versova,low_pressure,+91-9879687104,19.1259,72.8295,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10376,2026-08-26T18:43:00Z,D,Malabar Hill / Walkeshwar,contaminated_water,+91-9875663887,18.9645,72.811,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10377,2026-08-26T12:24:00Z,H/E,Bandra East / Santacruz East,contaminated_water,+91-9831355959,19.0668,72.8504,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10378,2026-08-27T11:15:00Z,C,Marine Lines / Chandanwadi,tanker_delay,+91-9822050016,18.9473,72.8217,resolved,true,10364,true,42,2.0.0,2026-09-18T12:00:00Z
+10379,2026-08-27T18:27:00Z,R/S,Kandivali West & East,contaminated_water,+91-9832133488,19.2067,72.8479,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10380,2026-08-27T15:03:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9855595002,19.0614,72.8957,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10381,2026-08-27T07:46:00Z,G/S,Worli / Lower Parel,low_pressure,+91-9840294632,19.0071,72.8201,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10382,2026-08-27T20:07:00Z,P/S,Goregaon West & East,severe_dry_pipe,+91-9840893554,19.1645,72.8458,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10383,2026-08-27T11:07:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9862992190,19.1308,72.8279,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10384,2026-08-27T09:13:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9813278875,19.1317,72.8261,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10385,2026-08-27T09:31:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9827513462,19.0554,72.9172,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10386,2026-08-27T12:03:00Z,R/S,Kandivali West & East,pipeline_burst,+91-9839013022,19.2102,72.8511,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10387,2026-08-27T16:16:00Z,T,Mulund / Nahur,low_pressure,+91-9817651867,19.1741,72.9574,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10388,2026-08-27T16:00:00Z,R/C,Borivali / Gorai,severe_dry_pipe,+91-9895479191,19.2283,72.8528,resolved,true,10373,true,42,2.0.0,2026-09-18T12:00:00Z
+10389,2026-08-27T06:46:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9868994222,19.0592,72.9189,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10390,2026-08-27T19:09:00Z,A,Colaba / Fort / Nariman Point,low_pressure,+91-9838700866,18.9238,72.8339,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10391,2026-08-27T18:16:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9855192260,19.1249,72.8298,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10392,2026-08-27T14:45:00Z,K/E,Andheri East / Marol,contaminated_water,+91-9824197496,19.1132,72.8728,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10393,2026-08-27T07:24:00Z,H/E,Bandra East / Santacruz East,contaminated_water,+91-9851200569,19.0622,72.8528,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10394,2026-08-27T12:56:00Z,M/W,Chembur West / Tilak Nagar,contaminated_water,+91-9812590579,19.061,72.8984,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10395,2026-08-27T11:42:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9852590275,19.0541,72.917,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10396,2026-08-27T16:58:00Z,K/W,Andheri West / Versova,low_pressure,+91-9847258863,19.1289,72.828,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10397,2026-08-27T17:10:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9839899149,19.1231,72.8262,resolved,true,10383,true,42,2.0.0,2026-09-18T12:00:00Z
+10398,2026-08-27T06:52:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9868206200,19.1269,72.828,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10399,2026-08-27T10:07:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9869032390,19.125,72.8323,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10400,2026-08-27T08:51:00Z,K/E,Andheri East / Marol,pipeline_burst,+91-9817807119,19.1149,72.8649,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10401,2026-08-27T18:30:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,pipeline_burst,+91-9835585598,19.0566,72.9142,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10402,2026-08-27T12:14:00Z,S,Bhandup / Kanjurmarg / Powai,contaminated_water,+91-9892646095,19.1384,72.93,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10403,2026-08-27T17:31:00Z,R/N,Dahisar / Mandapeshwar,contaminated_water,+91-9881391237,19.2529,72.8576,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10404,2026-08-27T09:55:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9863715359,19.1316,72.8335,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10405,2026-08-27T07:41:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9867657203,19.1258,72.8294,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10406,2026-08-27T21:40:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9872279402,19.0551,72.9219,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10407,2026-08-28T16:17:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9889569064,18.9522,72.8418,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10408,2026-08-28T20:14:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9871424035,19.1277,72.8289,resolved,true,10391,true,42,2.0.0,2026-09-18T12:00:00Z
+10409,2026-08-28T11:03:00Z,H/W,Bandra West / Khar,low_pressure,+91-9883341202,19.0622,72.8311,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10410,2026-08-28T08:43:00Z,R/N,Dahisar / Mandapeshwar,pipeline_burst,+91-9834818586,19.2524,72.8562,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10411,2026-08-28T17:21:00Z,K/E,Andheri East / Marol,low_pressure,+91-9835802281,19.1165,72.8672,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10412,2026-08-28T08:46:00Z,R/N,Dahisar / Mandapeshwar,low_pressure,+91-9898464873,19.2576,72.8545,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10413,2026-08-28T16:59:00Z,R/N,Dahisar / Mandapeshwar,contaminated_water,+91-9859906117,19.2568,72.8606,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10414,2026-08-28T15:13:00Z,B,Sandhurst Road / Dongri,low_pressure,+91-9865653078,18.9488,72.8354,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10415,2026-08-28T14:14:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9870488064,19.0586,72.8509,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10416,2026-08-28T17:12:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9831209215,19.0532,72.9133,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10417,2026-08-28T16:48:00Z,R/C,Borivali / Gorai,severe_dry_pipe,+91-9816372042,19.2298,72.8561,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10418,2026-08-28T09:46:00Z,T,Mulund / Nahur,pipeline_burst,+91-9883069334,19.1692,72.9541,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10419,2026-08-28T09:18:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9864232594,19.1322,72.826,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10420,2026-08-28T16:20:00Z,K/W,Andheri West / Versova,low_pressure,+91-9886945060,19.129,72.8272,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10421,2026-08-28T21:28:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9860895634,19.1296,72.8327,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10422,2026-08-28T15:56:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9813947245,19.1295,72.832,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10423,2026-08-28T09:36:00Z,F/N,Matunga / Sion / Wadala,severe_dry_pipe,+91-9857860095,19.024,72.8549,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10424,2026-08-28T13:29:00Z,G/S,Worli / Lower Parel,contaminated_water,+91-9864076443,19.0094,72.8248,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10425,2026-08-28T16:19:00Z,K/E,Andheri East / Marol,contaminated_water,+91-9864827880,19.1145,72.865,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10426,2026-08-28T19:51:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9880329089,19.125,72.834,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10427,2026-08-28T14:33:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9889606347,19.0515,72.9162,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10428,2026-08-28T09:09:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9899900238,19.0576,72.9028,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10429,2026-08-28T20:25:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9879425335,19.0527,72.9185,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10430,2026-08-28T21:36:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9860273758,19.07,72.8784,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10431,2026-08-28T10:30:00Z,F/N,Matunga / Sion / Wadala,contaminated_water,+91-9813747681,19.027,72.8549,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10432,2026-08-28T09:27:00Z,N,Ghatkopar / Pant Nagar,contaminated_water,+91-9863780091,19.0829,72.9045,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10433,2026-08-28T20:43:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9847284599,18.9565,72.8163,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10434,2026-08-28T14:47:00Z,R/C,Borivali / Gorai,contaminated_water,+91-9877403084,19.2281,72.8596,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10435,2026-08-28T13:21:00Z,A,Colaba / Fort / Nariman Point,tanker_delay,+91-9812035223,18.9234,72.8373,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10436,2026-08-28T09:33:00Z,R/C,Borivali / Gorai,severe_dry_pipe,+91-9870767763,19.2323,72.8565,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10437,2026-08-28T06:49:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9835927386,19.1247,72.8311,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10438,2026-08-29T07:07:00Z,G/S,Worli / Lower Parel,pipeline_burst,+91-9826210725,19.0015,72.8211,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10439,2026-08-29T14:18:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9833369172,19.1234,72.8294,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10440,2026-08-29T14:46:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,tanker_delay,+91-9892502556,19.0518,72.9152,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10441,2026-08-29T19:58:00Z,N,Ghatkopar / Pant Nagar,contaminated_water,+91-9855003258,19.0803,72.9114,resolved,true,10432,true,42,2.0.0,2026-09-18T12:00:00Z
+10442,2026-08-29T15:33:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,pipeline_burst,+91-9833313229,19.059,72.9178,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10443,2026-08-29T18:16:00Z,K/E,Andheri East / Marol,low_pressure,+91-9823122696,19.1108,72.8653,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10444,2026-08-29T07:25:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9839227690,19.126,72.8349,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10445,2026-08-29T08:52:00Z,T,Mulund / Nahur,contaminated_water,+91-9847359667,19.1707,72.9585,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10446,2026-08-29T20:19:00Z,K/W,Andheri West / Versova,low_pressure,+91-9885450490,19.1235,72.8267,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10447,2026-08-29T16:14:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9827290279,19.1283,72.8316,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10448,2026-08-29T06:14:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9870650203,19.1232,72.8303,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10449,2026-08-29T15:44:00Z,K/E,Andheri East / Marol,low_pressure,+91-9864757506,19.1153,72.8735,resolved,true,10443,true,42,2.0.0,2026-09-18T12:00:00Z
+10450,2026-08-29T13:16:00Z,E,Byculla / Mazgaon / Nagpada,low_pressure,+91-9841005436,18.9696,72.8287,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10451,2026-08-29T10:27:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9867688811,19.1323,72.8257,resolved,true,10437,true,42,2.0.0,2026-09-18T12:00:00Z
+10452,2026-08-29T06:53:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9850606959,19.1321,72.829,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10453,2026-08-29T12:36:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9813407950,19.058,72.8516,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10454,2026-08-29T12:06:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9881933833,19.123,72.8269,resolved,true,10437,true,42,2.0.0,2026-09-18T12:00:00Z
+10455,2026-08-29T13:58:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,pipeline_burst,+91-9882022359,19.0541,72.9201,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10456,2026-08-29T08:23:00Z,F/S,Parel / Sewri / Lalbaug,contaminated_water,+91-9819692020,18.9944,72.8419,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10457,2026-08-29T10:59:00Z,C,Marine Lines / Chandanwadi,low_pressure,+91-9851468513,18.945,72.821,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10458,2026-08-29T13:39:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9815592526,19.0745,72.8858,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10459,2026-08-29T12:49:00Z,N,Ghatkopar / Pant Nagar,severe_dry_pipe,+91-9848397149,19.0839,72.9045,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10460,2026-08-29T11:15:00Z,H/W,Bandra West / Khar,severe_dry_pipe,+91-9814476488,19.0622,72.8319,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10461,2026-08-29T20:35:00Z,R/N,Dahisar / Mandapeshwar,pipeline_burst,+91-9884270763,19.2566,72.8598,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10462,2026-08-29T08:34:00Z,F/S,Parel / Sewri / Lalbaug,tanker_delay,+91-9875825451,19.0029,72.8428,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10463,2026-08-29T18:06:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9864672065,19.0561,72.9163,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10464,2026-08-29T14:51:00Z,R/C,Borivali / Gorai,low_pressure,+91-9894779257,19.2339,72.8544,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10465,2026-08-29T18:50:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9818330304,19.0573,72.9164,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10466,2026-08-29T11:37:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9862735620,19.1258,72.8293,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10467,2026-08-29T10:58:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9841226401,19.054,72.9134,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10468,2026-08-29T12:45:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9839532916,19.0586,72.9134,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10469,2026-08-30T08:55:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9864204736,19.1264,72.8327,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10470,2026-08-30T09:26:00Z,S,Bhandup / Kanjurmarg / Powai,severe_dry_pipe,+91-9824474372,19.143,72.9297,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10471,2026-08-30T10:52:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9840571534,19.0628,72.849,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10472,2026-08-30T17:43:00Z,K/W,Andheri West / Versova,low_pressure,+91-9821464524,19.1321,72.8325,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10473,2026-08-30T16:39:00Z,R/N,Dahisar / Mandapeshwar,pipeline_burst,+91-9836609952,19.2532,72.8576,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10474,2026-08-30T12:38:00Z,A,Colaba / Fort / Nariman Point,severe_dry_pipe,+91-9886335511,18.9258,72.8385,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10475,2026-08-30T12:47:00Z,P/N,Malad / Marve / Malvani,low_pressure,+91-9812108810,19.191,72.8433,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10476,2026-08-30T07:39:00Z,K/E,Andheri East / Marol,low_pressure,+91-9836775182,19.1108,72.873,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10477,2026-08-30T10:48:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9872703541,19.0524,72.9208,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10478,2026-08-30T09:11:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9836009296,19.1269,72.8348,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10479,2026-08-30T07:26:00Z,A,Colaba / Fort / Nariman Point,contaminated_water,+91-9837818619,18.9239,72.8294,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10480,2026-08-30T10:12:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9876246087,19.1159,72.8682,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10481,2026-08-30T08:45:00Z,K/W,Andheri West / Versova,low_pressure,+91-9830385502,19.1307,72.8283,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10482,2026-08-30T17:43:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9840066128,19.0515,72.9165,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10483,2026-08-30T21:29:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9812534672,19.0565,72.9225,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10484,2026-08-30T16:55:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9812204092,19.0566,72.9173,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10485,2026-08-30T10:05:00Z,N,Ghatkopar / Pant Nagar,low_pressure,+91-9852942345,19.0796,72.9043,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10486,2026-08-30T08:49:00Z,F/N,Matunga / Sion / Wadala,low_pressure,+91-9835417363,19.0303,72.8555,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10487,2026-08-30T16:26:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9813519460,18.9577,72.8163,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10488,2026-08-30T08:10:00Z,R/C,Borivali / Gorai,contaminated_water,+91-9848982903,19.2309,72.8531,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10489,2026-08-30T09:45:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9876594919,19.131,72.8264,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10490,2026-08-30T07:22:00Z,E,Byculla / Mazgaon / Nagpada,severe_dry_pipe,+91-9866931409,18.9691,72.8338,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10491,2026-08-30T20:12:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9857304545,19.1233,72.825,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10492,2026-08-30T20:21:00Z,R/C,Borivali / Gorai,pipeline_burst,+91-9833424511,19.2254,72.8561,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10493,2026-08-30T14:18:00Z,C,Marine Lines / Chandanwadi,low_pressure,+91-9889698829,18.9516,72.8225,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10494,2026-08-30T10:18:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9859759405,19.0621,72.8471,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10495,2026-08-30T11:52:00Z,S,Bhandup / Kanjurmarg / Powai,severe_dry_pipe,+91-9812773807,19.1439,72.9289,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10496,2026-08-31T16:32:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9875850080,19.1328,72.8268,resolved,true,10478,true,42,2.0.0,2026-09-18T12:00:00Z
+10497,2026-08-31T11:26:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9823102442,19.0525,72.9173,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10498,2026-08-31T10:51:00Z,G/N,Dharavi / Mahim / Dadar West,severe_dry_pipe,+91-9892372118,19.0475,72.8491,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10499,2026-08-31T19:48:00Z,R/S,Kandivali West & East,severe_dry_pipe,+91-9856693281,19.2085,72.849,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10500,2026-08-31T11:44:00Z,R/S,Kandivali West & East,tanker_delay,+91-9810094677,19.207,72.852,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10501,2026-08-31T10:03:00Z,R/C,Borivali / Gorai,contaminated_water,+91-9897441850,19.2285,72.8549,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10502,2026-08-31T11:21:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9830622673,19.126,72.8283,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10503,2026-08-31T10:08:00Z,R/N,Dahisar / Mandapeshwar,pipeline_burst,+91-9833339085,19.2507,72.8633,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10504,2026-08-31T11:36:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9869604191,19.0588,72.9145,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10505,2026-08-31T16:30:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9886406318,19.1328,72.8318,resolved,true,10489,true,42,2.0.0,2026-09-18T12:00:00Z
+10506,2026-08-31T17:45:00Z,K/E,Andheri East / Marol,low_pressure,+91-9858964630,19.1158,72.8719,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10507,2026-08-31T09:34:00Z,P/S,Goregaon West & East,severe_dry_pipe,+91-9861709286,19.1613,72.8469,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10508,2026-08-31T15:00:00Z,R/S,Kandivali West & East,contaminated_water,+91-9831786970,19.2051,72.8517,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10509,2026-08-31T21:31:00Z,R/N,Dahisar / Mandapeshwar,severe_dry_pipe,+91-9836064749,19.2545,72.8596,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10510,2026-08-31T20:28:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9863815545,19.1235,72.8321,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10511,2026-08-31T16:26:00Z,A,Colaba / Fort / Nariman Point,severe_dry_pipe,+91-9866441337,18.9254,72.8351,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10512,2026-08-31T16:26:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9859066151,19.1231,72.8311,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10513,2026-08-31T15:46:00Z,R/N,Dahisar / Mandapeshwar,severe_dry_pipe,+91-9867781296,19.2508,72.8582,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10514,2026-08-31T10:51:00Z,K/W,Andheri West / Versova,low_pressure,+91-9820189555,19.1301,72.8255,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10515,2026-08-31T12:07:00Z,F/N,Matunga / Sion / Wadala,low_pressure,+91-9881727424,19.0282,72.8543,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10516,2026-08-31T07:59:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9849114385,18.9509,72.8389,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10517,2026-08-31T10:57:00Z,N,Ghatkopar / Pant Nagar,pipeline_burst,+91-9828262780,19.0793,72.9105,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10518,2026-08-31T06:17:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9857553058,19.174,72.9536,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10519,2026-08-31T16:41:00Z,N,Ghatkopar / Pant Nagar,contaminated_water,+91-9884905512,19.0816,72.9085,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10520,2026-08-31T20:34:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9824842386,19.1267,72.8337,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10521,2026-09-01T11:44:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9862564351,19.1237,72.827,resolved,true,10502,true,42,2.0.0,2026-09-18T12:00:00Z
+10522,2026-09-01T20:15:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9859107678,19.0756,72.8845,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10523,2026-09-01T07:35:00Z,F/N,Matunga / Sion / Wadala,low_pressure,+91-9891061352,19.0302,72.853,resolved,true,10515,true,42,2.0.0,2026-09-18T12:00:00Z
+10524,2026-09-01T21:45:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9818040591,19.1314,72.8256,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10525,2026-09-01T14:46:00Z,P/S,Goregaon West & East,contaminated_water,+91-9838834857,19.158,72.841,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10526,2026-09-01T09:59:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9897702488,18.9566,72.8077,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10527,2026-09-01T21:48:00Z,L,Kurla / Asalpha / Sakinaka,pipeline_burst,+91-9879288636,19.0761,72.88,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10528,2026-09-01T16:35:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9889776036,19.0516,72.9225,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10529,2026-09-01T16:03:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9892265451,18.9624,72.8149,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10530,2026-09-01T16:30:00Z,N,Ghatkopar / Pant Nagar,severe_dry_pipe,+91-9816087559,19.0877,72.9127,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10531,2026-09-01T18:22:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9877759721,19.1291,72.8264,resolved,true,10512,true,42,2.0.0,2026-09-18T12:00:00Z
+10532,2026-09-01T09:01:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9814784505,19.0634,72.9023,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10533,2026-09-01T12:56:00Z,E,Byculla / Mazgaon / Nagpada,contaminated_water,+91-9842256655,18.9745,72.835,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10534,2026-09-01T09:58:00Z,H/W,Bandra West / Khar,severe_dry_pipe,+91-9857431983,19.0601,72.8325,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10535,2026-09-01T07:22:00Z,H/W,Bandra West / Khar,tanker_delay,+91-9899597355,19.0617,72.8294,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10536,2026-09-01T20:58:00Z,B,Sandhurst Road / Dongri,low_pressure,+91-9883319963,18.9547,72.8399,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10537,2026-09-01T08:06:00Z,K/W,Andheri West / Versova,low_pressure,+91-9819193403,19.1321,72.8316,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10538,2026-09-01T20:24:00Z,R/N,Dahisar / Mandapeshwar,contaminated_water,+91-9871646074,19.2541,72.8613,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10539,2026-09-01T18:49:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9877945691,19.0017,72.8228,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10540,2026-09-01T14:36:00Z,R/S,Kandivali West & East,severe_dry_pipe,+91-9881441907,19.2045,72.8501,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10541,2026-09-01T19:28:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9874882636,19.1102,72.8716,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10542,2026-09-01T11:31:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9845126090,19.0533,72.9195,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10543,2026-09-01T09:05:00Z,E,Byculla / Mazgaon / Nagpada,pipeline_burst,+91-9889800384,18.969,72.8308,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10544,2026-09-01T15:16:00Z,T,Mulund / Nahur,contaminated_water,+91-9823538621,19.1764,72.9532,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10545,2026-09-01T13:57:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9880680378,19.1232,72.8275,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10546,2026-09-01T15:49:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9869519367,19.1255,72.831,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10547,2026-09-01T14:17:00Z,K/W,Andheri West / Versova,low_pressure,+91-9868141054,19.1263,72.8333,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10548,2026-09-01T08:12:00Z,L,Kurla / Asalpha / Sakinaka,contaminated_water,+91-9827562979,19.0682,72.8785,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10549,2026-09-01T07:28:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9849574387,19.1258,72.8281,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10550,2026-09-02T13:47:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9842162150,19.0526,72.9146,resolved,true,10542,true,42,2.0.0,2026-09-18T12:00:00Z
+10551,2026-09-02T21:05:00Z,R/S,Kandivali West & East,tanker_delay,+91-9886339644,19.2095,72.8463,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10552,2026-09-02T10:06:00Z,K/W,Andheri West / Versova,low_pressure,+91-9850278855,19.1313,72.8253,resolved,true,10537,true,42,2.0.0,2026-09-18T12:00:00Z
+10553,2026-09-02T14:46:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9881804206,19.1294,72.8312,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10554,2026-09-02T08:43:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9896505514,19.0037,72.8186,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10555,2026-09-02T18:52:00Z,R/N,Dahisar / Mandapeshwar,pipeline_burst,+91-9879946152,19.2537,72.8541,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10556,2026-09-02T10:18:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9860534417,18.9547,72.8418,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10557,2026-09-02T07:59:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9886868784,19.1257,72.8305,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10558,2026-09-02T10:34:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9845439417,19.0569,72.9189,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10559,2026-09-02T12:48:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9852432135,19.1297,72.8287,resolved,true,10545,true,42,2.0.0,2026-09-18T12:00:00Z
+10560,2026-09-02T20:20:00Z,S,Bhandup / Kanjurmarg / Powai,contaminated_water,+91-9855618325,19.1403,72.9294,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10561,2026-09-02T07:04:00Z,M/W,Chembur West / Tilak Nagar,low_pressure,+91-9838215840,19.0576,72.898,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10562,2026-09-02T21:41:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9816746001,19.1148,72.8727,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10563,2026-09-02T12:02:00Z,G/S,Worli / Lower Parel,contaminated_water,+91-9852811219,19.0032,72.8236,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10564,2026-09-02T19:09:00Z,D,Malabar Hill / Walkeshwar,low_pressure,+91-9891588835,18.9643,72.8104,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10565,2026-09-02T16:21:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9846319349,19.1718,72.9521,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10566,2026-09-02T16:57:00Z,P/S,Goregaon West & East,pipeline_burst,+91-9898084453,19.1628,72.8472,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10567,2026-09-02T11:49:00Z,R/C,Borivali / Gorai,contaminated_water,+91-9816520235,19.2256,72.8526,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10568,2026-09-02T15:39:00Z,L,Kurla / Asalpha / Sakinaka,pipeline_burst,+91-9844179993,19.0746,72.884,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10569,2026-09-02T18:10:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9866349207,19.1246,72.8332,resolved,true,10549,true,42,2.0.0,2026-09-18T12:00:00Z
+10570,2026-09-02T21:27:00Z,E,Byculla / Mazgaon / Nagpada,pipeline_burst,+91-9898107862,18.9758,72.8354,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10571,2026-09-02T08:43:00Z,G/S,Worli / Lower Parel,pipeline_burst,+91-9820511264,19.0047,72.8206,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10572,2026-09-02T10:01:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9843086092,19.1258,72.8272,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10573,2026-09-02T12:27:00Z,C,Marine Lines / Chandanwadi,severe_dry_pipe,+91-9877562019,18.9483,72.8239,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10574,2026-09-02T15:05:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9849151952,19.0065,72.8245,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10575,2026-09-03T10:01:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9894271357,19.0581,72.9219,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10576,2026-09-03T20:24:00Z,P/N,Malad / Marve / Malvani,severe_dry_pipe,+91-9893193278,19.1897,72.8479,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10577,2026-09-03T12:01:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9835992095,19.0505,72.9131,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10578,2026-09-03T07:48:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9873475762,19.0507,72.9216,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10579,2026-09-03T16:10:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9869507853,19.058,72.9179,resolved,true,10575,true,42,2.0.0,2026-09-18T12:00:00Z
+10580,2026-09-03T07:51:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9841376377,19.0512,72.9192,resolved,true,10575,true,42,2.0.0,2026-09-18T12:00:00Z
+10581,2026-09-03T21:43:00Z,F/N,Matunga / Sion / Wadala,severe_dry_pipe,+91-9843709452,19.0284,72.8534,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10582,2026-09-03T09:32:00Z,F/S,Parel / Sewri / Lalbaug,low_pressure,+91-9886025704,19.0027,72.8488,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10583,2026-09-03T06:22:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9865492121,19.1256,72.8345,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10584,2026-09-03T07:45:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9870025289,19.067,72.8776,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10585,2026-09-03T08:41:00Z,P/N,Malad / Marve / Malvani,severe_dry_pipe,+91-9898893026,19.1834,72.8431,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10586,2026-09-03T06:06:00Z,G/N,Dharavi / Mahim / Dadar West,severe_dry_pipe,+91-9839975645,19.0406,72.8443,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10587,2026-09-03T16:16:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9896119973,19.0545,72.9149,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10588,2026-09-03T18:05:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9833902159,19.1307,72.8283,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10589,2026-09-03T19:43:00Z,K/W,Andheri West / Versova,low_pressure,+91-9836020728,19.1258,72.8292,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10590,2026-09-03T17:32:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9850615244,19.1323,72.8319,resolved,true,10572,true,42,2.0.0,2026-09-18T12:00:00Z
+10591,2026-09-03T11:11:00Z,A,Colaba / Fort / Nariman Point,pipeline_burst,+91-9861348420,18.923,72.8336,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10592,2026-09-03T17:39:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9898288283,19.0543,72.9173,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10593,2026-09-03T17:35:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9842326600,19.1674,72.9563,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10594,2026-09-03T16:41:00Z,K/W,Andheri West / Versova,low_pressure,+91-9827857875,19.1256,72.8312,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10595,2026-09-03T19:12:00Z,G/N,Dharavi / Mahim / Dadar West,severe_dry_pipe,+91-9822246507,19.0384,72.8452,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10596,2026-09-03T08:58:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9851395385,19.128,72.8306,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10597,2026-09-03T10:08:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9844877876,19.0503,72.9215,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10598,2026-09-03T12:29:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9877498480,19.1255,72.8266,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10599,2026-09-03T17:22:00Z,N,Ghatkopar / Pant Nagar,contaminated_water,+91-9827594396,19.0802,72.9087,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10600,2026-09-03T15:30:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9886848864,19.1275,72.8293,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10601,2026-09-03T21:29:00Z,R/S,Kandivali West & East,low_pressure,+91-9883796352,19.2018,72.8502,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10602,2026-09-03T07:50:00Z,H/E,Bandra East / Santacruz East,contaminated_water,+91-9896911739,19.0574,72.8539,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10603,2026-09-03T16:30:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9818205258,19.1292,72.8288,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10604,2026-09-04T19:27:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9848645309,19.0592,72.9195,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10605,2026-09-04T21:28:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9818595106,19.1235,72.832,resolved,true,10588,true,42,2.0.0,2026-09-18T12:00:00Z
+10606,2026-09-04T11:50:00Z,C,Marine Lines / Chandanwadi,severe_dry_pipe,+91-9824115854,18.9433,72.8246,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10607,2026-09-04T18:36:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9863434683,19.0573,72.9151,resolved,true,10587,true,42,2.0.0,2026-09-18T12:00:00Z
+10608,2026-09-04T17:25:00Z,F/N,Matunga / Sion / Wadala,low_pressure,+91-9815339804,19.0259,72.8529,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10609,2026-09-04T14:46:00Z,F/N,Matunga / Sion / Wadala,tanker_delay,+91-9855419874,19.0309,72.8592,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10610,2026-09-04T20:56:00Z,H/W,Bandra West / Khar,severe_dry_pipe,+91-9899192681,19.061,72.8334,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10611,2026-09-04T12:57:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9894268965,19.0516,72.9202,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10612,2026-09-04T13:04:00Z,K/W,Andheri West / Versova,low_pressure,+91-9872378799,19.1301,72.8266,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10613,2026-09-04T21:53:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9823742432,19.0553,72.9201,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10614,2026-09-04T15:59:00Z,R/N,Dahisar / Mandapeshwar,severe_dry_pipe,+91-9830781091,19.2501,72.86,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10615,2026-09-04T19:50:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9833528370,19.0544,72.9226,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10616,2026-09-04T13:28:00Z,P/S,Goregaon West & East,low_pressure,+91-9888087162,19.1604,72.8405,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10617,2026-09-04T14:52:00Z,P/S,Goregaon West & East,pipeline_burst,+91-9818368022,19.1598,72.8454,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10618,2026-09-04T12:43:00Z,C,Marine Lines / Chandanwadi,contaminated_water,+91-9876567546,18.9522,72.8276,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10619,2026-09-04T18:16:00Z,E,Byculla / Mazgaon / Nagpada,contaminated_water,+91-9841410091,18.9721,72.8317,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10620,2026-09-04T08:38:00Z,K/E,Andheri East / Marol,contaminated_water,+91-9848883370,19.1122,72.869,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10621,2026-09-04T08:23:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9859805838,19.0505,72.9227,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10622,2026-09-04T10:38:00Z,H/W,Bandra West / Khar,severe_dry_pipe,+91-9828402727,19.0559,72.8316,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10623,2026-09-04T19:21:00Z,P/N,Malad / Marve / Malvani,low_pressure,+91-9869271403,19.1898,72.8458,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10624,2026-09-04T20:58:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9847699195,19.1262,72.8263,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10625,2026-09-04T07:45:00Z,P/N,Malad / Marve / Malvani,low_pressure,+91-9851724609,19.1891,72.8446,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10626,2026-09-04T08:06:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9810217025,19.0572,72.9226,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10627,2026-09-04T13:38:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9847936147,19.0543,72.9225,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10628,2026-09-04T20:09:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9838672522,19.0569,72.9164,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10629,2026-09-05T16:24:00Z,E,Byculla / Mazgaon / Nagpada,contaminated_water,+91-9880457193,18.9681,72.8309,resolved,true,10619,true,42,2.0.0,2026-09-18T12:00:00Z
+10630,2026-09-05T08:55:00Z,A,Colaba / Fort / Nariman Point,contaminated_water,+91-9847003781,18.9262,72.835,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10631,2026-09-05T14:52:00Z,L,Kurla / Asalpha / Sakinaka,pipeline_burst,+91-9838277773,19.0719,72.8861,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10632,2026-09-05T19:51:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9830304828,18.9512,72.8398,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10633,2026-09-05T10:03:00Z,L,Kurla / Asalpha / Sakinaka,contaminated_water,+91-9835618538,19.0737,72.8845,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10634,2026-09-05T17:48:00Z,L,Kurla / Asalpha / Sakinaka,low_pressure,+91-9855939380,19.0744,72.8842,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10635,2026-09-05T06:33:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,pipeline_burst,+91-9842218121,19.0595,72.9217,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10636,2026-09-05T06:36:00Z,H/E,Bandra East / Santacruz East,tanker_delay,+91-9871344856,19.0575,72.8539,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10637,2026-09-05T13:14:00Z,R/C,Borivali / Gorai,severe_dry_pipe,+91-9872530698,19.2327,72.8593,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10638,2026-09-05T17:53:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9811243545,19.0109,72.8186,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10639,2026-09-05T11:50:00Z,R/N,Dahisar / Mandapeshwar,severe_dry_pipe,+91-9839248301,19.2534,72.8587,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10640,2026-09-05T09:35:00Z,H/W,Bandra West / Khar,pipeline_burst,+91-9816097314,19.0618,72.8347,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10641,2026-09-05T11:53:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9894851167,19.1288,72.8329,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10642,2026-09-05T18:10:00Z,K/W,Andheri West / Versova,low_pressure,+91-9828405654,19.1303,72.8315,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10643,2026-09-05T08:20:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,tanker_delay,+91-9837356422,19.0504,72.9152,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10644,2026-09-05T21:11:00Z,P/N,Malad / Marve / Malvani,severe_dry_pipe,+91-9837242238,19.1818,72.8457,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10645,2026-09-05T17:46:00Z,K/E,Andheri East / Marol,contaminated_water,+91-9814559996,19.1098,72.8706,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10646,2026-09-05T17:16:00Z,A,Colaba / Fort / Nariman Point,severe_dry_pipe,+91-9890307559,18.9222,72.8316,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10647,2026-09-05T06:03:00Z,D,Malabar Hill / Walkeshwar,low_pressure,+91-9860355843,18.9646,72.8094,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10648,2026-09-05T07:48:00Z,A,Colaba / Fort / Nariman Point,severe_dry_pipe,+91-9824393483,18.9184,72.8378,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10649,2026-09-05T08:27:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9819833715,19.0544,72.9199,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10650,2026-09-05T18:30:00Z,L,Kurla / Asalpha / Sakinaka,contaminated_water,+91-9877738529,19.0723,72.8835,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10651,2026-09-05T11:25:00Z,C,Marine Lines / Chandanwadi,contaminated_water,+91-9827850457,18.9527,72.8296,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10652,2026-09-05T21:36:00Z,M/W,Chembur West / Tilak Nagar,low_pressure,+91-9831577336,19.0586,72.893,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10653,2026-09-05T19:51:00Z,F/N,Matunga / Sion / Wadala,contaminated_water,+91-9870723341,19.0263,72.86,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10654,2026-09-05T18:20:00Z,S,Bhandup / Kanjurmarg / Powai,severe_dry_pipe,+91-9890691584,19.1399,72.9232,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10655,2026-09-06T21:16:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9884198248,19.1317,72.8272,resolved,true,10641,true,42,2.0.0,2026-09-18T12:00:00Z
+10656,2026-09-06T17:18:00Z,K/W,Andheri West / Versova,low_pressure,+91-9810909597,19.1281,72.8261,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10657,2026-09-06T08:18:00Z,F/S,Parel / Sewri / Lalbaug,pipeline_burst,+91-9847073332,18.9957,72.8471,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10658,2026-09-06T09:00:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9865579749,19.0564,72.9188,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10659,2026-09-06T06:22:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,tanker_delay,+91-9872995155,19.0588,72.9188,resolved,true,10643,true,42,2.0.0,2026-09-18T12:00:00Z
+10660,2026-09-06T10:29:00Z,M/W,Chembur West / Tilak Nagar,low_pressure,+91-9820984301,19.0599,72.8932,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10661,2026-09-06T09:44:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9840512874,19.1237,72.8253,resolved,true,10641,true,42,2.0.0,2026-09-18T12:00:00Z
+10662,2026-09-06T10:44:00Z,F/N,Matunga / Sion / Wadala,tanker_delay,+91-9869459292,19.0273,72.8572,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10663,2026-09-06T15:47:00Z,P/N,Malad / Marve / Malvani,low_pressure,+91-9896291224,19.1843,72.8518,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10664,2026-09-06T19:50:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9874713593,19.1278,72.8269,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10665,2026-09-06T06:22:00Z,F/S,Parel / Sewri / Lalbaug,severe_dry_pipe,+91-9867491587,18.9998,72.8404,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10666,2026-09-06T21:53:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9819062053,19.1759,72.9569,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10667,2026-09-06T14:13:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9812435135,19.0616,72.8978,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10668,2026-09-06T18:03:00Z,A,Colaba / Fort / Nariman Point,pipeline_burst,+91-9889410888,18.9198,72.8324,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10669,2026-09-06T19:29:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9874961075,19.1292,72.8348,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10670,2026-09-06T11:27:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9849343548,19.1291,72.8266,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10671,2026-09-06T08:37:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9887071383,19.1293,72.8334,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10672,2026-09-06T19:31:00Z,P/S,Goregaon West & East,contaminated_water,+91-9866269330,19.1608,72.8432,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10673,2026-09-06T11:25:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9838811438,19.1305,72.8308,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10674,2026-09-06T14:32:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9828985332,19.0598,72.9131,resolved,true,10658,true,42,2.0.0,2026-09-18T12:00:00Z
+10675,2026-09-06T09:47:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9836082554,18.9471,72.8331,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10676,2026-09-06T15:21:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9818856863,19.1276,72.8319,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10677,2026-09-06T12:16:00Z,K/W,Andheri West / Versova,low_pressure,+91-9863975933,19.1238,72.833,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10678,2026-09-06T10:24:00Z,C,Marine Lines / Chandanwadi,severe_dry_pipe,+91-9897130147,18.9521,72.8268,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10679,2026-09-06T18:38:00Z,G/N,Dharavi / Mahim / Dadar West,low_pressure,+91-9842369458,19.0419,72.8445,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10680,2026-09-06T20:27:00Z,R/S,Kandivali West & East,tanker_delay,+91-9814842316,19.2049,72.8515,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10681,2026-09-07T17:16:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9844259663,19.1676,72.9576,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10682,2026-09-07T13:38:00Z,L,Kurla / Asalpha / Sakinaka,low_pressure,+91-9874732768,19.0707,72.8803,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10683,2026-09-07T15:08:00Z,R/N,Dahisar / Mandapeshwar,contaminated_water,+91-9866862138,19.2509,72.8596,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10684,2026-09-07T13:24:00Z,K/W,Andheri West / Versova,low_pressure,+91-9836593541,19.1318,72.8327,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10685,2026-09-07T07:57:00Z,R/S,Kandivali West & East,contaminated_water,+91-9886850247,19.2039,72.8494,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10686,2026-09-07T18:43:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9855162432,19.1249,72.8262,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10687,2026-09-07T16:58:00Z,N,Ghatkopar / Pant Nagar,contaminated_water,+91-9894280581,19.0837,72.9086,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10688,2026-09-07T16:51:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9818148994,19.1292,72.8276,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10689,2026-09-07T10:24:00Z,F/S,Parel / Sewri / Lalbaug,severe_dry_pipe,+91-9833506400,19.0028,72.848,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10690,2026-09-07T14:59:00Z,G/N,Dharavi / Mahim / Dadar West,low_pressure,+91-9822623049,19.0388,72.8432,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10691,2026-09-07T15:12:00Z,N,Ghatkopar / Pant Nagar,tanker_delay,+91-9841207920,19.0851,72.9071,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10692,2026-09-07T21:01:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9840323415,19.1252,72.8261,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10693,2026-09-07T19:54:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9817870932,19.0535,72.9182,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10694,2026-09-07T11:28:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9868371266,19.1287,72.8294,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10695,2026-09-07T09:25:00Z,P/N,Malad / Marve / Malvani,severe_dry_pipe,+91-9855006094,19.1878,72.8441,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10696,2026-09-07T20:39:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9818423711,19.1326,72.8293,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10697,2026-09-07T18:47:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9864775235,19.0532,72.9136,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10698,2026-09-07T09:09:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9884940677,19.056,72.9225,resolved,true,10693,true,42,2.0.0,2026-09-18T12:00:00Z
+10699,2026-09-07T18:31:00Z,A,Colaba / Fort / Nariman Point,low_pressure,+91-9885549790,18.9252,72.8365,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10700,2026-09-07T18:59:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9849283436,19.1153,72.8721,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10701,2026-09-07T18:53:00Z,F/S,Parel / Sewri / Lalbaug,severe_dry_pipe,+91-9814174731,18.9989,72.8465,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10702,2026-09-07T15:25:00Z,R/N,Dahisar / Mandapeshwar,contaminated_water,+91-9859532392,19.2516,72.8631,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10703,2026-09-07T06:58:00Z,N,Ghatkopar / Pant Nagar,severe_dry_pipe,+91-9847281818,19.085,72.9094,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10704,2026-09-07T06:54:00Z,F/S,Parel / Sewri / Lalbaug,contaminated_water,+91-9868145714,19.0001,72.8439,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10705,2026-09-07T10:35:00Z,G/N,Dharavi / Mahim / Dadar West,severe_dry_pipe,+91-9879577720,19.0451,72.8482,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10706,2026-09-07T21:35:00Z,G/S,Worli / Lower Parel,tanker_delay,+91-9844221587,19.0082,72.8208,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10707,2026-09-07T21:33:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9831838673,19.0688,72.8828,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10708,2026-09-07T16:05:00Z,C,Marine Lines / Chandanwadi,contaminated_water,+91-9830489136,18.949,72.8257,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10709,2026-09-07T20:21:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9885986793,19.1673,72.9592,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10710,2026-09-08T18:47:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9866360008,19.0527,72.9207,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10711,2026-09-08T21:37:00Z,D,Malabar Hill / Walkeshwar,contaminated_water,+91-9882159060,18.9566,72.8083,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10712,2026-09-08T06:45:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9891625969,19.0584,72.9203,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10713,2026-09-08T19:31:00Z,C,Marine Lines / Chandanwadi,low_pressure,+91-9876784477,18.949,72.8253,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10714,2026-09-08T13:50:00Z,F/S,Parel / Sewri / Lalbaug,severe_dry_pipe,+91-9883041361,18.9983,72.8397,resolved,true,10701,true,42,2.0.0,2026-09-18T12:00:00Z
+10715,2026-09-08T06:23:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9874633466,19.1268,72.8253,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10716,2026-09-08T06:33:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9855690743,19.1278,72.826,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10717,2026-09-08T10:35:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9869864369,18.956,72.8093,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10718,2026-09-08T15:27:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9821149758,19.051,72.9204,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10719,2026-09-08T20:06:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9869415822,19.0593,72.8556,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10720,2026-09-08T12:19:00Z,P/N,Malad / Marve / Malvani,contaminated_water,+91-9839321238,19.1908,72.8452,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10721,2026-09-08T12:02:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9821255761,18.9574,72.8128,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10722,2026-09-08T08:52:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9811110254,19.0598,72.9011,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10723,2026-09-08T21:21:00Z,T,Mulund / Nahur,low_pressure,+91-9848431387,19.1692,72.954,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10724,2026-09-08T18:23:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9851563145,19.0582,72.8556,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10725,2026-09-08T19:23:00Z,S,Bhandup / Kanjurmarg / Powai,severe_dry_pipe,+91-9881542581,19.1436,72.9305,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10726,2026-09-08T07:10:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9844831042,19.0584,72.9207,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10727,2026-09-08T06:15:00Z,R/S,Kandivali West & East,contaminated_water,+91-9835628875,19.2011,72.8494,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10728,2026-09-08T11:49:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9861471208,19.0504,72.9194,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10729,2026-09-08T11:26:00Z,P/N,Malad / Marve / Malvani,tanker_delay,+91-9823260113,19.1878,72.8483,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10730,2026-09-08T20:35:00Z,K/W,Andheri West / Versova,low_pressure,+91-9844443948,19.1295,72.829,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10731,2026-09-08T10:57:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9829588455,19.1262,72.8296,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10732,2026-09-08T12:18:00Z,S,Bhandup / Kanjurmarg / Powai,severe_dry_pipe,+91-9848850214,19.1402,72.9261,resolved,true,10725,true,42,2.0.0,2026-09-18T12:00:00Z
+10733,2026-09-08T15:08:00Z,R/N,Dahisar / Mandapeshwar,severe_dry_pipe,+91-9834259158,19.2532,72.8611,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10734,2026-09-08T12:05:00Z,F/S,Parel / Sewri / Lalbaug,pipeline_burst,+91-9860676267,19.0006,72.8463,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10735,2026-09-08T09:33:00Z,F/S,Parel / Sewri / Lalbaug,low_pressure,+91-9812619186,19.0011,72.8464,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10736,2026-09-08T19:57:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9821256852,18.9605,72.8127,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10737,2026-09-08T06:55:00Z,P/N,Malad / Marve / Malvani,contaminated_water,+91-9840656476,19.1863,72.8432,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10738,2026-09-08T10:32:00Z,F/S,Parel / Sewri / Lalbaug,low_pressure,+91-9826960570,18.9931,72.8402,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10739,2026-09-08T21:55:00Z,R/N,Dahisar / Mandapeshwar,severe_dry_pipe,+91-9850189575,19.2559,72.8576,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10740,2026-09-08T10:02:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9846251557,19.1246,72.8316,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10741,2026-09-08T10:41:00Z,R/S,Kandivali West & East,contaminated_water,+91-9859847622,19.2106,72.8473,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10742,2026-09-08T17:47:00Z,S,Bhandup / Kanjurmarg / Powai,severe_dry_pipe,+91-9872329818,19.1361,72.9328,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10743,2026-09-09T15:32:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9890718864,19.1281,72.8329,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10744,2026-09-09T21:36:00Z,F/N,Matunga / Sion / Wadala,low_pressure,+91-9888192847,19.0292,72.8548,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10745,2026-09-09T07:15:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9829246722,19.0514,72.9196,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10746,2026-09-09T17:01:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9886770572,19.126,72.8272,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10747,2026-09-09T09:38:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9843646761,19.0536,72.9193,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10748,2026-09-09T19:57:00Z,N,Ghatkopar / Pant Nagar,severe_dry_pipe,+91-9861213759,19.0862,72.9077,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10749,2026-09-09T20:00:00Z,P/N,Malad / Marve / Malvani,low_pressure,+91-9827725920,19.1863,72.8481,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10750,2026-09-09T15:40:00Z,N,Ghatkopar / Pant Nagar,severe_dry_pipe,+91-9858393538,19.0871,72.9101,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10751,2026-09-09T18:53:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9893760101,19.1286,72.8255,resolved,true,10731,true,42,2.0.0,2026-09-18T12:00:00Z
+10752,2026-09-09T11:37:00Z,R/C,Borivali / Gorai,pipeline_burst,+91-9871284632,19.2332,72.8522,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10753,2026-09-09T11:50:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9873887606,19.0566,72.9191,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10754,2026-09-09T17:03:00Z,P/N,Malad / Marve / Malvani,contaminated_water,+91-9817728371,19.1903,72.8521,resolved,true,10737,true,42,2.0.0,2026-09-18T12:00:00Z
+10755,2026-09-09T07:19:00Z,A,Colaba / Fort / Nariman Point,severe_dry_pipe,+91-9861684431,18.9197,72.8373,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10756,2026-09-09T14:38:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9867713879,19.1321,72.8314,resolved,true,10740,true,42,2.0.0,2026-09-18T12:00:00Z
+10757,2026-09-09T18:39:00Z,E,Byculla / Mazgaon / Nagpada,pipeline_burst,+91-9893442094,18.9715,72.8277,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10758,2026-09-09T18:07:00Z,R/S,Kandivali West & East,severe_dry_pipe,+91-9830776893,19.205,72.8522,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10759,2026-09-09T15:10:00Z,P/S,Goregaon West & East,pipeline_burst,+91-9812287452,19.1603,72.8395,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10760,2026-09-09T21:29:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9845359379,19.1265,72.8347,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10761,2026-09-09T10:38:00Z,P/N,Malad / Marve / Malvani,severe_dry_pipe,+91-9848371791,19.1846,72.8496,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10762,2026-09-09T20:11:00Z,A,Colaba / Fort / Nariman Point,contaminated_water,+91-9812716656,18.9225,72.8319,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10763,2026-09-09T09:03:00Z,P/N,Malad / Marve / Malvani,severe_dry_pipe,+91-9875447186,19.1858,72.8456,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10764,2026-09-09T14:04:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9813316872,19.1288,72.8299,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10765,2026-09-09T17:16:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9822713352,18.9513,72.8407,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10766,2026-09-09T19:25:00Z,N,Ghatkopar / Pant Nagar,severe_dry_pipe,+91-9826578694,19.0858,72.9121,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10767,2026-09-09T10:02:00Z,R/S,Kandivali West & East,contaminated_water,+91-9885630723,19.2065,72.8475,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10768,2026-09-09T21:57:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9846612861,19.1268,72.8344,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10769,2026-09-09T11:31:00Z,K/W,Andheri West / Versova,low_pressure,+91-9820715515,19.1243,72.8253,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10770,2026-09-09T20:15:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9821995210,19.0586,72.922,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10771,2026-09-09T16:19:00Z,H/E,Bandra East / Santacruz East,tanker_delay,+91-9827830521,19.0595,72.8492,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10772,2026-09-09T09:32:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9811853479,19.0069,72.8181,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10773,2026-09-09T10:44:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9824436663,18.9644,72.8091,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10774,2026-09-09T17:27:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9823750560,19.1258,72.83,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10775,2026-09-10T08:41:00Z,R/S,Kandivali West & East,severe_dry_pipe,+91-9899338660,19.2103,72.8543,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10776,2026-09-10T17:38:00Z,F/S,Parel / Sewri / Lalbaug,severe_dry_pipe,+91-9822078506,18.9939,72.8426,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10777,2026-09-10T12:54:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,pipeline_burst,+91-9876038660,19.0515,72.9135,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10778,2026-09-10T18:38:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9863653551,18.9489,72.8361,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10779,2026-09-10T07:36:00Z,R/S,Kandivali West & East,tanker_delay,+91-9858463614,19.2091,72.8471,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10780,2026-09-10T13:10:00Z,R/C,Borivali / Gorai,severe_dry_pipe,+91-9861518784,19.2335,72.852,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10781,2026-09-10T06:10:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9834751374,19.0581,72.9165,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10782,2026-09-10T12:23:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9813606740,19.1272,72.8341,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10783,2026-09-10T10:54:00Z,R/S,Kandivali West & East,contaminated_water,+91-9825192311,19.2089,72.8486,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10784,2026-09-10T18:28:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9824465604,19.133,72.8326,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10785,2026-09-10T06:53:00Z,K/W,Andheri West / Versova,low_pressure,+91-9893460231,19.1296,72.8252,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10786,2026-09-10T15:43:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9843013859,19.116,72.8743,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10787,2026-09-10T17:37:00Z,M/W,Chembur West / Tilak Nagar,contaminated_water,+91-9821655949,19.0566,72.9,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10788,2026-09-10T18:30:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9852006328,19.1232,72.8256,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10789,2026-09-10T06:27:00Z,E,Byculla / Mazgaon / Nagpada,severe_dry_pipe,+91-9836304475,18.9748,72.8347,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10790,2026-09-10T20:10:00Z,F/N,Matunga / Sion / Wadala,severe_dry_pipe,+91-9878902926,19.0225,72.8553,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10791,2026-09-10T15:30:00Z,L,Kurla / Asalpha / Sakinaka,low_pressure,+91-9819652039,19.0765,72.8808,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10792,2026-09-10T10:58:00Z,P/N,Malad / Marve / Malvani,contaminated_water,+91-9891314788,19.1815,72.8441,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10793,2026-09-10T10:18:00Z,K/W,Andheri West / Versova,low_pressure,+91-9889578902,19.1252,72.8318,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10794,2026-09-10T10:32:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,pipeline_burst,+91-9838940319,19.0591,72.9159,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10795,2026-09-10T06:26:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9898322734,19.1293,72.8341,resolved,true,10782,true,42,2.0.0,2026-09-18T12:00:00Z
+10796,2026-09-10T07:39:00Z,C,Marine Lines / Chandanwadi,pipeline_burst,+91-9864683868,18.9431,72.8298,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10797,2026-09-10T16:01:00Z,G/N,Dharavi / Mahim / Dadar West,severe_dry_pipe,+91-9883485667,19.0465,72.8426,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10798,2026-09-10T12:33:00Z,N,Ghatkopar / Pant Nagar,severe_dry_pipe,+91-9823114778,19.0842,72.9074,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10799,2026-09-10T20:55:00Z,K/W,Andheri West / Versova,low_pressure,+91-9883907261,19.1319,72.828,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10800,2026-09-11T12:35:00Z,E,Byculla / Mazgaon / Nagpada,tanker_delay,+91-9819185865,18.9727,72.836,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10801,2026-09-11T17:46:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9839037575,18.9637,72.8144,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10802,2026-09-11T12:16:00Z,P/S,Goregaon West & East,low_pressure,+91-9846291718,19.1638,72.8463,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10803,2026-09-11T11:19:00Z,R/C,Borivali / Gorai,severe_dry_pipe,+91-9876770033,19.2282,72.8526,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10804,2026-09-11T20:57:00Z,T,Mulund / Nahur,low_pressure,+91-9814404032,19.174,72.9599,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10805,2026-09-11T07:42:00Z,N,Ghatkopar / Pant Nagar,contaminated_water,+91-9810232074,19.0837,72.9067,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10806,2026-09-11T17:54:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9864738516,19.1255,72.8256,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10807,2026-09-11T21:19:00Z,E,Byculla / Mazgaon / Nagpada,low_pressure,+91-9872304399,18.9723,72.8274,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10808,2026-09-11T19:12:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9878558543,19.0514,72.9185,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10809,2026-09-11T21:54:00Z,F/N,Matunga / Sion / Wadala,severe_dry_pipe,+91-9868866287,19.0265,72.8597,resolved,true,10790,true,42,2.0.0,2026-09-18T12:00:00Z
+10810,2026-09-11T16:38:00Z,M/W,Chembur West / Tilak Nagar,tanker_delay,+91-9856053194,19.0654,72.897,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10811,2026-09-11T14:16:00Z,G/N,Dharavi / Mahim / Dadar West,tanker_delay,+91-9833882989,19.0477,72.851,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10812,2026-09-11T13:31:00Z,R/C,Borivali / Gorai,severe_dry_pipe,+91-9886566050,19.229,72.8587,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10813,2026-09-11T11:02:00Z,P/S,Goregaon West & East,contaminated_water,+91-9812854543,19.1592,72.8415,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10814,2026-09-11T11:40:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9884722670,19.1102,72.87,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10815,2026-09-11T16:01:00Z,A,Colaba / Fort / Nariman Point,contaminated_water,+91-9848468244,18.9216,72.8327,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10816,2026-09-11T12:22:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9880140747,19.0527,72.9135,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10817,2026-09-11T19:45:00Z,H/E,Bandra East / Santacruz East,contaminated_water,+91-9879220052,19.0656,72.8466,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10818,2026-09-11T19:57:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9845385901,18.9525,72.8345,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10819,2026-09-11T13:08:00Z,H/W,Bandra West / Khar,severe_dry_pipe,+91-9840095054,19.057,72.8344,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10820,2026-09-11T07:02:00Z,S,Bhandup / Kanjurmarg / Powai,contaminated_water,+91-9849645537,19.1442,72.9321,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10821,2026-09-11T15:00:00Z,E,Byculla / Mazgaon / Nagpada,contaminated_water,+91-9858730495,18.9751,72.8356,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10822,2026-09-11T09:54:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9892992425,19.0512,72.9133,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10823,2026-09-11T13:33:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9876179484,19.0588,72.8993,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10824,2026-09-11T21:50:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9875480133,19.1299,72.8255,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10825,2026-09-11T18:05:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9837714184,19.125,72.8337,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10826,2026-09-11T16:31:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9873601128,19.055,72.9152,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10827,2026-09-11T21:27:00Z,H/W,Bandra West / Khar,low_pressure,+91-9872382422,19.0554,72.8341,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10828,2026-09-11T08:48:00Z,H/W,Bandra West / Khar,contaminated_water,+91-9847118689,19.0554,72.8358,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10829,2026-09-12T12:58:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9827560804,19.0548,72.9152,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10830,2026-09-12T18:41:00Z,T,Mulund / Nahur,pipeline_burst,+91-9840548272,19.1683,72.9569,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10831,2026-09-12T10:48:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9859866398,19.1296,72.8347,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10832,2026-09-12T16:37:00Z,E,Byculla / Mazgaon / Nagpada,severe_dry_pipe,+91-9862023531,18.9769,72.8291,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10833,2026-09-12T08:24:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9882391613,19.0629,72.8939,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10834,2026-09-12T15:26:00Z,N,Ghatkopar / Pant Nagar,severe_dry_pipe,+91-9840379161,19.0854,72.9063,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10835,2026-09-12T10:42:00Z,P/S,Goregaon West & East,contaminated_water,+91-9816287798,19.1598,72.8441,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10836,2026-09-12T09:02:00Z,M/W,Chembur West / Tilak Nagar,contaminated_water,+91-9873286686,19.0618,72.8978,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10837,2026-09-12T18:47:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9836259399,19.0574,72.9191,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10838,2026-09-12T09:41:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9821453185,19.1276,72.8252,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10839,2026-09-12T19:35:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9887228141,19.0526,72.9138,resolved,true,10822,true,42,2.0.0,2026-09-18T12:00:00Z
+10840,2026-09-12T21:07:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9814431915,19.0595,72.9157,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10841,2026-09-12T18:06:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9839647099,19.1266,72.828,resolved,true,10824,true,42,2.0.0,2026-09-18T12:00:00Z
+10842,2026-09-12T10:42:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9817078841,19.051,72.9145,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10843,2026-09-12T18:39:00Z,T,Mulund / Nahur,contaminated_water,+91-9826444557,19.1701,72.9546,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10844,2026-09-12T18:56:00Z,G/N,Dharavi / Mahim / Dadar West,low_pressure,+91-9855037782,19.0442,72.8493,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10845,2026-09-12T08:21:00Z,A,Colaba / Fort / Nariman Point,tanker_delay,+91-9823830919,18.9257,72.838,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10846,2026-09-12T17:53:00Z,P/N,Malad / Marve / Malvani,severe_dry_pipe,+91-9883481252,19.1875,72.8469,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10847,2026-09-12T21:34:00Z,A,Colaba / Fort / Nariman Point,low_pressure,+91-9817154189,18.9214,72.829,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10848,2026-09-12T18:17:00Z,F/N,Matunga / Sion / Wadala,contaminated_water,+91-9880460685,19.0282,72.8551,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10849,2026-09-12T07:46:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9830596184,19.0517,72.9166,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10850,2026-09-12T14:30:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9863755277,19.0611,72.8489,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10851,2026-09-12T16:41:00Z,D,Malabar Hill / Walkeshwar,pipeline_burst,+91-9865255127,18.9644,72.8138,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10852,2026-09-12T10:25:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9819432530,19.0586,72.8999,resolved,true,10833,true,42,2.0.0,2026-09-18T12:00:00Z
+10853,2026-09-13T17:08:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9883271803,19.1239,72.8254,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10854,2026-09-13T08:29:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9857245413,19.066,72.8544,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10855,2026-09-13T20:23:00Z,P/S,Goregaon West & East,severe_dry_pipe,+91-9849961621,19.1663,72.8487,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10856,2026-09-13T09:48:00Z,G/S,Worli / Lower Parel,pipeline_burst,+91-9895045871,19.0096,72.8216,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10857,2026-09-13T07:20:00Z,S,Bhandup / Kanjurmarg / Powai,severe_dry_pipe,+91-9887756731,19.1374,72.9278,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10858,2026-09-13T16:57:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9813464828,19.0503,72.9208,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10859,2026-09-13T12:32:00Z,C,Marine Lines / Chandanwadi,low_pressure,+91-9846396552,18.9527,72.8272,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10860,2026-09-13T07:21:00Z,H/W,Bandra West / Khar,severe_dry_pipe,+91-9862765907,19.0601,72.8303,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10861,2026-09-13T16:11:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9834922821,19.0594,72.8509,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10862,2026-09-13T20:43:00Z,A,Colaba / Fort / Nariman Point,tanker_delay,+91-9887855168,18.9206,72.8346,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10863,2026-09-13T13:00:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9879871613,19.1238,72.8334,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10864,2026-09-13T12:01:00Z,K/W,Andheri West / Versova,low_pressure,+91-9846955903,19.1323,72.8271,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10865,2026-09-13T21:17:00Z,H/E,Bandra East / Santacruz East,low_pressure,+91-9859465226,19.0645,72.8551,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10866,2026-09-13T20:00:00Z,G/S,Worli / Lower Parel,contaminated_water,+91-9862978738,19.0081,72.8248,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10867,2026-09-13T09:11:00Z,P/N,Malad / Marve / Malvani,low_pressure,+91-9858969819,19.1826,72.8443,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10868,2026-09-13T08:15:00Z,H/W,Bandra West / Khar,contaminated_water,+91-9898238601,19.0553,72.8315,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10869,2026-09-13T13:45:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9810794153,19.0769,72.8791,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10870,2026-09-13T07:38:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9861969747,19.118,72.8664,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10871,2026-09-13T07:08:00Z,H/E,Bandra East / Santacruz East,severe_dry_pipe,+91-9840522600,19.0669,72.8464,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10872,2026-09-13T07:50:00Z,M/W,Chembur West / Tilak Nagar,contaminated_water,+91-9857609723,19.058,72.8948,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10873,2026-09-13T17:13:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9872926358,19.0584,72.919,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10874,2026-09-13T10:39:00Z,R/C,Borivali / Gorai,pipeline_burst,+91-9833415577,19.2253,72.8614,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10875,2026-09-13T11:14:00Z,B,Sandhurst Road / Dongri,low_pressure,+91-9845742549,18.9523,72.8401,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10876,2026-09-13T21:56:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9847196256,19.0561,72.9174,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10877,2026-09-13T20:54:00Z,M/W,Chembur West / Tilak Nagar,low_pressure,+91-9827018242,19.0602,72.8985,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10878,2026-09-13T19:26:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9879281295,19.1256,72.8278,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10879,2026-09-13T15:38:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9862520878,19.0093,72.8169,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10880,2026-09-13T14:41:00Z,H/E,Bandra East / Santacruz East,pipeline_burst,+91-9861672312,19.0667,72.8547,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10881,2026-09-13T18:14:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9871355999,19.0523,72.9152,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10882,2026-09-13T12:40:00Z,P/S,Goregaon West & East,low_pressure,+91-9859605975,19.1609,72.8486,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10883,2026-09-13T09:35:00Z,D,Malabar Hill / Walkeshwar,contaminated_water,+91-9827437499,18.9623,72.8127,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10884,2026-09-13T10:23:00Z,G/N,Dharavi / Mahim / Dadar West,severe_dry_pipe,+91-9896526149,19.0383,72.845,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10885,2026-09-14T11:40:00Z,D,Malabar Hill / Walkeshwar,contaminated_water,+91-9847190970,18.9627,72.8155,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10886,2026-09-14T16:55:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9823475186,19.1251,72.8295,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10887,2026-09-14T14:19:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,tanker_delay,+91-9811977901,19.0559,72.916,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10888,2026-09-14T12:40:00Z,F/S,Parel / Sewri / Lalbaug,contaminated_water,+91-9840154205,18.9973,72.8487,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10889,2026-09-14T15:13:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9831339346,18.9522,72.8371,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10890,2026-09-14T10:56:00Z,A,Colaba / Fort / Nariman Point,severe_dry_pipe,+91-9880525552,18.9197,72.8304,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10891,2026-09-14T08:01:00Z,P/N,Malad / Marve / Malvani,low_pressure,+91-9895442673,19.1831,72.8522,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10892,2026-09-14T20:00:00Z,C,Marine Lines / Chandanwadi,pipeline_burst,+91-9819920268,18.9497,72.8237,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10893,2026-09-14T06:57:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9835736477,19.1247,72.8265,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10894,2026-09-14T11:29:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9845214246,19.1244,72.8323,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10895,2026-09-14T17:45:00Z,G/N,Dharavi / Mahim / Dadar West,low_pressure,+91-9828044473,19.0456,72.8467,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10896,2026-09-14T07:45:00Z,G/N,Dharavi / Mahim / Dadar West,pipeline_burst,+91-9884475855,19.0476,72.8503,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10897,2026-09-14T16:43:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9887544343,19.0597,72.9203,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10898,2026-09-14T13:39:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9843432451,19.0593,72.9162,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10899,2026-09-14T15:26:00Z,G/N,Dharavi / Mahim / Dadar West,severe_dry_pipe,+91-9845400958,19.0397,72.845,resolved,true,10884,true,42,2.0.0,2026-09-18T12:00:00Z
+10900,2026-09-14T11:44:00Z,G/N,Dharavi / Mahim / Dadar West,low_pressure,+91-9832481352,19.0426,72.8411,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10901,2026-09-14T12:51:00Z,B,Sandhurst Road / Dongri,severe_dry_pipe,+91-9870628097,18.9499,72.84,resolved,true,10889,true,42,2.0.0,2026-09-18T12:00:00Z
+10902,2026-09-14T09:34:00Z,A,Colaba / Fort / Nariman Point,severe_dry_pipe,+91-9851760617,18.9239,72.8357,resolved,true,10890,true,42,2.0.0,2026-09-18T12:00:00Z
+10903,2026-09-14T21:49:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9890523476,19.0701,72.879,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10904,2026-09-14T20:05:00Z,N,Ghatkopar / Pant Nagar,severe_dry_pipe,+91-9888330375,19.0784,72.9084,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10905,2026-09-14T18:56:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9878124663,19.1287,72.833,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10906,2026-09-14T10:11:00Z,H/E,Bandra East / Santacruz East,contaminated_water,+91-9896379315,19.0591,72.8528,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10907,2026-09-14T11:06:00Z,G/N,Dharavi / Mahim / Dadar West,contaminated_water,+91-9846710968,19.0437,72.8477,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10908,2026-09-14T14:49:00Z,F/S,Parel / Sewri / Lalbaug,contaminated_water,+91-9837472085,18.9932,72.8395,resolved,true,10888,true,42,2.0.0,2026-09-18T12:00:00Z
+10909,2026-09-14T12:52:00Z,R/N,Dahisar / Mandapeshwar,low_pressure,+91-9876590583,19.257,72.8607,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10910,2026-09-14T09:24:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9890598707,19.132,72.8298,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10911,2026-09-14T14:53:00Z,P/S,Goregaon West & East,severe_dry_pipe,+91-9898325758,19.1603,72.8402,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10912,2026-09-14T14:16:00Z,P/S,Goregaon West & East,contaminated_water,+91-9828536547,19.1628,72.8462,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10913,2026-09-14T12:23:00Z,M/W,Chembur West / Tilak Nagar,contaminated_water,+91-9848067054,19.0571,72.8961,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10914,2026-09-14T11:23:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9838044077,19.1287,72.8317,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10915,2026-09-14T11:26:00Z,R/C,Borivali / Gorai,low_pressure,+91-9847670934,19.2295,72.8596,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10916,2026-09-15T18:25:00Z,C,Marine Lines / Chandanwadi,severe_dry_pipe,+91-9855340974,18.9513,72.8293,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10917,2026-09-15T09:17:00Z,K/E,Andheri East / Marol,pipeline_burst,+91-9874131827,19.1155,72.8697,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10918,2026-09-15T10:17:00Z,R/N,Dahisar / Mandapeshwar,low_pressure,+91-9817992907,19.2576,72.8573,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10919,2026-09-15T09:16:00Z,K/W,Andheri West / Versova,low_pressure,+91-9857430477,19.1264,72.8305,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10920,2026-09-15T14:14:00Z,R/N,Dahisar / Mandapeshwar,low_pressure,+91-9862097731,19.2493,72.8628,resolved,true,10909,true,42,2.0.0,2026-09-18T12:00:00Z
+10921,2026-09-15T19:45:00Z,K/W,Andheri West / Versova,low_pressure,+91-9835250632,19.1324,72.8267,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10922,2026-09-15T16:18:00Z,M/W,Chembur West / Tilak Nagar,severe_dry_pipe,+91-9851996742,19.0562,72.8973,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10923,2026-09-15T10:06:00Z,P/S,Goregaon West & East,severe_dry_pipe,+91-9898791255,19.1585,72.8487,resolved,true,10911,true,42,2.0.0,2026-09-18T12:00:00Z
+10924,2026-09-15T21:30:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,tanker_delay,+91-9817104570,19.0566,72.9185,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10925,2026-09-15T16:33:00Z,R/S,Kandivali West & East,low_pressure,+91-9869255698,19.206,72.8499,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10926,2026-09-15T14:45:00Z,E,Byculla / Mazgaon / Nagpada,contaminated_water,+91-9842474868,18.9712,72.8273,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10927,2026-09-15T09:30:00Z,P/S,Goregaon West & East,contaminated_water,+91-9881422380,19.1651,72.8392,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10928,2026-09-15T15:49:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9843897667,19.1324,72.8256,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10929,2026-09-15T07:42:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9858591967,19.0099,72.8221,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10930,2026-09-15T06:09:00Z,A,Colaba / Fort / Nariman Point,pipeline_burst,+91-9814484630,18.9172,72.8368,resolved,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10931,2026-09-15T14:52:00Z,K/W,Andheri West / Versova,low_pressure,+91-9863886458,19.1287,72.8274,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10932,2026-09-15T19:19:00Z,T,Mulund / Nahur,contaminated_water,+91-9835923850,19.1766,72.9549,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10933,2026-09-15T20:13:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9824652994,19.1292,72.8287,resolved,true,10914,true,42,2.0.0,2026-09-18T12:00:00Z
+10934,2026-09-15T12:21:00Z,R/S,Kandivali West & East,low_pressure,+91-9822256887,19.2079,72.8535,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10935,2026-09-15T15:38:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9892118979,19.0574,72.9153,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10936,2026-09-15T09:14:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9895402749,19.1248,72.8251,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10937,2026-09-15T21:50:00Z,D,Malabar Hill / Walkeshwar,contaminated_water,+91-9840771297,18.9615,72.8144,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10938,2026-09-15T15:21:00Z,N,Ghatkopar / Pant Nagar,low_pressure,+91-9868468400,19.0859,72.9045,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10939,2026-09-15T17:28:00Z,H/W,Bandra West / Khar,pipeline_burst,+91-9836996978,19.0554,72.8357,resolved,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10940,2026-09-16T13:22:00Z,H/E,Bandra East / Santacruz East,pipeline_burst,+91-9892549972,19.0649,72.8523,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10941,2026-09-16T21:48:00Z,M/W,Chembur West / Tilak Nagar,contaminated_water,+91-9849710487,19.0562,72.8956,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10942,2026-09-16T06:09:00Z,A,Colaba / Fort / Nariman Point,contaminated_water,+91-9819820724,18.917,72.8375,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10943,2026-09-16T13:08:00Z,N,Ghatkopar / Pant Nagar,contaminated_water,+91-9863310261,19.0832,72.9034,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10944,2026-09-16T11:27:00Z,R/S,Kandivali West & East,severe_dry_pipe,+91-9838638244,19.2075,72.8503,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10945,2026-09-16T19:32:00Z,G/S,Worli / Lower Parel,severe_dry_pipe,+91-9828112454,19.0076,72.8202,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10946,2026-09-16T10:02:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9877068841,19.0515,72.9203,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10947,2026-09-16T07:37:00Z,H/W,Bandra West / Khar,contaminated_water,+91-9820353853,19.0599,72.8288,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10948,2026-09-16T20:10:00Z,L,Kurla / Asalpha / Sakinaka,severe_dry_pipe,+91-9864094527,19.0704,72.8775,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10949,2026-09-16T20:15:00Z,K/W,Andheri West / Versova,pipeline_burst,+91-9847002538,19.1282,72.8251,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10950,2026-09-16T07:04:00Z,R/S,Kandivali West & East,severe_dry_pipe,+91-9853087356,19.2064,72.8461,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10951,2026-09-16T21:13:00Z,T,Mulund / Nahur,severe_dry_pipe,+91-9815165921,19.1708,72.9578,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10952,2026-09-16T12:27:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,contaminated_water,+91-9837062342,19.0598,72.9142,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10953,2026-09-16T10:12:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9869245013,19.1129,72.8674,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10954,2026-09-16T13:55:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9899291533,19.0566,72.9176,active,true,10935,true,42,2.0.0,2026-09-18T12:00:00Z
+10955,2026-09-16T15:14:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9890032715,19.1185,72.8665,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10956,2026-09-16T13:43:00Z,K/W,Andheri West / Versova,low_pressure,+91-9830570629,19.1299,72.8264,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10957,2026-09-16T15:46:00Z,E,Byculla / Mazgaon / Nagpada,pipeline_burst,+91-9850423310,18.9748,72.8296,active,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10958,2026-09-16T09:05:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9884269219,19.1231,72.8254,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10959,2026-09-16T13:13:00Z,R/C,Borivali / Gorai,severe_dry_pipe,+91-9823474984,19.2251,72.8548,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10960,2026-09-16T09:41:00Z,R/S,Kandivali West & East,contaminated_water,+91-9840930396,19.2023,72.8464,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10961,2026-09-16T08:21:00Z,K/W,Andheri West / Versova,low_pressure,+91-9852203508,19.1302,72.825,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10962,2026-09-16T08:22:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9827552989,19.1234,72.833,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10963,2026-09-16T17:17:00Z,H/W,Bandra West / Khar,contaminated_water,+91-9877563228,19.0629,72.8306,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10964,2026-09-16T21:21:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9811879345,19.1278,72.8326,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10965,2026-09-17T18:32:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9813432660,19.0501,72.9196,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10966,2026-09-17T18:43:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9875202640,19.1299,72.8336,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10967,2026-09-17T14:31:00Z,B,Sandhurst Road / Dongri,contaminated_water,+91-9875042488,18.9548,72.8344,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10968,2026-09-17T09:16:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9824360084,19.056,72.914,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10969,2026-09-17T12:09:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9869896857,19.058,72.9228,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10970,2026-09-17T07:57:00Z,K/W,Andheri West / Versova,tanker_delay,+91-9819261267,19.1305,72.8318,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10971,2026-09-17T14:26:00Z,K/W,Andheri West / Versova,low_pressure,+91-9837167846,19.129,72.8266,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10972,2026-09-17T08:15:00Z,H/W,Bandra West / Khar,low_pressure,+91-9822295035,19.0596,72.8303,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10973,2026-09-17T18:53:00Z,H/E,Bandra East / Santacruz East,pipeline_burst,+91-9825839249,19.0626,72.8519,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10974,2026-09-17T15:36:00Z,K/E,Andheri East / Marol,severe_dry_pipe,+91-9836960315,19.1114,72.866,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10975,2026-09-17T12:23:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9880373632,19.0579,72.9221,active,true,10965,true,42,2.0.0,2026-09-18T12:00:00Z
+10976,2026-09-17T19:23:00Z,D,Malabar Hill / Walkeshwar,contaminated_water,+91-9899299478,18.9655,72.8101,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10977,2026-09-17T18:12:00Z,R/C,Borivali / Gorai,pipeline_burst,+91-9879821889,19.228,72.8584,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10978,2026-09-17T20:35:00Z,D,Malabar Hill / Walkeshwar,low_pressure,+91-9888826077,18.9578,72.8165,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10979,2026-09-17T16:33:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9861489281,19.1238,72.8315,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10980,2026-09-17T21:10:00Z,R/C,Borivali / Gorai,pipeline_burst,+91-9811661904,19.2255,72.858,active,true,10977,true,42,2.0.0,2026-09-18T12:00:00Z
+10981,2026-09-17T06:35:00Z,F/N,Matunga / Sion / Wadala,low_pressure,+91-9830004627,19.0318,72.8559,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10982,2026-09-17T15:15:00Z,K/W,Andheri West / Versova,contaminated_water,+91-9822185712,19.1248,72.8338,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10983,2026-09-17T10:19:00Z,D,Malabar Hill / Walkeshwar,severe_dry_pipe,+91-9828619463,18.9645,72.813,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10984,2026-09-17T14:28:00Z,K/W,Andheri West / Versova,severe_dry_pipe,+91-9885587944,19.1295,72.8305,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10985,2026-09-17T10:00:00Z,P/S,Goregaon West & East,low_pressure,+91-9844826214,19.1658,72.8459,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10986,2026-09-17T06:20:00Z,K/W,Andheri West / Versova,low_pressure,+91-9854170608,19.1293,72.8252,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10987,2026-09-17T08:42:00Z,G/S,Worli / Lower Parel,contaminated_water,+91-9814300159,19.0014,72.8238,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10988,2026-09-17T18:13:00Z,E,Byculla / Mazgaon / Nagpada,severe_dry_pipe,+91-9832025553,18.9694,72.83,active,true,,true,42,2.0.0,2026-09-18T12:00:00Z
+10989,2026-09-17T08:05:00Z,H/W,Bandra West / Khar,pipeline_burst,+91-9826984061,19.0564,72.8365,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10990,2026-09-17T20:24:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,low_pressure,+91-9888185318,19.0537,72.918,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10991,2026-09-17T17:24:00Z,M/W,Chembur West / Tilak Nagar,contaminated_water,+91-9897318743,19.0582,72.9017,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10992,2026-09-17T13:24:00Z,S,Bhandup / Kanjurmarg / Powai,low_pressure,+91-9834837858,19.1404,72.9277,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
+10993,2026-09-17T17:57:00Z,M/E,Govandi / Mankhurd / Shivaji Nagar,severe_dry_pipe,+91-9873426891,19.0528,72.9144,active,false,,true,42,2.0.0,2026-09-18T12:00:00Z
