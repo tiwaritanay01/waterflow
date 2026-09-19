@@ -459,7 +459,7 @@ function AppContent() {
           {/* Tab Content */}
           <div className="flex-1 min-h-0 overflow-hidden relative">
             {loading && (
-              <div className="absolute inset-0 bg-canvas/80 flex items-center justify-center z-50">
+              <div className="absolute inset-0 bg-canvas/80 flex items-center justify-center z-[9998]">
                 <div className="flex items-center space-x-3 bg-white px-6 py-4 rounded-xl shadow-lg border border-card-border">
                   <div className="w-5 h-5 border-2 border-deep-blue border-t-transparent rounded-full animate-spin" />
                   <span className="text-sm font-semibold text-head-text">
@@ -518,7 +518,7 @@ function AppContent() {
                     </button>
                   </div>
                 </div>
-                <div className="flex-1 min-h-0 relative overflow-hidden">
+                <div className="flex-1 min-h-0 relative overflow-hidden isolate">
                   <MumbaiLeafletMap
                     wards={wards}
                     tankers={tankers}

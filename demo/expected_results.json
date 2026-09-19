@@ -1,0 +1,19 @@
+{
+  "demo_scenario": "Mumbai Emergency Water Allocation Desk Demo",
+  "version": "1.0.0-RC1",
+  "random_seed": 42,
+  "operating_mode": "DEMO / OPERATIONAL SIMULATION",
+  "expected_baseline_comparison": {
+    "high_vulnerability_fulfillment_wf_pct": 98.4,
+    "high_vulnerability_fulfillment_fcfs_pct": 58.2,
+    "emergency_delay_wf_minutes": 22.4,
+    "emergency_delay_nearest_tanker_minutes": 48.6,
+    "constraint_violations": 0
+  },
+  "expected_counterfactuals": {
+    "cf1_supply_drop_fulfillment_pct": 68.5,
+    "cf2_wtp_outage_fulfillment_pct": 53.8,
+    "cf3_fleet_road_block_mean_eta_minutes": 38.2
+  },
+  "reproducibility_hash_matches": true
+}

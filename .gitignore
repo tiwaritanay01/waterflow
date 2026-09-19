@@ -54,3 +54,7 @@ Thumbs.db
 # Temporary files & logs
 logs/
 *.log
+
+# Documentation & Reports
+docs/
+reports/

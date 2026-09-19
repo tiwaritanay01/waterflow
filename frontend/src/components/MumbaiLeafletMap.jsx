@@ -409,9 +409,9 @@ export default function MumbaiLeafletMap({
   }, [tankers, wardMap]);
 
   return (
-    <div className="relative w-full h-full flex flex-col overflow-hidden select-none bg-[#EAF2F9]">
+    <div className="relative w-full h-full flex flex-col overflow-hidden select-none bg-[#EAF2F9] isolate">
       {/* Top Map Control Bar */}
-      <div className="z-1000 absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
+      <div className="z-20 absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
         {/* Layer Selector */}
         <div className="pointer-events-auto bg-white/95 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-card-border shadow-sm flex items-center space-x-1.5 text-xs">
           <span className="font-bold text-[10px] text-sec-text flex items-center space-x-1 pr-1 border-r border-slate-200">
@@ -619,7 +619,7 @@ export default function MumbaiLeafletMap({
       </div>
 
       {/* Floating Bottom HUD */}
-      <div className="z-1000 absolute bottom-2 left-2 right-2 flex items-center justify-between pointer-events-none">
+      <div className="z-20 absolute bottom-2 left-2 right-2 flex items-center justify-between pointer-events-none">
         {/* Choropleth Legend */}
         <div className="pointer-events-auto bg-white/95 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-card-border shadow-sm text-[10px] flex items-center space-x-3">
           <div className="font-bold text-head-text">

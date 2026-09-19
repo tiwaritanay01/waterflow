@@ -78,6 +78,7 @@ body {
   font-family: var(--font-sans);
   background-color: #EAF2F9;
   outline: none;
+  isolation: isolate;
 }
 
 .leaflet-popup-content-wrapper {

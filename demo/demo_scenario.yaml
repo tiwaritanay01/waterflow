@@ -1,0 +1,53 @@
+# WaterFlow OS v1.0-RC — Official Demo Scenario Configuration
+# Seed: 42 (Deterministic Reproducibility Guaranteed)
+
+scenario_metadata:
+  name: "Mumbai Emergency Water Allocation Desk Demo"
+  version: "1.0.0-RC1"
+  operating_mode: "DEMO / OPERATIONAL SIMULATION"
+  random_seed: 42
+  description: "Official 5-minute judging scenario for Mumbai BMC emergency water allocation desk."
+
+current_operational_state:
+  available_water_mld: 14.2
+  available_water_liters: 14200000.0
+  expected_demand_mld: 19.8
+  expected_demand_liters: 19800000.0
+  active_complaints: 143
+  corroborated_complaint_clusters: 27
+  critical_facilities_count: 11
+  available_tankers: 17
+  road_restrictions: 3
+  heatwave_alert: "Orange"
+  water_quality_status: "Safe"
+
+baseline_definition:
+  type: "First-Come-First-Served (FCFS)"
+  description: "A reproducible manual-style baseline used for controlled comparison."
+  constraints_applied: "Same physical supply ceiling and vehicle capacity as WaterFlow OS."
+
+counterfactual_scenarios:
+  cf1_supply_reduction:
+    id: "CF1_SUPPLY_DROP"
+    name: "30% Supply Reduction (Heatwave Drought)"
+    supply_multiplier: 0.70
+    available_water_liters: 9940000.0
+    description: "Evaluates systemic allocation resilience when bulk supply drops by 30%."
+
+  cf2_treatment_outage:
+    id: "CF2_WTP_OUTAGE"
+    name: "Bhandup Treatment Plant Outage"
+    affected_facility: "Bhandup WTP"
+    supply_multiplier: 0.55
+    available_water_liters: 7810000.0
+    description: "Evaluates redistribution when major eastern water treatment plant shuts down."
+
+  cf3_road_fleet_restriction:
+    id: "CF3_FLEET_ROAD_BLOCK"
+    name: "Major Arterial Closure & Fleet Deficit"
+    available_tankers: 12
+    road_delay_multiplier: 1.65
+    affected_corridors:
+      - "Eastern Express Highway Bottleneck"
+      - "SVP Road Bridge Closure"
+    description: "Evaluates VRP rerouting and ETA degradation during major road closure and 30% fleet reduction."

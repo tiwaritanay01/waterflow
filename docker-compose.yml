@@ -1,0 +1,77 @@
+services:
+  postgres:
+    image: postgis/postgis:15-3.3-alpine
+    container_name: waterflow_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PGDATABASE:-waterflow_os}
+      POSTGRES_USER: ${PGUSER:-waterflow_admin}
+      POSTGRES_PASSWORD: ${PGPASSWORD:-waterflow_secret_dev}
+    ports:
+      - "${PGPORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER:-waterflow_admin} -d ${PGDATABASE:-waterflow_os}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ai_engine:
+    build:
+      context: .
+      dockerfile: ai_engine/Dockerfile
+    container_name: waterflow_ai_engine
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: waterflow_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ai_engine:
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - PGHOST=postgres
+      - PGPORT=5432
+      - PGDATABASE=${PGDATABASE:-waterflow_os}
+      - PGUSER=${PGUSER:-waterflow_admin}
+      - PGPASSWORD=${PGPASSWORD:-waterflow_secret_dev}
+      - AI_ENGINE_URL=http://ai_engine:8000
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: waterflow_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  postgres_data:

@@ -1,0 +1,95 @@
+version: 1.0.0
+date: '2026-09-18T13:31:26.471995+00:00'
+taxonomy:
+  REAL_OBSERVATION:
+    definition: Runtime actually receives a live or periodically-updated observation
+      from an official municipal/government data source.
+    example_factors:
+    - F001 (if daily bulletin is fetched)
+    - F003 (if AWS rainfall is fetched)
+    current_note: No WaterFlow OS factor currently receives automated live streaming
+      data. All REAL sources are static reference snapshots.
+  REAL_REFERENCE_DATA:
+    definition: Published official data used as a static input parameter. The data
+      exists, was published by an authoritative body, and is loaded as a reference
+      dataset.
+    example_factors:
+    - F039 Census 2011 population
+    - F049 slum share from Census
+  REAL_REFERENCE_CONSTANT:
+    definition: A fixed physical or regulatory constant from an official standard
+      or specification, not expected to change during operation.
+    example_factors:
+    - F098 tanker capacities 10kL/3kL
+    - F109 TDS <= 2000 mg/L
+    - F110-F112 BIS IS 10500 limits
+  REAL_DERIVED:
+    definition: A value mathematically derived or transformed from REAL source data.
+      The derivation is documented and reproducible.
+    example_factors:
+    - F035 NRW 0.28 from World Bank audit
+    - F099 road network distances from OSM
+    - F100 traffic speed profiles
+  LEGAL_RULE:
+    definition: A binding legal principle, court order, or statutory requirement that
+      constrains the system. Not a data observation but a mandatory policy rule.
+    example_factors:
+    - F119 Bombay HC Article 21 non-discrimination mandate
+  ENGINEERING_ASSUMPTION:
+    definition: A calibrated technical constant derived from engineering manuals,
+      operational experience, or expert judgment. Not directly measured in real-time.
+    example_factors:
+    - F060 135 LPCD (MoHUA benchmark)
+    - F091 10% strategic reserve
+    - F101 depot queue time
+    - F102 loading duration
+    - F103 unloading duration
+  SYNTHETIC_SEEDED:
+    definition: Runtime input generated via deterministic pseudo-random seeds (seed=42)
+      because live municipal data is unavailable. Explicitly not real data.
+    example_factors:
+    - F028 line pressure
+    - F031 pipe age
+    - F051 standpost distance
+    - F019 SCADA flow
+    - F105 GPS
+  SCENARIO_PARAMETER:
+    definition: A parameter injected during stress testing or what-if scenario analysis.
+      Not used in baseline allocation.
+    example_factors:
+    - F067 festival surge 1.25x
+    - F070 heatwave multiplier
+    - F073 cloudburst
+  DOCUMENTED_ONLY:
+    definition: Factor is formalized in the research catalog and ontology but has
+      zero computational implementation. No code path exists.
+    example_factors:
+    - F002 dead storage
+    - F008 inter-basin quota
+    - F117 pH
+critical_rules:
+- Official source availability does NOT imply real data connectivity.
+- A factor is SYNTHETIC_SEEDED if its runtime input is generated via seed=42, regardless
+  of whether an official sensor exists.
+- A static regulatory number is REAL_REFERENCE_CONSTANT, not REAL_OBSERVATION.
+- A static published dataset is REAL_REFERENCE_DATA, not REAL_OBSERVATION.
+- A court principle is LEGAL_RULE, not REAL.
+factor_reclassifications:
+  F001: REAL_REFERENCE_DATA
+  F003: REAL_REFERENCE_DATA
+  F011: REAL_REFERENCE_CONSTANT
+  F012: REAL_REFERENCE_CONSTANT
+  F016: REAL_REFERENCE_CONSTANT
+  F035: REAL_DERIVED
+  F039: REAL_REFERENCE_DATA
+  F049: REAL_DERIVED
+  F069: REAL_REFERENCE_DATA
+  F070: REAL_REFERENCE_DATA
+  F098: REAL_REFERENCE_CONSTANT
+  F099: REAL_DERIVED
+  F100: REAL_DERIVED
+  F109: REAL_REFERENCE_CONSTANT
+  F110: REAL_REFERENCE_CONSTANT
+  F111: REAL_REFERENCE_CONSTANT
+  F112: REAL_REFERENCE_CONSTANT
+  F119: LEGAL_RULE

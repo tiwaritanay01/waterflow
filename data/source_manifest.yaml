@@ -40,6 +40,30 @@ sources:
     geographic_level: "Street and node level"
     license: "Open Database License (ODbL) 1.0"
 
+  - id: bis_is_10500
+    name: "Drinking Water — Specification (IS 10500:2012)"
+    organization: "Bureau of Indian Standards (BIS)"
+    url: "https://bis.gov.in/wp-content/uploads/2020/05/IS-10500-2012.pdf"
+    publication_date: "2012-05-01"
+    geographic_level: "National Statutory Standard"
+    license: "Government Public Standard"
+
+  - id: mohua_slb
+    name: "Handbook on Service Level Benchmarks for Urban Water Supply"
+    organization: "Ministry of Housing and Urban Affairs (MoHUA), Govt of India"
+    url: "https://mohua.gov.in/upload/uploadfiles/files/Handbook.pdf"
+    publication_date: "2010-05-15"
+    geographic_level: "National Benchmark Standard (135 LPCD)"
+    license: "Open Government Reference"
+
+  - id: mcgm_wdip_audit
+    name: "Water Distribution Improvement Project (WDIP) & NRW Audit"
+    organization: "Castalia Strategic Advisors / Municipal Corporation of Greater Mumbai"
+    url: "https://smartcities.gov.in/studies/mumbai_water_audit"
+    publication_date: "2022-08-15"
+    geographic_level: "Citywide & Ward Distribution Level"
+    license: "Municipal Institutional Audit"
+
 manifest:
   # --- Reference Ward Datasets ---
   - field: "ward_id"

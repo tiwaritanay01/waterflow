@@ -1029,17 +1029,36 @@ app.get("/api/analytics/unmet-demand", async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// Health & Readiness checks
+// Health & Version & Readiness checks
 // ---------------------------------------------------------------------------
 
 app.get("/health", (req, res) => {
   res.json({
     status: "ok",
     service: "WaterFlow OS Gateway (Mumbai BMC)",
-    policy_version: "2.4.0-hardened",
+    application_version: "1.0.0-RC1",
+    policy_version: "3.0.0-research",
+    parameter_version: "1.0.0",
+    audit_baseline_version: "1.0.0",
+    operating_mode: "DEMO / OPERATIONAL SIMULATION",
+    is_live: false,
     db_connected: dbAvailable,
     ai_engine_url: AI_ENGINE_URL,
     total_wards: MOCK_WARDS.length,
+  });
+});
+
+app.get(["/version", "/api/version"], (req, res) => {
+  res.json({
+    application: "WaterFlow OS",
+    application_version: "1.0.0-RC1",
+    policy_version: "3.0.0-research",
+    parameter_version: "1.0.0",
+    audit_baseline_version: "1.0.0",
+    operating_mode: "DEMO / OPERATIONAL SIMULATION",
+    is_live: false,
+    data_provenance: "REFERENCE_DATA + SYNTHETIC_SEEDED",
+    db_connected: dbAvailable,
   });
 });
 
@@ -1047,12 +1066,18 @@ app.get("/ready", (req, res) => {
   res.json({
     status: "ready",
     service: "WaterFlow OS Gateway (Mumbai BMC)",
-    policy_version: "2.4.0-hardened",
+    application_version: "1.0.0-RC1",
+    policy_version: "3.0.0-research",
+    operating_mode: "DEMO / OPERATIONAL SIMULATION",
     db_connected: dbAvailable,
     wards_loaded: MOCK_WARDS.length === 24,
     depots_loaded: MOCK_DEPOTS.length === 4,
     tankers_loaded: MOCK_TANKERS.length === 25,
   });
+});
+
+app.get("/liveness", (req, res) => {
+  res.status(200).send("OK");
 });
 
 
