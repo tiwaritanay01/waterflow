@@ -1,4 +1,20 @@
-import { ListOrdered } from "lucide-react";
+import { ListOrdered, Zap, Eye, Lock } from "lucide-react";
+
+// Classify governance tier for a ward dispatch based on volume and priority tier
+function getGovernanceTier(ward) {
+  // Tier 3: Critical — hospital-adjacent wards, extreme dry pipe hours, very high volume
+  if (ward.dry_pipe_hours > 50 || ward.total_score >= 85 || ward.demand_liters > 25000) return 3;
+  // Tier 2: Operator Review — elevated demand, moderate scores
+  if (ward.demand_liters > 15000 || ward.total_score >= 70) return 2;
+  // Tier 1: Autonomous — routine dispatches
+  return 1;
+}
+
+const GOV_TIER_META = {
+  1: { label: "AUTO", icon: Zap, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200" },
+  2: { label: "REVIEW", icon: Eye, color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200" },
+  3: { label: "AUTH", icon: Lock, color: "text-red-600", bg: "bg-red-50", border: "border-red-200" },
+};
 
 export default function PriorityQueue({ queue }) {
   const displayQueue = queue?.slice(0, 5) || [];
@@ -13,15 +29,26 @@ export default function PriorityQueue({ queue }) {
             Explainable Priority Queue
           </h4>
         </div>
-        <span className="text-[9px] font-bold text-deep-blue bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">
-          Top {displayQueue.length} Pending
-        </span>
+        <div className="flex items-center space-x-1.5">
+          <span className="text-[8px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-1 py-0.5 rounded flex items-center space-x-0.5">
+            <Zap className="w-2 h-2" /><span>Auto</span>
+          </span>
+          <span className="text-[8px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-1 py-0.5 rounded flex items-center space-x-0.5">
+            <Eye className="w-2 h-2" /><span>Review</span>
+          </span>
+          <span className="text-[8px] font-bold text-red-600 bg-red-50 border border-red-200 px-1 py-0.5 rounded flex items-center space-x-0.5">
+            <Lock className="w-2 h-2" /><span>Auth</span>
+          </span>
+        </div>
       </div>
 
       {/* Queue Items */}
       <div className="space-y-1.5 mt-2">
         {displayQueue.map((ward, idx) => {
           const isTop = idx === 0;
+          const govTier = getGovernanceTier(ward);
+          const tierMeta = GOV_TIER_META[govTier];
+          const TierIcon = tierMeta.icon;
           return (
             <div
               key={ward.ward_id || ward.ward_number}
@@ -57,6 +84,11 @@ export default function PriorityQueue({ queue }) {
                   >
                     {ward.demand_liters?.toLocaleString()}L
                   </span>
+                  {/* Governance Tier Badge */}
+                  <span className={`px-1 py-0.5 ${tierMeta.bg} ${tierMeta.border} border rounded text-[7px] font-bold ${tierMeta.color} flex items-center space-x-0.5`}>
+                    <TierIcon className="w-2 h-2" />
+                    <span>{tierMeta.label}</span>
+                  </span>
                 </div>
                 <div className="text-[10px] text-sec-text truncate mt-0.5">
                   {ward.description || _getWardSummary(ward)}
@@ -76,7 +108,7 @@ export default function PriorityQueue({ queue }) {
                       : "bg-slate-100 hover:bg-slate-200 text-deep-blue"
                   } text-[10px] font-bold rounded shadow-2xs transition-colors`}
                 >
-                  {isTop ? "Assign" : "Queue"}
+                  {govTier === 3 ? "🔐 Auth" : govTier === 2 ? "Review" : isTop ? "Assign" : "Queue"}
                 </button>
               </div>
             </div>

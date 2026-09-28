@@ -16,6 +16,9 @@ import {
   CheckCircle2,
   LogOut,
   User as UserIcon,
+  Lock,
+  Zap,
+  Eye,
 } from "lucide-react";
 
 import KpiStrip from "./components/KpiStrip";
@@ -29,6 +32,7 @@ import WorkerApp from "./components/WorkerApp";
 import LandingPage from "./components/LandingPage";
 import LoginPage from "./components/LoginPage";
 import EvidencePanelModal from "./components/EvidencePanelModal";
+import GovernanceCenter from "./components/GovernanceCenter";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
 const API_URL = "http://localhost:3001";
@@ -37,6 +41,7 @@ const NAV_ITEMS = [
   { id: "overview", label: "Live Overview", icon: LayoutDashboard },
   { id: "spatial", label: "GIS Spatial Dispatch", icon: Map },
   { id: "queue", label: "Allocation Queue", icon: ListOrdered, badge: null },
+  { id: "governance", label: "Governance Gate", icon: ShieldAlert },
   { id: "forecast", label: "Complaint & Forecast", icon: TrendingUp },
   { id: "fleet", label: "Fleet & Logistics", icon: Truck, suffix: null },
   { id: "equity", label: "Equity & Impact", icon: Scale },
@@ -66,6 +71,7 @@ function AppContent() {
   const [unmetStats, setUnmetStats] = useState(null);
   const [provenanceTag, setProvenanceTag] = useState("SYNTHETIC_SEEDED");
   const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
+  const [governanceStats, setGovernanceStats] = useState({ pending_authorization: 0, pending_review: 0, auto_executed: 0, total_pending: 0 });
 
   // Automatically synchronize view and portal mode when user is logged in
   useEffect(() => {
@@ -109,12 +115,24 @@ function AppContent() {
       }
     }
 
+    async function fetchGovernanceStats() {
+      try {
+        const gRes = await fetch(`${API_URL}/api/governance/stats`);
+        const gData = await gRes.json();
+        setGovernanceStats(gData);
+      } catch (err) {
+        // fallback
+      }
+    }
+
     fetchDashboard();
     fetchAnalytics();
+    fetchGovernanceStats();
     const interval = setInterval(() => {
       fetchDashboard();
       fetchAnalytics();
-    }, 30000);
+      fetchGovernanceStats();
+    }, 15000);
     return () => clearInterval(interval);
   }, []);
 
@@ -136,6 +154,7 @@ function AppContent() {
   const criticalCount = kpis?.critical_alerts || 3;
   const queueCount = priorityQueue?.filter((w) => w.tier <= 2).length || 4;
   const fleetSuffix = kpis ? `${kpis.fleet_available}/${kpis.fleet_total}` : "18/25";
+  const govPending = governanceStats.total_pending || 0;
 
   // Unauthenticated Public Landing Page
   if (!isAuthenticated && view === "landing") {
@@ -293,6 +312,26 @@ function AppContent() {
             <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
             <span className="hidden lg:inline">Evidence & Methodology</span>
           </button>
+          {/* Governance Gate Chip */}
+          {govPending > 0 ? (
+            <button
+              className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold hover:bg-amber-100 transition-colors animate-pulse"
+              onClick={() => setActiveTab("governance")}
+              title="Pending governance decisions require authorization"
+            >
+              <Lock className="w-3 h-3 text-amber-600" />
+              <span>{govPending} Pending Auth</span>
+            </button>
+          ) : (
+            <button
+              className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold hover:bg-emerald-100 transition-colors"
+              onClick={() => setActiveTab("governance")}
+              title="All governance decisions resolved"
+            >
+              <Zap className="w-3 h-3" />
+              <span>HITL Clear</span>
+            </button>
+          )}
           <button
             className="flex items-center space-x-1 px-2 py-1 rounded-lg bg-red-50 border border-red-200 text-crit-red text-xs font-bold hover:bg-red-100 transition-colors"
             onClick={() => setActiveTab("alerts")}
@@ -379,6 +418,16 @@ function AppContent() {
                     {item.id === "queue" && (
                       <span className="px-1.5 py-0.5 bg-warm-amber text-white text-[10px] font-bold rounded-full">
                         {queueCount}
+                      </span>
+                    )}
+                    {item.id === "governance" && govPending > 0 && (
+                      <span className="px-1.5 py-0.5 bg-crit-red text-white text-[10px] font-bold rounded-full animate-pulse">
+                        {govPending}
+                      </span>
+                    )}
+                    {item.id === "governance" && govPending === 0 && (
+                      <span className="px-1.5 py-0.5 bg-emerald-500 text-white text-[10px] font-bold rounded-full">
+                        ✓
                       </span>
                     )}
                     {item.id === "fleet" && (
@@ -528,6 +577,11 @@ function AppContent() {
                   />
                 </div>
               </div>
+            )}
+
+            {/* TAB: Governance Gate (HITL 3-Tier Decision Pipeline) */}
+            {activeTab === "governance" && (
+              <GovernanceCenter />
             )}
 
             {/* TAB: Allocation Queue */}

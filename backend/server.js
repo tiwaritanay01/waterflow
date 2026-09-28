@@ -1082,6 +1082,330 @@ app.get("/liveness", (req, res) => {
 
 
 // ---------------------------------------------------------------------------
+// 3-Tier HITL Governance Engine — Decision Gate & Authorization
+// ---------------------------------------------------------------------------
+// Tier 1: AUTONOMOUS   — AI auto-executes (routine <15kL, standard routes, PoD invoices)
+// Tier 2: SUPERVISED   — Operator 1-click confirm (quota variance, GPS deviation, quality escrow)
+// Tier 3: CRITICAL     — Executive PIN authorization (hospital pre-emption, reserve breach, anti-mafia)
+// ---------------------------------------------------------------------------
+
+const GOVERNANCE_DECISIONS = [
+  // ── Tier 1: Autonomous (AI already executed) ──
+  {
+    decision_id: "gov-t1-001",
+    decision_type: "routine_dispatch",
+    governance_tier: 1,
+    status: "executed",
+    ward_code: "P/N",
+    volume_liters: 12000,
+    tanker_id: "T-03",
+    description: "Routine standpost refill dispatched to Ward P/North Malad — 12,000 L via Bhandup Depot. Standard demand within normal 135 LPCD baseline.",
+    ai_recommendation: null,
+    risk_level: "low",
+    timestamp: new Date(Date.now() - 25 * 60000).toISOString(),
+    authorized_by: "AI Engine (Auto)",
+    justification: "Tier 1 auto-execution. Score 62.4, volume ≤15,000L, standard route.",
+  },
+  {
+    decision_id: "gov-t1-002",
+    decision_type: "route_optimization",
+    governance_tier: 1,
+    status: "executed",
+    ward_code: "N",
+    volume_liters: 8000,
+    tanker_id: "T-11",
+    description: "2-opt route re-optimization for T-11 serving Ghatkopar. Reduced transit 7.2→5.8 km avoiding Kurla railway crossing congestion.",
+    ai_recommendation: null,
+    risk_level: "low",
+    timestamp: new Date(Date.now() - 18 * 60000).toISOString(),
+    authorized_by: "AI Engine (Auto)",
+    justification: "Autonomous route optimization within ±500m corridor.",
+  },
+  {
+    decision_id: "gov-t1-003",
+    decision_type: "complaint_clustering",
+    governance_tier: 1,
+    status: "executed",
+    ward_code: "G/N",
+    volume_liters: 0,
+    tanker_id: null,
+    description: "7 duplicate grievances from Dharavi Sector 4 collapsed into 1 spatial incident (300m radius, 120-min window). Noise-normalized priority preserved.",
+    ai_recommendation: null,
+    risk_level: "low",
+    timestamp: new Date(Date.now() - 12 * 60000).toISOString(),
+    authorized_by: "AI Engine (Auto)",
+    justification: "Spatial-temporal deduplication. No allocation change.",
+  },
+  {
+    decision_id: "gov-t1-004",
+    decision_type: "invoice_auto_approve",
+    governance_tier: 1,
+    status: "executed",
+    ward_code: "L",
+    volume_liters: 10000,
+    tanker_id: "T-08",
+    description: "Contractor invoice INV-BMC-20260928-00501 auto-approved. ₹4,500 at ₹450/kL. Water quality Grade-A (pH 7.2, TDS 185 mg/L). Triple-lock verified.",
+    ai_recommendation: null,
+    risk_level: "low",
+    timestamp: new Date(Date.now() - 8 * 60000).toISOString(),
+    authorized_by: "AI Engine (Auto)",
+    justification: "All quality gates passed. CV confidence 0.94, OTP matched, geofence valid.",
+  },
+
+  // ── Tier 2: Operator Review (pending confirmation) ──
+  {
+    decision_id: "gov-t2-001",
+    decision_type: "quota_variance",
+    governance_tier: 2,
+    status: "pending_review",
+    ward_code: "H/E",
+    volume_liters: 18000,
+    tanker_id: "T-05",
+    description: "Ward H/East Bandra requesting 18,000 L — 14% above normal baseline. IMD heatwave advisory (+3.2°C) detected. AI proposes granting variance.",
+    ai_recommendation: "Grant +14% quota variance. Heatwave-triggered demand surge validated against IMD Santacruz weather station data. Expected to normalize in 48h.",
+    risk_level: "medium",
+    timestamp: new Date(Date.now() - 6 * 60000).toISOString(),
+    authorized_by: null,
+    justification: null,
+  },
+  {
+    decision_id: "gov-t2-002",
+    decision_type: "quality_escrow",
+    governance_tier: 2,
+    status: "pending_review",
+    ward_code: "S",
+    volume_liters: 10000,
+    tanker_id: "T-19",
+    description: "Water quality borderline for T-19 delivery to Ward S (Bhandup). pH 8.4 (limit: 8.5). TDS 480 mg/L (limit: 500). Contractor payout placed in escrow.",
+    ai_recommendation: "Release escrow with ₹0 penalty. Readings within IS 10500 tolerance but near upper boundary. Flag for re-test on next delivery.",
+    risk_level: "medium",
+    timestamp: new Date(Date.now() - 4 * 60000).toISOString(),
+    authorized_by: null,
+    justification: null,
+  },
+  {
+    decision_id: "gov-t2-003",
+    decision_type: "gps_variance",
+    governance_tier: 2,
+    status: "pending_review",
+    ward_code: "K/E",
+    volume_liters: 8000,
+    tanker_id: "T-22",
+    description: "T-22 delivery GPS shows 180m deviation from designated standpost in Andheri East. Within 300m tolerance but flagged for operator awareness.",
+    ai_recommendation: "Accept delivery. GPS offset likely due to narrow lane access via secondary approach road. No fraud indicators detected.",
+    risk_level: "low",
+    timestamp: new Date(Date.now() - 3 * 60000).toISOString(),
+    authorized_by: null,
+    justification: null,
+  },
+
+  // ── Tier 3: Critical Authorization (hard-blocked until executive PIN) ──
+  {
+    decision_id: "gov-t3-001",
+    decision_type: "hospital_preemption",
+    governance_tier: 3,
+    status: "pending",
+    ward_code: "F/S",
+    volume_liters: 25000,
+    tanker_id: "T-08",
+    description: "⚠️ CRITICAL: Trunk main burst detected in Ward F/South. AI proposes pre-empting 25,000 L from Ward G/South (residential low-priority) to KEM Hospital Dialysis & ICU Unit. 142 patients at immediate risk.",
+    ai_recommendation: "Pre-empt 25,000 L to KEM Hospital. G/South residential can sustain 6h delay (current reserve: 18h). Hospital dialysis unit requires continuous supply — failure = medical emergency.",
+    risk_level: "critical",
+    timestamp: new Date(Date.now() - 2 * 60000).toISOString(),
+    authorized_by: null,
+    justification: null,
+  },
+  {
+    decision_id: "gov-t3-002",
+    decision_type: "reserve_breach",
+    governance_tier: 3,
+    status: "pending",
+    ward_code: "M/E",
+    volume_liters: 40000,
+    tanker_id: null,
+    description: "🔴 EXTREME: Govandi Ward M/East facing 58h complete outage during +5.2°C heatwave. AI proposes tapping 40,000 L from the statutory 10% Vihar Strategic Disaster Reserve. This breaches the emergency buffer protocol.",
+    ai_recommendation: "Release 40,000 L from Strategic Reserve. Current Vihar reservoir at 82% capacity — post-release would remain at 78.4%, still above 70% safety threshold. 807,720 residents affected.",
+    risk_level: "critical",
+    timestamp: new Date(Date.now() - 1 * 60000).toISOString(),
+    authorized_by: null,
+    justification: null,
+  },
+  {
+    decision_id: "gov-t3-003",
+    decision_type: "fleet_freeze",
+    governance_tier: 3,
+    status: "pending",
+    ward_code: "—",
+    volume_liters: 0,
+    tanker_id: "T-14",
+    description: "🛑 ANTI-MAFIA ALERT: Tanker T-14 (MH-01-CV-4921) diverged 2.3 km off-route into private industrial zone in Bhiwandi. GPS trail shows 22-min unauthorized stop. Contractor payout frozen.",
+    ai_recommendation: "Confirm impound & initiate police audit. GPS trail shows unauthorized detour to private water resale point. Pattern matches known mafia diversion route. Estimated public funds at risk: ₹18,000.",
+    risk_level: "critical",
+    timestamp: new Date(Date.now() - 0.5 * 60000).toISOString(),
+    authorized_by: null,
+    justification: null,
+  },
+];
+
+const GOVERNANCE_AUDIT_LOG = [];
+
+/**
+ * Classify a dispatch decision into its governance tier.
+ * Tier 1: Routine (<15kL, standard route, auto-approved invoices, complaint dedup)
+ * Tier 2: Minor variance (10-20% demand bump, borderline GPS, quality escrow)
+ * Tier 3: Critical (hospital pre-emption, reserve breach, anti-mafia, emergency rationing)
+ */
+function classifyGovernanceTier(decision) {
+  const { decision_type, volume_liters, risk_level } = decision;
+
+  // Hard-coded critical types always Tier 3
+  const criticalTypes = ["hospital_preemption", "reserve_breach", "fleet_freeze", "emergency_rationing"];
+  if (criticalTypes.includes(decision_type)) return 3;
+  if (risk_level === "critical") return 3;
+
+  // Review types always Tier 2
+  const reviewTypes = ["quota_variance", "quality_escrow", "gps_variance"];
+  if (reviewTypes.includes(decision_type)) return 2;
+  if (risk_level === "medium") return 2;
+
+  // Volume threshold: >15,000L requires at least review
+  if (volume_liters > 15000) return 2;
+
+  // Default: autonomous
+  return 1;
+}
+
+// GET /api/governance/decisions — Return all governance decisions with computed stats
+app.get("/api/governance/decisions", (req, res) => {
+  const tier = req.query.tier ? parseInt(req.query.tier) : null;
+  const status = req.query.status || null;
+
+  let filtered = [...GOVERNANCE_DECISIONS];
+  if (tier) filtered = filtered.filter(d => d.governance_tier === tier);
+  if (status) filtered = filtered.filter(d => d.status === status);
+
+  // Sort: pending first (Tier 3 > Tier 2), then executed, most recent first
+  filtered.sort((a, b) => {
+    const statusOrder = { pending: 0, pending_review: 1, authorized: 2, executed: 3, rejected: 4 };
+    const aDiff = (statusOrder[a.status] || 5) - (statusOrder[b.status] || 5);
+    if (aDiff !== 0) return aDiff;
+    // Within same status, Tier 3 > Tier 2 > Tier 1
+    if (a.status === "pending" || a.status === "pending_review") {
+      return b.governance_tier - a.governance_tier;
+    }
+    return new Date(b.timestamp) - new Date(a.timestamp);
+  });
+
+  const pendingAuth = GOVERNANCE_DECISIONS.filter(d => d.governance_tier === 3 && d.status === "pending").length;
+  const pendingReview = GOVERNANCE_DECISIONS.filter(d => d.governance_tier === 2 && (d.status === "pending" || d.status === "pending_review")).length;
+  const autoExecuted = GOVERNANCE_DECISIONS.filter(d => d.governance_tier === 1).length;
+
+  res.json({
+    decisions: filtered,
+    stats: {
+      total: GOVERNANCE_DECISIONS.length,
+      pending_authorization: pendingAuth,
+      pending_review: pendingReview,
+      auto_executed: autoExecuted,
+      resolved: GOVERNANCE_DECISIONS.filter(d => ["authorized", "rejected", "executed"].includes(d.status)).length,
+    },
+    governance_policy: {
+      tier_1_threshold: "Routine dispatch ≤15,000L, standard route, auto-approved invoices",
+      tier_2_threshold: "Quota variance 10-20%, borderline GPS/quality, volume >15kL",
+      tier_3_threshold: "Hospital pre-emption, strategic reserve breach, anti-mafia fleet freeze, emergency rationing",
+      executive_pin_required_for: "Tier 3 only",
+    },
+  });
+});
+
+// GET /api/governance/stats — Lightweight stats for header badge
+app.get("/api/governance/stats", (req, res) => {
+  const pendingAuth = GOVERNANCE_DECISIONS.filter(d => d.governance_tier === 3 && d.status === "pending").length;
+  const pendingReview = GOVERNANCE_DECISIONS.filter(d => d.governance_tier === 2 && (d.status === "pending" || d.status === "pending_review")).length;
+  const autoExecuted = GOVERNANCE_DECISIONS.filter(d => d.governance_tier === 1).length;
+  res.json({
+    pending_authorization: pendingAuth,
+    pending_review: pendingReview,
+    auto_executed: autoExecuted,
+    total_pending: pendingAuth + pendingReview,
+  });
+});
+
+// POST /api/governance/authorize — Authorize, approve, or reject a governance decision
+app.post("/api/governance/authorize", (req, res) => {
+  const { decision_id, action, officer_id, officer_name, pin, justification } = req.body;
+
+  if (!decision_id || !action) {
+    return res.status(400).json({ success: false, error: "decision_id and action are required" });
+  }
+
+  const decision = GOVERNANCE_DECISIONS.find(d => d.decision_id === decision_id);
+  if (!decision) {
+    return res.status(404).json({ success: false, error: `Decision ${decision_id} not found` });
+  }
+
+  if (decision.status === "authorized" || decision.status === "rejected" || decision.status === "executed") {
+    return res.status(409).json({ success: false, error: `Decision already ${decision.status}` });
+  }
+
+  // Tier 3 requires valid executive PIN
+  if (decision.governance_tier === 3 && action === "AUTHORIZE") {
+    const validPins = ["4491", "admin123", "7419"];
+    if (!validPins.includes(pin)) {
+      return res.status(403).json({ success: false, error: "Invalid executive authorization PIN" });
+    }
+  }
+
+  // Record the action
+  const auditRecord = {
+    audit_id: `audit-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+    decision_id,
+    action,
+    officer_id: officer_id || "UNKNOWN",
+    officer_name: officer_name || "Unknown Officer",
+    pin_used: pin ? "****" + pin.slice(-2) : null,
+    justification: justification || "",
+    timestamp: new Date().toISOString(),
+    governance_tier: decision.governance_tier,
+    decision_type: decision.decision_type,
+  };
+  GOVERNANCE_AUDIT_LOG.push(auditRecord);
+
+  // Update decision status
+  if (action === "AUTHORIZE" || action === "APPROVE") {
+    decision.status = "authorized";
+    decision.authorized_by = officer_name || officer_id;
+    decision.justification = justification || "Authorized after review";
+  } else if (action === "REJECT") {
+    decision.status = "rejected";
+    decision.authorized_by = officer_name || officer_id;
+    decision.justification = justification || "Rejected — re-route or escalate";
+  }
+
+  console.log(`🔐 Governance ${action}: ${decision_id} by ${officer_name} (Tier ${decision.governance_tier})`);
+
+  res.json({
+    success: true,
+    audit_id: auditRecord.audit_id,
+    decision_id,
+    new_status: decision.status,
+    governance_tier: decision.governance_tier,
+    officer: officer_name,
+    timestamp: auditRecord.timestamp,
+  });
+});
+
+// GET /api/governance/audit-log — Immutable audit trail of all authorization actions
+app.get("/api/governance/audit-log", (req, res) => {
+  res.json({
+    audit_log: GOVERNANCE_AUDIT_LOG,
+    total_entries: GOVERNANCE_AUDIT_LOG.length,
+    governance_policy_version: "HITL-v1.0",
+  });
+});
+
+
+// ---------------------------------------------------------------------------
 // Start server
 // ---------------------------------------------------------------------------
 
