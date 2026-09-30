@@ -61,6 +61,13 @@ const mobileApiRouter = require("./mobile_api");
 app.use("/api", mobileApiRouter);
 
 // ---------------------------------------------------------------------------
+// Resilience Engine & Autonomy Engine (Phase: Resilience Sprint)
+// ---------------------------------------------------------------------------
+const { mountResilienceRoutes } = require("./resilience_engine");
+const { mountAutonomyRoutes } = require("./autonomy_engine");
+const { mountFieldSyncRoutes } = require("./field_sync");
+
+// ---------------------------------------------------------------------------
 // Phase 2: WhatsApp Multi-Lingual NLP Webhook (Meta & Twilio Compatible)
 // ---------------------------------------------------------------------------
 try {
@@ -1082,6 +1089,191 @@ app.get("/liveness", (req, res) => {
 
 
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Phase 34: Policy & Crisis Sandbox Proxy + Governance Integration
+// ---------------------------------------------------------------------------
+
+// In-memory store for sandbox simulation results
+const SANDBOX_SIMULATIONS = {};
+
+// POST /api/sandbox/simulate — Proxy to FastAPI sandbox engine + governance integration
+app.post("/api/sandbox/simulate", async (req, res) => {
+  const { policyPreset, crisisScenario, parameters } = req.body;
+
+  if (!policyPreset || !crisisScenario) {
+    return res.status(400).json({
+      success: false,
+      error: "policyPreset and crisisScenario are required",
+    });
+  }
+
+  try {
+    // Forward to FastAPI sandbox engine
+    const aiRes = await fetch(`${AI_ENGINE_URL}/api/sandbox/simulate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ policyPreset, crisisScenario, parameters: parameters || {} }),
+    });
+
+    if (!aiRes.ok) {
+      const errBody = await aiRes.json().catch(() => ({}));
+      return res.status(aiRes.status).json({
+        success: false,
+        error: errBody.detail || `AI Engine returned ${aiRes.status}`,
+      });
+    }
+
+    const result = await aiRes.json();
+
+    // Store simulation for traceability
+    SANDBOX_SIMULATIONS[result.simulation_id] = result;
+
+    // ── Governance Integration ──────────────────────────────
+    // If the simulation result triggers Tier 2 or 3, create a governance decision
+    const govTier = result.governance?.tier || 1;
+    let governanceDecisionId = null;
+
+    if (govTier >= 2) {
+      // Check for duplicate pending decisions from same simulation
+      const existingPending = GOVERNANCE_DECISIONS.find(
+        d => d.simulation_id === result.simulation_id
+          && (d.status === "pending" || d.status === "pending_review")
+      );
+
+      if (!existingPending) {
+        // Create new governance decision
+        governanceDecisionId = `gov-sandbox-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+
+        const govDecision = {
+          decision_id: governanceDecisionId,
+          decision_type: govTier === 3 ? "emergency_rationing" : "quota_variance",
+          governance_tier: govTier,
+          status: govTier === 3 ? "pending" : "pending_review",
+          ward_code: "SYSTEM",
+          volume_liters: Math.round(result.scenario?.unmet_demand || 0),
+          tanker_id: null,
+          description: `🧪 POLICY SANDBOX: ${policyPreset} + ${crisisScenario} — ${result.scenario_description || "Simulation scenario"}. ` +
+            `Impact: Fulfillment ${((result.baseline?.fulfillment_ratio || 0) * 100).toFixed(1)}% → ${((result.scenario?.fulfillment_ratio || 0) * 100).toFixed(1)}%. ` +
+            `Unmet demand: ${(result.baseline?.unmet_demand || 0).toLocaleString()} L → ${(result.scenario?.unmet_demand || 0).toLocaleString()} L.`,
+          ai_recommendation: result.governance?.proposed_actions?.join(". ") || "Review simulation results.",
+          risk_level: result.governance?.risk_level || "medium",
+          timestamp: new Date().toISOString(),
+          authorized_by: null,
+          justification: null,
+          // Sandbox traceability fields
+          simulation_id: result.simulation_id,
+          policy_preset: policyPreset,
+          crisis_scenario: crisisScenario,
+          sandbox_source: true,
+        };
+
+        GOVERNANCE_DECISIONS.push(govDecision);
+        console.log(`🧪 Sandbox → Governance Decision created: ${governanceDecisionId} (Tier ${govTier})`);
+      } else {
+        governanceDecisionId = existingPending.decision_id;
+        console.log(`🧪 Sandbox → Duplicate prevented: ${existingPending.decision_id} already pending`);
+      }
+    }
+
+    // ── HARD BACKEND RULE: Tier 3 MUST NOT execute ──────────
+    // A Tier 3 simulation result creates GOVERNANCE_PENDING
+    // The action remains blocked until GovernanceCenter authorization
+    result.governance_decision_id = governanceDecisionId;
+
+    if (govTier === 3) {
+      result.execution_blocked = true;
+      result.block_reason = "🔐 AUTHORIZATION REQUIRED — Tier 3 decision hard-blocked until executive PIN sign-off via Governance Center.";
+    } else {
+      result.execution_blocked = false;
+      result.block_reason = null;
+    }
+
+    return res.json({
+      success: true,
+      ...result,
+    });
+  } catch (err) {
+    console.error("Sandbox proxy error:", err.message);
+    return res.status(502).json({
+      success: false,
+      error: `Cannot reach AI Engine at ${AI_ENGINE_URL}: ${err.message}`,
+    });
+  }
+});
+
+// GET /api/sandbox/simulation/:id — Retrieve stored simulation
+app.get("/api/sandbox/simulation/:id", (req, res) => {
+  const sim = SANDBOX_SIMULATIONS[req.params.id];
+  if (!sim) {
+    return res.status(404).json({ success: false, error: `Simulation '${req.params.id}' not found` });
+  }
+  res.json(sim);
+});
+
+// GET /api/sandbox/presets — Available presets (proxy to AI engine)
+app.get("/api/sandbox/presets", async (req, res) => {
+  try {
+    const aiRes = await fetch(`${AI_ENGINE_URL}/api/sandbox/presets`);
+    const data = await aiRes.json();
+    res.json(data);
+  } catch (err) {
+    // Fallback with hardcoded presets
+    res.json({
+      mode: "DEMO / OPERATIONAL SIMULATION",
+      policy_presets: {
+        EQUAL_SERVICE: { description: "Equal weight across all 5 factors" },
+        PRO_POOR: { description: "50% vulnerability weighting — protect informal settlements" },
+        OUTAGE_FIRST: { description: "50% unmet demand weighting — respond to acute outages" },
+        FACILITY_PROTECTION: { description: "35% population/facility weighting — protect critical infrastructure" },
+        LOGISTICS_FIRST: { description: "35% distance weighting — minimize logistics burden" },
+      },
+      crisis_scenarios: {
+        NORMAL: { description: "Normal operations" },
+        HEATWAVE: { description: "Demand +25% heatwave advisory" },
+        MAJOR_SUPPLY_REDUCTION: { description: "Supply -35% capacity reduction" },
+        TRUNK_MAIN_FAILURE: { description: "Trunk main burst — transmission reduced" },
+        FLOOD_DISRUPTION: { description: "Monsoon flooding — losses + routing penalty" },
+      },
+    });
+  }
+});
+
+// POST /api/sandbox/check-execution — Check if an authorized sandbox decision can proceed
+app.post("/api/sandbox/check-execution", (req, res) => {
+  const { decision_id } = req.body;
+  if (!decision_id) {
+    return res.status(400).json({ success: false, error: "decision_id required" });
+  }
+
+  const decision = GOVERNANCE_DECISIONS.find(d => d.decision_id === decision_id);
+  if (!decision) {
+    return res.status(404).json({ success: false, error: `Decision ${decision_id} not found` });
+  }
+
+  // HARD BACKEND RULE: Only authorized decisions can proceed
+  if (decision.status !== "authorized") {
+    return res.status(403).json({
+      success: false,
+      error: `Decision ${decision_id} is '${decision.status}' — only 'authorized' decisions can execute.`,
+      current_status: decision.status,
+      governance_tier: decision.governance_tier,
+      requires_authorization: decision.governance_tier === 3,
+    });
+  }
+
+  // Authorized — but do NOT automatically execute. Just confirm eligibility.
+  res.json({
+    success: true,
+    decision_id,
+    status: "AUTHORIZED — READY FOR DISPATCH",
+    message: "Decision authorized. Eligible for operational dispatch when dispatch pipeline is active.",
+    governance_tier: decision.governance_tier,
+    authorized_by: decision.authorized_by,
+    note: "DEMO / OPERATIONAL SIMULATION — does not control real infrastructure.",
+  });
+});
+
+// ---------------------------------------------------------------------------
 // 3-Tier HITL Governance Engine — Decision Gate & Authorization
 // ---------------------------------------------------------------------------
 // Tier 1: AUTONOMOUS   — AI auto-executes (routine <15kL, standard routes, PoD invoices)
@@ -1406,6 +1598,15 @@ app.get("/api/governance/audit-log", (req, res) => {
 
 
 // ---------------------------------------------------------------------------
+// Mount Resilience, Autonomy, and Field Sync routes
+// (uses GOVERNANCE_DECISIONS and GOVERNANCE_AUDIT_LOG from above)
+// ---------------------------------------------------------------------------
+mountResilienceRoutes(app, GOVERNANCE_DECISIONS, GOVERNANCE_AUDIT_LOG);
+mountAutonomyRoutes(app, GOVERNANCE_DECISIONS, GOVERNANCE_AUDIT_LOG);
+mountFieldSyncRoutes(app);
+console.log("✅ Resilience Engine, Autonomy Engine, and Field Sync routes mounted");
+
+// ---------------------------------------------------------------------------
 // Start server
 // ---------------------------------------------------------------------------
 
@@ -1413,6 +1614,9 @@ app.listen(PORT, () => {
   console.log(`\n🌊 WaterFlow OS Gateway running on http://localhost:${PORT}`);
   console.log(`   City:       Mumbai BMC (24 Administrative Wards)`);
   console.log(`   Dashboard:  GET  http://localhost:${PORT}/api/dashboard`);
+  console.log(`   Resilience: POST http://localhost:${PORT}/api/resilience/simulate`);
+  console.log(`   Autonomy:   POST http://localhost:${PORT}/api/automation/evaluate`);
+  console.log(`   Field Sync: POST http://localhost:${PORT}/api/field/sync`);
   console.log(`   AI Engine:  ${AI_ENGINE_URL}`);
   console.log(`   DB Status:  ${dbAvailable ? "✅ Connected" : "⚠️  Mumbai BMC Mock Fallback"}\n`);
 });

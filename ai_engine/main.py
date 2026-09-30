@@ -721,6 +721,96 @@ async def ready():
 
 
 # ---------------------------------------------------------------------------
+# Phase 34: Policy & Crisis Sandbox Simulation Engine
+# ---------------------------------------------------------------------------
+
+# 24 Mumbai BMC ward data (reuses MOCK_WARDS equivalent for sandbox)
+SANDBOX_WARDS = [
+    {"ward_id": 1, "ward_number": "M/E", "ward_code": "M/E", "name": "Govandi / Mankhurd", "population": 807720, "vulnerability_index": 0.96, "dry_pipe_hours": 58, "historical_deficit": 0.78, "demand_liters": 32000, "depot_distance_km": 4.8},
+    {"ward_id": 2, "ward_number": "G/N", "ward_code": "G/N", "name": "Dharavi / Mahim", "population": 599039, "vulnerability_index": 0.93, "dry_pipe_hours": 52, "historical_deficit": 0.70, "demand_liters": 28000, "depot_distance_km": 3.6},
+    {"ward_id": 3, "ward_number": "L", "ward_code": "L", "name": "Kurla / Asalpha", "population": 902226, "vulnerability_index": 0.88, "dry_pipe_hours": 46, "historical_deficit": 0.62, "demand_liters": 24000, "depot_distance_km": 6.2},
+    {"ward_id": 4, "ward_number": "P/N", "ward_code": "P/N", "name": "Malad / Malvani", "population": 946457, "vulnerability_index": 0.79, "dry_pipe_hours": 44, "historical_deficit": 0.55, "demand_liters": 22000, "depot_distance_km": 11.2},
+    {"ward_id": 5, "ward_number": "K/E", "ward_code": "K/E", "name": "Andheri East", "population": 824401, "vulnerability_index": 0.72, "dry_pipe_hours": 38, "historical_deficit": 0.48, "demand_liters": 18000, "depot_distance_km": 3.2},
+    {"ward_id": 6, "ward_number": "H/E", "ward_code": "H/E", "name": "Bandra East", "population": 557239, "vulnerability_index": 0.68, "dry_pipe_hours": 34, "historical_deficit": 0.42, "demand_liters": 15000, "depot_distance_km": 6.5},
+    {"ward_id": 7, "ward_number": "N", "ward_code": "N", "name": "Ghatkopar", "population": 622853, "vulnerability_index": 0.65, "dry_pipe_hours": 32, "historical_deficit": 0.38, "demand_liters": 14000, "depot_distance_km": 5.1},
+    {"ward_id": 8, "ward_number": "R/S", "ward_code": "R/S", "name": "Kandivali / Charkop", "population": 691229, "vulnerability_index": 0.60, "dry_pipe_hours": 28, "historical_deficit": 0.34, "demand_liters": 12000, "depot_distance_km": 12.5},
+    {"ward_id": 9, "ward_number": "M/W", "ward_code": "M/W", "name": "Chembur West", "population": 411363, "vulnerability_index": 0.58, "dry_pipe_hours": 26, "historical_deficit": 0.30, "demand_liters": 11000, "depot_distance_km": 3.9},
+    {"ward_id": 10, "ward_number": "F/N", "ward_code": "F/N", "name": "Matunga / Sion", "population": 529003, "vulnerability_index": 0.55, "dry_pipe_hours": 24, "historical_deficit": 0.28, "demand_liters": 10000, "depot_distance_km": 3.4},
+    {"ward_id": 11, "ward_number": "S", "ward_code": "S", "name": "Bhandup / Powai", "population": 743783, "vulnerability_index": 0.50, "dry_pipe_hours": 20, "historical_deficit": 0.22, "demand_liters": 9000, "depot_distance_km": 1.4},
+    {"ward_id": 12, "ward_number": "R/C", "ward_code": "R/C", "name": "Borivali / Gorai", "population": 562162, "vulnerability_index": 0.46, "dry_pipe_hours": 18, "historical_deficit": 0.20, "demand_liters": 8000, "depot_distance_km": 14.8},
+]
+
+
+class SandboxRequest(BaseModel):
+    policyPreset: str = "EQUAL_SERVICE"
+    crisisScenario: str = "NORMAL"
+    parameters: Dict[str, Any] = {}
+
+
+@app.post("/api/sandbox/simulate")
+async def sandbox_simulate(req: SandboxRequest):
+    """
+    Execute a policy & crisis simulation using the EXISTING allocation engine.
+    Runs BASELINE vs SCENARIO — returns real metrics, deterministic WHY, governance tier.
+    Mode: DEMO / OPERATIONAL SIMULATION
+    """
+    from ai_engine.sandbox_engine import (
+        run_sandbox_simulation, store_simulation,
+        POLICY_WEIGHTS, CRISIS_SCENARIOS,
+    )
+
+    try:
+        result = run_sandbox_simulation(
+            wards=SANDBOX_WARDS,
+            total_supply=420000,
+            policy_preset=req.policyPreset,
+            crisis_scenario=req.crisisScenario,
+            custom_params=req.parameters if req.parameters else None,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Simulation engine error: {str(e)}")
+
+    # Store simulation for traceability
+    store_simulation(result)
+
+    return result.model_dump()
+
+
+@app.get("/api/sandbox/simulation/{simulation_id}")
+async def get_sandbox_simulation(simulation_id: str):
+    """Retrieve a stored sandbox simulation result by ID."""
+    from ai_engine.sandbox_engine import get_simulation
+    result = get_simulation(simulation_id)
+    if not result:
+        raise HTTPException(status_code=404, detail=f"Simulation '{simulation_id}' not found")
+    return result
+
+
+@app.get("/api/sandbox/presets")
+async def get_sandbox_presets():
+    """Return available policy presets and crisis scenarios with descriptions."""
+    from ai_engine.sandbox_engine import POLICY_WEIGHTS, CRISIS_SCENARIOS
+    return {
+        "mode": "DEMO / OPERATIONAL SIMULATION",
+        "policy_presets": {
+            name: {"weights": weights, "description": f"Policy archetype: {name}"}
+            for name, weights in POLICY_WEIGHTS.items()
+        },
+        "crisis_scenarios": {
+            name: {
+                "description": scenario.description,
+                "assumptions": scenario.assumptions,
+                "demand_multiplier": scenario.demand_multiplier,
+                "supply_reduction_pct": scenario.supply_reduction_pct,
+            }
+            for name, scenario in CRISIS_SCENARIOS.items()
+        },
+    }
+
+
+# ---------------------------------------------------------------------------
 # Phase 30: Hardened Authoritative Municipal Endpoints
 # ---------------------------------------------------------------------------
 

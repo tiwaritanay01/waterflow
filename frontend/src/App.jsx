@@ -19,6 +19,8 @@ import {
   Lock,
   Zap,
   Eye,
+  Beaker,
+  Network,
 } from "lucide-react";
 
 import KpiStrip from "./components/KpiStrip";
@@ -33,6 +35,8 @@ import LandingPage from "./components/LandingPage";
 import LoginPage from "./components/LoginPage";
 import EvidencePanelModal from "./components/EvidencePanelModal";
 import GovernanceCenter from "./components/GovernanceCenter";
+import PolicySandbox from "./components/PolicySandbox";
+import NetworkResilience from "./components/NetworkResilience";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
 const API_URL = "http://localhost:3001";
@@ -42,6 +46,8 @@ const NAV_ITEMS = [
   { id: "spatial", label: "GIS Spatial Dispatch", icon: Map },
   { id: "queue", label: "Allocation Queue", icon: ListOrdered, badge: null },
   { id: "governance", label: "Governance Gate", icon: ShieldAlert },
+  { id: "resilience", label: "Network Resilience", icon: Network },
+  { id: "sandbox", label: "Policy Sandbox", icon: Beaker },
   { id: "forecast", label: "Complaint & Forecast", icon: TrendingUp },
   { id: "fleet", label: "Fleet & Logistics", icon: Truck, suffix: null },
   { id: "equity", label: "Equity & Impact", icon: Scale },
@@ -582,6 +588,18 @@ function AppContent() {
             {/* TAB: Governance Gate (HITL 3-Tier Decision Pipeline) */}
             {activeTab === "governance" && (
               <GovernanceCenter />
+            )}
+
+            {/* TAB: Network Resilience (Graph-Based Scenario Analysis) */}
+            {activeTab === "resilience" && (
+              <div className="bg-slate-900/80 rounded-xl border border-slate-600/30 p-6 animate-fade-in">
+                <NetworkResilience />
+              </div>
+            )}
+
+            {/* TAB: Policy & Crisis Sandbox Simulator */}
+            {activeTab === "sandbox" && (
+              <PolicySandbox onNavigateToGovernance={() => setActiveTab("governance")} />
             )}
 
             {/* TAB: Allocation Queue */}
