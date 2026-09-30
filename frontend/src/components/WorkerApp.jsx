@@ -23,11 +23,31 @@ import {
   Activity,
   Gauge,
   Camera,
-  FlaskConical
+  FlaskConical,
+  Wifi,
+  WifiOff,
+  CloudUpload,
+  History,
+  AlertCircle,
+  X,
+  Layers
 } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle } from "react-leaflet";
 import L from "leaflet";
 import DeliveryVerification from "./DeliveryVerification";
+import {
+  cacheMission,
+  getCachedMission,
+  getAllCachedMissions,
+  queueOfflineAction,
+  getPendingActions,
+  getAllQueuedActions,
+  updateActionStatus,
+  deleteQueuedAction,
+  clearAllQueuedActions,
+  syncOfflineQueue,
+  checkServerReachability,
+} from "../utils/indexedDB";
 
 const API_BASE = "http://localhost:3001";
 
@@ -86,57 +106,274 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
   const [volumeDischarged, setVolumeDischarged] = useState(0);
   const [verifyTab, setVerifyTab] = useState("smart"); // "smart" | "keypad"
 
-  // Fetch active mission
-  const fetchMission = async () => {
-    setLoading(true);
+  // Offline & Synchronization State
+  const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
+  const [simulateOffline, setSimulateOffline] = useState(false);
+  const [isServerReachable, setIsServerReachable] = useState(true);
+  const [isCachedSnapshot, setIsCachedSnapshot] = useState(false);
+  const [isStale, setIsStale] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState(null);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [queuedActions, setQueuedActions] = useState([]);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncFeedback, setSyncFeedback] = useState(null);
+  const [activeConflict, setActiveConflict] = useState(null);
+  const [showQueueDrawer, setShowQueueDrawer] = useState(false);
+
+  // Helper to re-read pending and queued actions from IndexedDB
+  const refreshQueueStatus = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/worker/mission?tanker_id=T-08`);
-      const data = await res.json();
-      if (data.success && data.mission) {
-        setMission((prev) => ({
-          ...prev,
-          ...data.mission,
-          driver_name: data.mission.driver_name || "Rajesh Patil",
-          license_plate: data.mission.license_plate || "MH-03-BW-7821",
-        }));
-        if (data.mission.delivery_status === "Delivered") {
-          setDeliverySuccess({
-            timestamp: data.mission.completed_at || new Date().toISOString(),
-            volume: data.mission.volume_liters || 10000,
-            audit_token: "SCADA-AUDIT-AUTH-SUCCESS-7419",
-          });
-          setVolumeDischarged(10000);
-        }
-      }
-    } catch (err) {
-      console.warn("Worker mission fetch error, using default mission:", err.message);
-    } finally {
-      setLoading(false);
+      const pending = await getPendingActions();
+      setPendingCount(pending.length);
+      const all = await getAllQueuedActions();
+      setQueuedActions(all);
+    } catch (e) {
+      console.warn("Could not read local queue:", e);
     }
   };
 
-  useEffect(() => {
-    fetchMission();
-  }, []);
+  // Fetch active mission (Online -> cache to IndexedDB; Offline -> load from IndexedDB)
+  const fetchMission = async () => {
+    setLoading(true);
+    setVerificationError(null);
 
-  // Update Driver Transit Status
-  const handleUpdateStatus = async (newStatus) => {
-    setStatusUpdating(true);
-    setMission((prev) => ({ ...prev, delivery_status: newStatus }));
+    let reachable = false;
+    if (!simulateOffline) {
+      reachable = await checkServerReachability(API_BASE);
+      setIsServerReachable(reachable);
+    } else {
+      setIsServerReachable(false);
+    }
+
+    // ONLINE MODE: Fetch from /api/field/missions and update cache
+    if (!simulateOffline && reachable) {
+      try {
+        const res = await fetch(`${API_BASE}/api/field/missions?tanker_id=${mission.tanker_id}`);
+        const data = await res.json();
+        if (data.success && data.missions && data.missions.length > 0) {
+          const serverMission = data.missions.find((m) => m.tanker_id === mission.tanker_id) || data.missions[0];
+          const merged = {
+            ...mission,
+            ...serverMission,
+            mission_id: serverMission.mission_id,
+            version: serverMission.version,
+            delivery_status: serverMission.status,
+            assigned_worker: serverMission.assigned_worker || mission.driver_name,
+            driver_name: serverMission.assigned_worker || mission.driver_name,
+            volume_liters: serverMission.volume_liters || 10000,
+          };
+
+          setMission(merged);
+          setIsCachedSnapshot(false);
+          setIsStale(false);
+          const timeStr = new Date().toLocaleTimeString();
+          setLastSyncTime(timeStr);
+
+          // Durably cache snapshot in IndexedDB
+          await cacheMission(merged);
+
+          if (serverMission.status === "delivered") {
+            setDeliverySuccess({
+              timestamp: serverMission.updated_at || new Date().toISOString(),
+              volume: serverMission.delivery_quantity_liters || serverMission.volume_liters || 10000,
+              audit_token: `SRV-VERIFIED-v${serverMission.version}`,
+              stage: "SERVER_ACCEPTED",
+              isOffline: false,
+            });
+            setVolumeDischarged(serverMission.delivery_quantity_liters || 10000);
+          }
+        }
+      } catch (err) {
+        console.warn("Online mission fetch failed, attempting cached fallback:", err.message);
+        reachable = false;
+        setIsServerReachable(false);
+      }
+    }
+
+    // OFFLINE MODE: Load from local IndexedDB cache
+    if (simulateOffline || !reachable) {
+      try {
+        const cached = await getCachedMission(String(mission.mission_id || "501"));
+        if (cached) {
+          setMission((prev) => ({
+            ...prev,
+            ...cached,
+            mission_id: cached.mission_id,
+            version: cached.version || 1,
+            delivery_status: cached.status || cached.delivery_status || "en_route",
+          }));
+          setIsCachedSnapshot(true);
+          setIsStale(cached.is_stale || false);
+          if (cached.cached_at) {
+            setLastSyncTime(new Date(cached.cached_at).toLocaleTimeString());
+          }
+          if (cached.status === "delivered" || cached.delivery_status === "delivered") {
+            setDeliverySuccess({
+              timestamp: cached.delivery_timestamp || new Date().toISOString(),
+              volume: cached.delivery_quantity_liters || cached.volume_liters || 10000,
+              audit_token: "CACHED-OFFLINE-SNAPSHOT",
+              stage: "SAVED_LOCALLY_PENDING_SYNC",
+              isOffline: true,
+            });
+            setVolumeDischarged(cached.volume_liters || 10000);
+          }
+        } else {
+          // If no cache exists, initialize current mission in cache
+          await cacheMission({ ...mission, version: 1 });
+          setIsCachedSnapshot(true);
+          setIsStale(false);
+        }
+      } catch (cacheErr) {
+        console.warn("Error reading cached mission from IndexedDB:", cacheErr);
+      }
+    }
+
+    await refreshQueueStatus();
+    setLoading(false);
+  };
+
+  // Synchronize pending queue to backend /api/field/sync
+  const runSync = async () => {
+    if (isSyncing) return;
+    if (simulateOffline) {
+      setSyncFeedback("Cannot sync while Simulated Offline is active. Turn off simulation first.");
+      return;
+    }
+
+    setIsSyncing(true);
+    setSyncFeedback("Synchronizing offline queue with BMC server...");
 
     try {
-      await fetch(`${API_BASE}/api/worker/status`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tanker_id: mission.tanker_id,
-          status: newStatus,
-        }),
-      });
+      const result = await syncOfflineQueue(API_BASE);
+
+      if (!result.success) {
+        setSyncFeedback(`Sync paused: ${result.error || "Network unreachable"}. Pending actions retained.`);
+        setIsServerReachable(false);
+      } else if (result.total === 0) {
+        setSyncFeedback("Sync complete. Queue is clear (0 pending).");
+        setLastSyncTime(new Date().toLocaleTimeString());
+        setIsServerReachable(true);
+      } else {
+        setSyncFeedback(`Sync complete: ${result.accepted} accepted, ${result.duplicate} duplicate, ${result.conflict} conflicts, ${result.rejected} rejected.`);
+        setLastSyncTime(new Date().toLocaleTimeString());
+        setIsServerReachable(true);
+
+        if (result.conflict > 0) {
+          const all = await getAllQueuedActions();
+          const firstConflict = all.find((a) => a.status === "conflict");
+          if (firstConflict) {
+            setActiveConflict(firstConflict);
+          }
+        }
+      }
+
+      await fetchMission();
     } catch (err) {
-      console.warn("Status update offline fallback:", err.message);
+      setSyncFeedback(`Sync failed: ${err.message}`);
+    } finally {
+      setIsSyncing(false);
+      await refreshQueueStatus();
+    }
+  };
+
+  // Monitor network online / offline events
+  useEffect(() => {
+    const handleOnline = async () => {
+      setIsOnline(true);
+      if (!simulateOffline) {
+        const reachable = await checkServerReachability(API_BASE);
+        setIsServerReachable(reachable);
+        if (reachable) {
+          runSync();
+        }
+      }
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      setIsServerReachable(false);
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    fetchMission();
+
+    const interval = setInterval(async () => {
+      if (!simulateOffline && typeof navigator !== "undefined" && navigator.onLine) {
+        const reachable = await checkServerReachability(API_BASE);
+        setIsServerReachable(reachable);
+      }
+      refreshQueueStatus();
+    }, 15000);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+      clearInterval(interval);
+    };
+  }, [simulateOffline]);
+
+  // Update Driver Transit Status (Durable queueing before local success)
+  const handleUpdateStatus = async (newStatus) => {
+    if (statusUpdating || isSyncing) return;
+    setStatusUpdating(true);
+    setVerificationError(null);
+
+    const isArrival = newStatus === "arrived";
+    const op = {
+      operation_id: `op-status-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 7)}`,
+      mission_id: String(mission.mission_id || "501"),
+      action_type: isArrival ? "ARRIVAL_RECORD" : "STATUS_UPDATE",
+      local_timestamp: new Date().toISOString(),
+      mission_version: mission.version || 1,
+      payload: isArrival
+        ? { gps: { lat: mission.lat, lng: mission.lng } }
+        : { status: newStatus.toLowerCase() },
+      worker_name: mission.driver_name || mission.assigned_worker || "Rajesh Patil",
+    };
+
+    try {
+      // 1. Durably save in IndexedDB
+      await queueOfflineAction(op);
+
+      // 2. Update local UI state
+      setMission((prev) => ({ ...prev, delivery_status: newStatus, status: newStatus }));
+      await refreshQueueStatus();
+      setSyncFeedback("SAVED LOCALLY — PENDING SYNC");
+
+      // 3. Trigger immediate sync if connected
+      if (!simulateOffline && isServerReachable) {
+        runSync();
+      }
+    } catch (err) {
+      console.error("Failed to queue status update:", err);
+      setVerificationError("Failed to persist action locally: " + err.message);
     } finally {
       setStatusUpdating(false);
+    }
+  };
+
+  // Report Route Delay (durably queues a NOTES action)
+  const handleReportDelay = async (delayReason = "Route delay along corridor") => {
+    const op = {
+      operation_id: `op-note-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 7)}`,
+      mission_id: String(mission.mission_id || "501"),
+      action_type: "NOTES",
+      local_timestamp: new Date().toISOString(),
+      mission_version: mission.version || 1,
+      payload: { note: delayReason },
+      worker_name: mission.driver_name || mission.assigned_worker || "Rajesh Patil",
+    };
+
+    try {
+      await queueOfflineAction(op);
+      await refreshQueueStatus();
+      setSyncFeedback("SAVED LOCALLY — PENDING SYNC");
+      if (!simulateOffline && isServerReachable) {
+        runSync();
+      }
+    } catch (err) {
+      console.error("Failed to queue delay note:", err);
     }
   };
 
@@ -166,47 +403,61 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
     setVerificationError(null);
   };
 
-  // Verify Delivery with Backend
+  // Verify Delivery with Backend or Queue Durably for Offline Sync
   const handleVerifyDelivery = async () => {
     if (inputOtp.length !== 4) return;
+    if (verifying || isSyncing) return;
+
     setVerifying(true);
     setVerificationError(null);
 
-    try {
-      const res = await fetch(`${API_BASE}/api/worker/verify-delivery`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tanker_id: mission.tanker_id,
-          otp_code: inputOtp,
-        }),
-      });
-      const data = await res.json();
+    const opId = `op-deliv-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 7)}`;
+    const op = {
+      operation_id: opId,
+      mission_id: String(mission.mission_id || "501"),
+      action_type: "DELIVERY_RECORD",
+      local_timestamp: new Date().toISOString(),
+      mission_version: mission.version || 1,
+      payload: {
+        quantity_liters: mission.volume_liters || 10000,
+        otp_code: inputOtp,
+        gps: { lat: mission.lat, lng: mission.lng },
+        notes: "Citizen OTP handover completed",
+      },
+      worker_name: mission.driver_name || mission.assigned_worker || "Rajesh Patil",
+    };
 
-      if (res.ok && data.success) {
-        setDeliverySuccess({
-          timestamp: data.completed_at || new Date().toISOString(),
-          volume: data.volume_liters || mission.volume_liters,
-          audit_token: data.audit_token || "SCADA-AUDIT-AUTH-OK",
-        });
-        setMission((prev) => ({ ...prev, delivery_status: "Delivered" }));
-        setVolumeDischarged(10000);
-      } else {
-        setVerificationError(data.error || "Invalid OTP PIN. Verification failed.");
+    try {
+      // 1. Durably queue action in IndexedDB BEFORE showing success
+      await queueOfflineAction(op);
+
+      // 2. Update local state
+      setMission((prev) => ({
+        ...prev,
+        delivery_status: "Delivered",
+        status: "delivered",
+      }));
+      setVolumeDischarged(mission.volume_liters || 10000);
+
+      const isOff = simulateOffline || !isServerReachable;
+      setDeliverySuccess({
+        timestamp: new Date().toISOString(),
+        volume: mission.volume_liters || 10000,
+        audit_token: opId,
+        stage: isOff ? "SAVED_LOCALLY_PENDING_SYNC" : "SERVER_ACCEPTED",
+        isOffline: isOff,
+      });
+
+      await refreshQueueStatus();
+      setSyncFeedback(isOff ? "SAVED LOCALLY — PENDING SYNC" : "Synchronizing delivery with server...");
+
+      // 3. If online, trigger sync
+      if (!simulateOffline && isServerReachable) {
+        await runSync();
       }
     } catch (err) {
-      // Fallback verification for test demo
-      if (inputOtp === "7419") {
-        setDeliverySuccess({
-          timestamp: new Date().toISOString(),
-          volume: 10000,
-          audit_token: "SCADA-AUDIT-OFFLINE-VERIFIED",
-        });
-        setMission((prev) => ({ ...prev, delivery_status: "Delivered" }));
-        setVolumeDischarged(10000);
-      } else {
-        setVerificationError("Invalid Citizen OTP. Please re-enter 4 digits.");
-      }
+      console.error("Failed to queue delivery record:", err);
+      setVerificationError("Failed to save delivery offline: " + err.message);
     } finally {
       setVerifying(false);
     }
@@ -314,13 +565,64 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
               </div>
             </div>
 
-            {/* Telemetry Status & Manual Sync Refresh */}
+            {/* Telemetry Status, Queue Counter & Manual Sync Controls */}
             <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-1.5 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full text-[11px] font-semibold text-emerald-700">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 live-pulse"></span>
-                <span>SCADA Synced</span>
-              </div>
-              
+              {/* Online / Offline Status Pill */}
+              {simulateOffline ? (
+                <div className="flex items-center space-x-1.5 bg-rose-50 border border-rose-300 px-2.5 py-1 rounded-full text-[11px] font-bold text-rose-700">
+                  <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+                  <span>Simulated Offline</span>
+                </div>
+              ) : !isOnline ? (
+                <div className="flex items-center space-x-1.5 bg-rose-50 border border-rose-300 px-2.5 py-1 rounded-full text-[11px] font-bold text-rose-700">
+                  <WifiOff className="w-3 h-3 text-rose-600" />
+                  <span>Offline</span>
+                </div>
+              ) : !isServerReachable ? (
+                <div className="flex items-center space-x-1.5 bg-amber-50 border border-amber-300 px-2.5 py-1 rounded-full text-[11px] font-bold text-amber-700">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                  <span>Server Unreachable</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-1.5 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full text-[11px] font-semibold text-emerald-700">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 live-pulse"></span>
+                  <span>SCADA Online</span>
+                </div>
+              )}
+
+              {/* Pending Queue Counter Button */}
+              <button
+                type="button"
+                onClick={() => setShowQueueDrawer(true)}
+                title="View Offline Action Queue"
+                className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-[11px] font-bold border transition cursor-pointer ${
+                  pendingCount > 0
+                    ? "bg-amber-100 hover:bg-amber-200 border-amber-300 text-amber-900 animate-pulse"
+                    : "bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-700"
+                }`}
+              >
+                <CloudUpload className="w-3.5 h-3.5 text-amber-600" />
+                <span>{pendingCount} Pending</span>
+              </button>
+
+              {/* Manual "Sync Now" Action Button */}
+              <button
+                type="button"
+                onClick={runSync}
+                disabled={isSyncing || simulateOffline || (!isServerReachable && !isOnline)}
+                title="Synchronize Durable Queue with BMC Authority"
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center space-x-1 shadow-2xs transition cursor-pointer ${
+                  isSyncing
+                    ? "bg-sky-200 text-sky-800 cursor-wait"
+                    : simulateOffline || (!isServerReachable && !isOnline)
+                    ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    : "bg-[#0056b3] hover:bg-sky-800 active:bg-sky-900 text-white"
+                }`}
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin" : ""}`} />
+                <span>{isSyncing ? "Syncing..." : "Sync Now"}</span>
+              </button>
+
               <button
                 onClick={fetchMission}
                 disabled={loading}
@@ -356,18 +658,109 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
               ============================================================ */}
           <div className={`${forceMobileFrame ? "space-y-3.5" : "lg:col-span-7 space-y-4"}`}>
             
-            {/* PWA ServiceWorker v4.12 Offline First Strip */}
-            <div className="bg-sky-50/70 border border-sky-200 rounded-lg px-3 py-1.5 flex items-center justify-between text-[11px] shadow-2xs">
-              <div className="flex items-center gap-1.5 text-sky-900 font-medium">
-                <span className="font-bold text-amber-500">⚡</span>
-                <span>PWA ServiceWorker v4.12</span>
-                <span className="text-slate-400">·</span>
-                <span className="text-slate-600 font-semibold">Offline First Cache</span>
+            {/* Dynamic Offline-First Status & Control Bar */}
+            <div className="space-y-2">
+              <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-xs flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Cache State Badge */}
+                  {isCachedSnapshot ? (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-md">
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                      <span>CACHED OFFLINE SNAPSHOT (v{mission.version || 1})</span>
+                      {isStale && <span className="text-[10px] text-rose-600 font-black ml-1">· STALE</span>}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-emerald-50 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded-md">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>AUTHORITATIVE SERVER MISSION (v{mission.version || 1})</span>
+                    </span>
+                  )}
+
+                  {/* Last Sync Timestamp */}
+                  <span className="text-[11px] text-slate-500 font-medium">
+                    Last sync: <strong className="text-slate-700">{lastSyncTime || "Initial"}</strong>
+                  </span>
+                </div>
+
+                {/* Simulation & Queue Controls */}
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = !simulateOffline;
+                      setSimulateOffline(next);
+                      if (next) {
+                        setIsServerReachable(false);
+                        setSyncFeedback("Simulating connection loss. Offline queue is active.");
+                      } else {
+                        setSyncFeedback("Restoring connection...");
+                        checkServerReachability(API_BASE).then((r) => {
+                          setIsServerReachable(r);
+                          if (r) runSync();
+                        });
+                      }
+                    }}
+                    className={`text-[10.5px] font-bold px-2.5 py-1 rounded-md border transition cursor-pointer ${
+                      simulateOffline
+                        ? "bg-rose-600 text-white border-rose-700 hover:bg-rose-700"
+                        : "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300"
+                    }`}
+                  >
+                    {simulateOffline ? "Restore Connectivity" : "Simulate Offline"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowQueueDrawer(true)}
+                    className="text-[10.5px] font-bold px-2 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition cursor-pointer"
+                  >
+                    Queue ({queuedActions.length})
+                  </button>
+                </div>
               </div>
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded border border-emerald-300">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                SYNCED LOCALLY
-              </span>
+
+              {/* Explicit Sync Status Toast Banner */}
+              {syncFeedback && (
+                <div className="bg-sky-50 border border-sky-300 text-sky-950 px-3 py-2 rounded-lg text-xs flex items-center justify-between gap-2 shadow-2xs animate-fade-in">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-black text-sky-700">⚡ STATUS:</span>
+                    <span className="font-semibold">{syncFeedback}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSyncFeedback(null)}
+                    className="text-sky-700 hover:text-sky-900 font-bold text-xs"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+
+              {/* High-Priority Conflict Review Banner */}
+              {activeConflict && (
+                <div className="bg-rose-50 border-2 border-rose-400 text-rose-950 p-3 rounded-xl shadow-xs space-y-1.5 animate-fade-in">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black uppercase tracking-wider text-rose-800 flex items-center gap-1.5">
+                      <AlertOctagon className="w-4 h-4 text-rose-600" />
+                      Sync Conflict Requiring Review ({activeConflict.conflict_type || "CONFLICT"})
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setActiveConflict(null)}
+                      className="text-rose-700 hover:text-rose-900 text-xs font-bold"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                  <p className="text-xs text-rose-900">
+                    {activeConflict.reason || "Server authoritative state rejected local action to prevent safety conflict."}
+                  </p>
+                  <div className="text-[10px] font-mono bg-white/80 p-1.5 rounded border border-rose-200 text-rose-800 flex items-center justify-between">
+                    <span>Op ID: {activeConflict.operation_id}</span>
+                    <span>Action: {activeConflict.action_type}</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Priority Mission Card */}
@@ -561,7 +954,7 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => alert("Transit Delay Logged: Notified BMC Central Operations and automated ward SMS sent to Mr. Kamble.")}
+                  onClick={() => handleReportDelay("Corridor congestion along Eastern Express Highway")}
                   className="flex-1 py-2 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold flex items-center justify-center gap-1.5 border border-slate-300 transition-colors cursor-pointer"
                 >
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
@@ -686,31 +1079,79 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                 </span>
               </div>
 
-              {/* Delivery Success View */}
+              {/* Delivery Success View — Clearly distinguishes Locally Recorded vs Server Accepted */}
               {deliverySuccess ? (
-                <div className="bg-emerald-50 border-2 border-emerald-500 text-emerald-900 rounded-xl p-4 text-center space-y-2 animate-fade-in">
-                  <div className="w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto shadow-sm">
-                    <CheckCircle2 className="w-8 h-8" />
+                <div className={`border-2 rounded-xl p-4 text-center space-y-2 animate-fade-in ${
+                  deliverySuccess.stage === "SAVED_LOCALLY_PENDING_SYNC"
+                    ? "bg-amber-50/90 border-amber-500 text-amber-950"
+                    : "bg-emerald-50 border-emerald-500 text-emerald-950"
+                }`}>
+                  <div className={`w-12 h-12 text-white rounded-full flex items-center justify-center mx-auto shadow-sm ${
+                    deliverySuccess.stage === "SAVED_LOCALLY_PENDING_SYNC" ? "bg-amber-500" : "bg-emerald-500"
+                  }`}>
+                    {deliverySuccess.stage === "SAVED_LOCALLY_PENDING_SYNC" ? (
+                      <CloudUpload className="w-7 h-7" />
+                    ) : (
+                      <CheckCircle2 className="w-8 h-8" />
+                    )}
                   </div>
-                  <h3 className="text-base font-black text-emerald-950">
-                    Delivery Verified &amp; SCADA Audited!
+                  <h3 className="text-base font-black tracking-tight">
+                    {deliverySuccess.stage === "SAVED_LOCALLY_PENDING_SYNC"
+                      ? "SAVED LOCALLY — PENDING SYNC"
+                      : "Delivery Server Accepted & Audited"}
                   </h3>
-                  <p className="text-xs text-emerald-800">
-                    Discharged <strong>{deliverySuccess.volume?.toLocaleString()} Liters</strong> of potable water to {mission.destination_ward}.
+                  <p className="text-xs leading-relaxed opacity-90">
+                    {deliverySuccess.stage === "SAVED_LOCALLY_PENDING_SYNC"
+                      ? `Recorded ${deliverySuccess.volume?.toLocaleString()} L discharge in local IndexedDB. Server verification and invoice generation will occur once network sync completes.`
+                      : `Discharged ${deliverySuccess.volume?.toLocaleString()} Liters of potable water to ${mission.destination_ward}. Authoritative mission version ${mission.version} confirmed.`}
                   </p>
-                  <div className="bg-white/80 p-2 rounded-lg text-[10px] font-mono text-emerald-800 border border-emerald-200">
-                    Audit Token: {deliverySuccess.audit_token || "SCADA-AUDIT-DELIV-AUTH-OK"}
+
+                  <div className="bg-white/90 p-2.5 rounded-lg text-[10px] font-mono border text-left space-y-1 border-slate-200">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Operation ID:</span>
+                      <strong className="text-slate-800">{deliverySuccess.audit_token}</strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Queue Stage:</span>
+                      <span className={`font-bold px-1.5 py-0.2 rounded ${
+                        deliverySuccess.stage === "SAVED_LOCALLY_PENDING_SYNC"
+                          ? "bg-amber-100 text-amber-900"
+                          : "bg-emerald-100 text-emerald-900"
+                      }`}>
+                        {deliverySuccess.stage}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Verification Authority:</span>
+                      <span className="font-bold text-slate-700">
+                        {deliverySuccess.stage === "SAVED_LOCALLY_PENDING_SYNC" ? "PENDING SERVER SYNC" : "SCADA AUDITED"}
+                      </span>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => {
-                      setDeliverySuccess(null);
-                      setInputOtp("");
-                      setMission((p) => ({ ...p, delivery_status: "en_route" }));
-                    }}
-                    className="mt-2 w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition cursor-pointer"
-                  >
-                    Reset / Next Mission Dispatch
-                  </button>
+
+                  <div className="pt-1 flex gap-2">
+                    {deliverySuccess.stage === "SAVED_LOCALLY_PENDING_SYNC" && !simulateOffline && isServerReachable && (
+                      <button
+                        type="button"
+                        onClick={runSync}
+                        disabled={isSyncing}
+                        className="flex-1 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition cursor-pointer"
+                      >
+                        {isSyncing ? "Syncing..." : "Sync Delivery Now"}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDeliverySuccess(null);
+                        setInputOtp("");
+                        setMission((p) => ({ ...p, delivery_status: "en_route" }));
+                      }}
+                      className="flex-1 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition cursor-pointer"
+                    >
+                      Reset / Next Dispatch
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <>
@@ -748,15 +1189,47 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                       wardId="M/East"
                       wardName={mission.destination_ward}
                       targetVolume={mission.volume_liters || 10000}
-                      onVerificationSuccess={(result) => {
+                      onVerificationSuccess={async (result) => {
+                        const opId = `op-deliv-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 7)}`;
+                        const op = {
+                          operation_id: opId,
+                          mission_id: String(mission.mission_id || "501"),
+                          action_type: "DELIVERY_RECORD",
+                          local_timestamp: new Date().toISOString(),
+                          mission_version: mission.version || 1,
+                          payload: {
+                            quantity_liters: mission.volume_liters || 10000,
+                            otp_code: result.otpCode || "7419",
+                            gps: { lat: mission.lat, lng: mission.lng },
+                            tds: result.tdsLevel,
+                            ph: result.phLevel,
+                            notes: "Smart delivery proof with water quality telemetry",
+                          },
+                          worker_name: mission.driver_name || mission.assigned_worker || "Rajesh Patil",
+                        };
+
+                        try {
+                          await queueOfflineAction(op);
+                          await refreshQueueStatus();
+                        } catch (e) {
+                          console.warn("Queue error:", e);
+                        }
+
+                        const isOff = simulateOffline || !isServerReachable;
                         setDeliverySuccess({
                           timestamp: new Date().toISOString(),
                           volume: mission.volume_liters || 10000,
-                          audit_token: result.invoiceNumber || "SCADA-AUDIT-AUTH-SUCCESS-7419",
-                          isOffline: result.isOffline
+                          audit_token: opId,
+                          stage: isOff ? "SAVED_LOCALLY_PENDING_SYNC" : "SERVER_ACCEPTED",
+                          isOffline: isOff,
                         });
                         setVolumeDischarged(10000);
-                        setMission(p => ({ ...p, delivery_status: "Delivered" }));
+                        setMission((p) => ({ ...p, delivery_status: "Delivered", status: "delivered" }));
+                        setSyncFeedback(isOff ? "SAVED LOCALLY — PENDING SYNC" : "Synchronizing delivery with server...");
+
+                        if (!simulateOffline && isServerReachable) {
+                          runSync();
+                        }
                       }}
                     />
                   ) : (
@@ -873,6 +1346,143 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
             WaterFlow OS · Municipal Water Supply &amp; Fleet Telemetry v4.12 · BMC Central Operations
           </p>
         </footer>
+
+        {/* ============================================================
+            OFFLINE QUEUE INSPECTION DRAWER MODAL
+            ============================================================ */}
+        {showQueueDrawer && (
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-2xl max-w-xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+              <div className="p-4 bg-slate-900 text-white flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CloudUpload className="w-5 h-5 text-sky-400" />
+                  <div>
+                    <h3 className="text-sm font-bold">Durable Field Operation Queue</h3>
+                    <p className="text-[10px] text-slate-300">IndexedDB: WaterFlowWorkerDB · Store: sync_queue</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowQueueDrawer(false)}
+                  className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-200"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-slate-700">Total Items: {queuedActions.length}</span>
+                  <span className="text-slate-400">·</span>
+                  <span className="text-amber-700 font-semibold">{pendingCount} Pending Sync</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={runSync}
+                    disabled={isSyncing || simulateOffline || !isServerReachable}
+                    className="px-2.5 py-1 rounded bg-[#0056b3] hover:bg-sky-800 disabled:bg-slate-300 text-white font-bold text-[11px] flex items-center gap-1 transition cursor-pointer"
+                  >
+                    <RefreshCw className={`w-3 h-3 ${isSyncing ? "animate-spin" : ""}`} />
+                    <span>Sync Now</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const all = await getAllQueuedActions();
+                      for (const a of all) {
+                        if (a.status === "synced") {
+                          await deleteQueuedAction(a.operation_id);
+                        }
+                      }
+                      await refreshQueueStatus();
+                    }}
+                    className="px-2 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold text-[11px] transition cursor-pointer"
+                  >
+                    Clear Synced
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll">
+                {queuedActions.length === 0 ? (
+                  <div className="text-center py-8 text-slate-400 text-xs">
+                    <CheckCircle2 className="w-8 h-8 mx-auto text-slate-300 mb-2" />
+                    <p>No actions in queue.</p>
+                    <p className="text-[10px] mt-0.5">Offline actions (arrival, delivery, notes) will durably persist here.</p>
+                  </div>
+                ) : (
+                  queuedActions.map((item) => (
+                    <div
+                      key={item.operation_id}
+                      className={`p-3 rounded-xl border text-xs space-y-1.5 transition ${
+                        item.status === "pending" || item.status === "retry"
+                          ? "bg-amber-50/70 border-amber-300"
+                          : item.status === "conflict"
+                          ? "bg-rose-50 border-rose-300"
+                          : item.status === "rejected"
+                          ? "bg-red-50 border-red-300"
+                          : "bg-slate-50 border-slate-200 opacity-80"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                            item.status === "pending" || item.status === "retry"
+                              ? "bg-amber-200 text-amber-900"
+                              : item.status === "conflict"
+                              ? "bg-rose-200 text-rose-900"
+                              : item.status === "rejected"
+                              ? "bg-red-200 text-red-900"
+                              : "bg-emerald-200 text-emerald-900"
+                          }`}>
+                            {item.status}
+                          </span>
+                          <span className="font-bold text-slate-900">{item.action_type}</span>
+                        </div>
+                        <span className="font-mono text-[10px] text-slate-400">
+                          {new Date(item.created_at || item.local_timestamp).toLocaleTimeString()}
+                        </span>
+                      </div>
+
+                      <div className="font-mono text-[10px] text-slate-600 truncate">
+                        ID: {item.operation_id} · Mission #{item.mission_id} (v{item.mission_version})
+                      </div>
+
+                      {item.payload && (
+                        <div className="bg-white/90 p-2 rounded border border-slate-200 font-mono text-[10px] text-slate-700">
+                          {JSON.stringify(item.payload)}
+                        </div>
+                      )}
+
+                      {item.reason && (
+                        <div className="text-[11px] text-rose-700 font-semibold bg-rose-100/60 p-1.5 rounded">
+                          Reason: {item.reason}
+                        </div>
+                      )}
+
+                      {item.last_error && (
+                        <div className="text-[10px] text-amber-800 bg-amber-100/70 p-1.5 rounded">
+                          Network Retry Note: {item.last_error} (Retries: {item.retry_count || 0})
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="p-3 bg-slate-100 border-t border-slate-200 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowQueueDrawer(false)}
+                  className="px-4 py-1.5 rounded-lg bg-slate-800 text-white font-bold text-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

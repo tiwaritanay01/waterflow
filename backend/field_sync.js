@@ -26,6 +26,8 @@ function initDemoMissions() {
       ward_code: "M/E",
       volume_liters: 10000,
       assigned_worker: "Rajesh Patil",
+      verification_state: "UNVERIFIED",
+      audit_trace: [],
       created_at: new Date(Date.now() - 20 * 60000).toISOString(),
       updated_at: new Date(Date.now() - 20 * 60000).toISOString(),
       cancelled: false,
@@ -39,6 +41,8 @@ function initDemoMissions() {
       ward_code: "L",
       volume_liters: 8000,
       assigned_worker: "Tanmay Menon",
+      verification_state: "UNVERIFIED",
+      audit_trace: [],
       created_at: new Date(Date.now() - 12 * 60000).toISOString(),
       updated_at: new Date(Date.now() - 12 * 60000).toISOString(),
       cancelled: false,
@@ -155,6 +159,24 @@ function mountFieldSyncRoutes(app) {
       mode: "DEMO / OPERATIONAL SIMULATION",
     });
   });
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // GET /api/field/missions/:id/audit-trace — Specific mission audit trace
+  // ─────────────────────────────────────────────────────────────────────────
+  app.get("/api/field/missions/:id/audit-trace", (req, res) => {
+    const mission = MISSION_VERSIONS.get(req.params.id);
+    if (!mission) {
+      return res.status(404).json({ success: false, error: `Mission ${req.params.id} not found` });
+    }
+    res.json({
+      success: true,
+      mission_id: req.params.id,
+      current_version: mission.version,
+      verification_state: mission.verification_state || "UNVERIFIED",
+      audit_trace: mission.audit_trace || [],
+      server_timestamp: new Date().toISOString(),
+    });
+  });
 }
 
 // =============================================================================
@@ -248,12 +270,32 @@ function processOperation(op) {
     // Non-safety actions (NOTES) can proceed with stale version
   }
 
-  // 6. Check for authorization — offline mode cannot grant new authorization
-  if (op.action_type === "AUTHORIZE" || op.action_type === "APPROVE_TIER3") {
+  // 6. Check for worker authorization (a worker cannot modify another worker's mission)
+  if (op.worker_name && mission.assigned_worker && op.worker_name !== mission.assigned_worker) {
     const result = {
       operation_id: op.operation_id,
       status: "REJECTED",
-      reason: "Offline operations cannot grant Tier 3 or higher authorization. Authorization must be done online.",
+      reason: `Worker authorization failed: mission ${missionId} is assigned to "${mission.assigned_worker}", received action from "${op.worker_name}".`,
+      conflict_type: "UNAUTHORIZED_WORKER",
+    };
+    PROCESSED_OPERATIONS.set(op.operation_id, { result: "REJECTED_UNAUTHORIZED", processed_at: new Date().toISOString() });
+    return result;
+  }
+
+  // 7. Check for authorization — offline mode cannot grant new authorization (Tier 2 or Tier 3)
+  const forbiddenOfflineActions = [
+    "AUTHORIZE",
+    "APPROVE_TIER2",
+    "APPROVE_TIER3",
+    "AUTHORIZE_TIER2",
+    "AUTHORIZE_TIER3",
+    "BYPASS_GOVERNANCE"
+  ];
+  if (forbiddenOfflineActions.includes(op.action_type)) {
+    const result = {
+      operation_id: op.operation_id,
+      status: "REJECTED",
+      reason: "Offline operations cannot grant Tier 2 or Tier 3 authorization. Authorization must be executed online by an authorized officer.",
       conflict_type: "OFFLINE_AUTH_DENIED",
     };
     PROCESSED_OPERATIONS.set(op.operation_id, { result: "REJECTED_AUTH", processed_at: new Date().toISOString() });
@@ -297,6 +339,8 @@ function processOperation(op) {
  */
 function applyAction(mission, op) {
   const payload = op.payload || {};
+  const prevVersion = mission.version;
+  let applyDetails = {};
 
   switch (op.action_type) {
     case "STATUS_UPDATE": {
@@ -304,35 +348,55 @@ function applyAction(mission, op) {
       if (!validStatuses.includes(payload.status)) {
         throw new Error(`Invalid status: ${payload.status}. Valid: ${validStatuses.join(", ")}`);
       }
+      if (mission.status === "delivered" && payload.status !== "delivered") {
+        throw new Error(`Invalid state transition: mission is already delivered, cannot transition backwards to ${payload.status}`);
+      }
       const prevStatus = mission.status;
       mission.status = payload.status;
       mission.version++;
       mission.updated_at = new Date().toISOString();
-      return { previous_status: prevStatus, new_status: payload.status };
+      applyDetails = { previous_status: prevStatus, new_status: payload.status };
+      break;
     }
 
     case "ARRIVAL_RECORD": {
+      if (mission.status === "delivered") {
+        throw new Error("Invalid state transition: mission is already delivered, cannot record arrival");
+      }
       mission.status = "arrived";
       mission.arrival_timestamp = op.local_timestamp || new Date().toISOString();
       mission.arrival_gps = payload.gps || null;
       mission.version++;
       mission.updated_at = new Date().toISOString();
-      return { arrival_recorded: true };
+      applyDetails = { arrival_recorded: true };
+      break;
     }
 
     case "DELIVERY_RECORD": {
       if (mission.status === "delivered") {
         throw new Error("Mission already delivered. Cannot record another delivery.");
       }
+      const qty = payload.quantity_liters !== undefined ? Number(payload.quantity_liters) : mission.volume_liters;
+      if (isNaN(qty) || qty <= 0) {
+        throw new Error("Invalid delivery quantity: quantity must be a positive number");
+      }
+      if (qty > (mission.volume_liters || 10000) * 1.5) {
+        throw new Error(`Invalid delivery quantity: ${qty}L exceeds maximum tanker capacity envelope`);
+      }
+
       mission.status = "delivered";
       mission.delivery_timestamp = op.local_timestamp || new Date().toISOString();
-      mission.delivery_quantity_liters = payload.quantity_liters || mission.volume_liters;
+      mission.delivery_quantity_liters = qty;
       mission.delivery_gps = payload.gps || null;
       mission.delivery_otp = payload.otp_code || null;
       mission.delivery_notes = payload.notes || null;
+      // CRITICAL: Local delivery recording does NOT mark mission VERIFIED.
+      // It sets verification_state to PENDING_VERIFICATION until civic OTP / authority verifies.
+      mission.verification_state = "PENDING_VERIFICATION";
       mission.version++;
       mission.updated_at = new Date().toISOString();
-      return { delivery_recorded: true, quantity: mission.delivery_quantity_liters };
+      applyDetails = { delivery_recorded: true, quantity: mission.delivery_quantity_liters, verification_state: mission.verification_state };
+      break;
     }
 
     case "NOTES": {
@@ -344,12 +408,30 @@ function applyAction(mission, op) {
       });
       mission.version++;
       mission.updated_at = new Date().toISOString();
-      return { note_added: true };
+      applyDetails = { note_added: true };
+      break;
     }
 
     default:
       throw new Error(`Unknown action_type: ${op.action_type}`);
   }
+
+  // Record into mission authoritative audit trace
+  mission.audit_trace = mission.audit_trace || [];
+  mission.audit_trace.push({
+    trace_id: `trace-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`,
+    operation_id: op.operation_id,
+    action_type: op.action_type,
+    version_before: prevVersion,
+    version_after: mission.version,
+    server_timestamp: new Date().toISOString(),
+    local_timestamp: op.local_timestamp || null,
+    worker_identity: mission.assigned_worker,
+    status: mission.status,
+    verification_state: mission.verification_state || "UNVERIFIED",
+  });
+
+  return applyDetails;
 }
 
 // =============================================================================
