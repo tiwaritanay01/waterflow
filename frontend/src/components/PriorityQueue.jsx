@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ListOrdered, Zap, Eye, Lock } from "lucide-react";
 
 // Classify governance tier for a ward dispatch based on volume and priority tier
@@ -16,8 +17,34 @@ const GOV_TIER_META = {
   3: { label: "AUTH", icon: Lock, color: "text-red-600", bg: "bg-red-50", border: "border-red-200" },
 };
 
-export default function PriorityQueue({ queue }) {
+export default function PriorityQueue({ queue, onDispatch }) {
   const displayQueue = queue?.slice(0, 5) || [];
+  const [dispatchingWard, setDispatchingWard] = useState(null);
+
+  const handleAction = async (ward, govTier) => {
+    if (dispatchingWard) return;
+    setDispatchingWard(ward.ward_number);
+    try {
+      if (onDispatch) {
+        await onDispatch(ward);
+      } else {
+        await fetch("http://localhost:3001/api/dispatch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ward_code: ward.ward_number || ward.ward_code,
+            volume_liters: ward.demand_liters || 10000,
+            pin: "4491",
+            notes: `Priority Queue dispatch (Tier ${govTier})`,
+          }),
+        });
+      }
+    } catch (e) {
+      console.error("Queue dispatch error:", e);
+    } finally {
+      setDispatchingWard(null);
+    }
+  };
 
   return (
     <div className="bg-white rounded-xl border border-card-border shadow-sm p-2.5 flex flex-col shrink-0">
@@ -102,13 +129,25 @@ export default function PriorityQueue({ queue }) {
                   </span>
                 </span>
                 <button
+                  onClick={() => handleAction(ward, govTier)}
+                  disabled={dispatchingWard === ward.ward_number}
                   className={`px-2 py-1 ${
-                    isTop
+                    dispatchingWard === ward.ward_number
+                      ? "bg-blue-300 text-white cursor-wait"
+                      : isTop
                       ? "bg-deep-blue text-white hover:bg-blue-700"
                       : "bg-slate-100 hover:bg-slate-200 text-deep-blue"
                   } text-[10px] font-bold rounded shadow-2xs transition-colors`}
                 >
-                  {govTier === 3 ? "🔐 Auth" : govTier === 2 ? "Review" : isTop ? "Assign" : "Queue"}
+                  {dispatchingWard === ward.ward_number
+                    ? "..."
+                    : govTier === 3
+                    ? "🔐 Auth"
+                    : govTier === 2
+                    ? "Review"
+                    : isTop
+                    ? "Assign"
+                    : "Queue"}
                 </button>
               </div>
             </div>

@@ -13,6 +13,8 @@
 const express = require("express");
 const router = express.Router();
 
+const { MISSION_VERSIONS, verifyMissionDelivery, initDemoMissions } = require("./field_sync");
+
 // ---------------------------------------------------------------------------
 // In-Memory Fallback State (Synchronized with PostgreSQL if available)
 // ---------------------------------------------------------------------------
@@ -44,52 +46,18 @@ let activeReports = [
   },
 ];
 
-let activeDispatches = [
-  {
-    mission_id: 501,
-    tanker_id: "T-08",
-    license_plate: "MH-03-BW-7821",
-    driver_name: "Rajesh Patil",
-    driver_phone: "+91-9820155432",
-    destination_ward: "Ward M/East",
-    destination_address: "Shivaji Nagar Community Supply Point, Sector 4, Govandi, Mumbai 400043",
-    lat: 19.0550,
-    lng: 72.9180,
-    volume_liters: 10000,
-    citizen_phone: "+91-9820012345",
-    otp_code: "7419",
-    delivery_status: "en_route", // en_route, arrived, dispensing, delivered
-    eta_minutes: 14,
-    dispatched_at: new Date(Date.now() - 20 * 60000).toISOString(),
-    completed_at: null,
-    depot_name: "Trombay High Level Reservoir",
-  },
-  {
-    mission_id: 502,
-    tanker_id: "T-14",
-    license_plate: "MH-01-CV-4921",
-    driver_name: "Tanmay Menon",
-    driver_phone: "+91-9820388910",
-    destination_ward: "Ward L",
-    destination_address: "Asalpha Hillside Booster Point, Kurla West, Mumbai 400072",
-    lat: 19.0720,
-    lng: 72.8820,
-    volume_liters: 8000,
-    citizen_phone: "+91-9811223344",
-    otp_code: "3892",
-    delivery_status: "en_route",
-    eta_minutes: 22,
-    dispatched_at: new Date(Date.now() - 12 * 60000).toISOString(),
-    completed_at: null,
-    depot_name: "Veravali High Reservoir Depot",
-  },
-];
+// Authoritative mission access helper (synced with field_sync.js)
+function getActiveDispatches() {
+  initDemoMissions();
+  return Array.from(MISSION_VERSIONS.values());
+}
 
 // Helper: Find closest active dispatch to a lat/lng coordinate (within ~5 km)
 function findNearbyDispatch(lat, lng, phone) {
+  const dispatches = getActiveDispatches();
   if (phone) {
     const cleanPhone = phone.replace(/[^0-9]/g, "");
-    const match = activeDispatches.find((d) => {
+    const match = dispatches.find((d) => {
       const dPhone = (d.citizen_phone || "").replace(/[^0-9]/g, "");
       return dPhone.endsWith(cleanPhone.slice(-8)) || cleanPhone.endsWith(dPhone.slice(-8));
     });
@@ -99,10 +67,9 @@ function findNearbyDispatch(lat, lng, phone) {
   if (lat && lng) {
     const cLat = parseFloat(lat);
     const cLng = parseFloat(lng);
-    // Simple Euclidean distance approximation for nearby coordinates
     let best = null;
     let minDist = 0.08; // ~8km threshold
-    for (const d of activeDispatches) {
+    for (const d of dispatches) {
       const dist = Math.sqrt((d.lat - cLat) ** 2 + (d.lng - cLng) ** 2);
       if (dist < minDist) {
         minDist = dist;
@@ -113,7 +80,7 @@ function findNearbyDispatch(lat, lng, phone) {
   }
 
   // Default to the first active dispatch if user is testing
-  return activeDispatches.find((d) => d.delivery_status !== "delivered") || activeDispatches[0];
+  return dispatches.find((d) => d.delivery_status !== "delivered" && d.status !== "delivered") || dispatches[0];
 }
 
 // ---------------------------------------------------------------------------
@@ -291,12 +258,13 @@ router.get("/worker/mission", async (req, res) => {
     }
 
     // Fallback to in-memory active dispatch
+    const dispatches = getActiveDispatches();
     const mission =
-      activeDispatches.find(
+      dispatches.find(
         (d) =>
           d.tanker_id.toUpperCase() === requestedId.toUpperCase() ||
           String(d.mission_id) === String(requestedId)
-      ) || activeDispatches[0];
+      ) || dispatches[0];
 
     res.json({
       success: true,
@@ -327,12 +295,13 @@ router.post("/worker/verify-delivery", async (req, res) => {
     const cleanInputOtp = String(otp_code).trim();
     const reqTankerId = tanker_id || "T-08";
 
-    // Find the active dispatch
-    const mission = activeDispatches.find(
+    // Find the active dispatch from authoritative store
+    const dispatches = getActiveDispatches();
+    const mission = dispatches.find(
       (d) =>
         d.tanker_id.toUpperCase() === String(reqTankerId).toUpperCase() ||
         String(d.mission_id) === String(reqTankerId)
-    ) || activeDispatches[0];
+    ) || dispatches[0];
 
     // Attempt PostgreSQL verification if connected
     if (req.app.locals.pool && req.app.locals.dbAvailable) {
@@ -361,18 +330,20 @@ router.post("/worker/verify-delivery", async (req, res) => {
       }
     }
 
-    // Validate against stored OTP
-    if (cleanInputOtp !== mission.otp_code) {
+    // Call authoritative verification engine (triggers closed-loop state update)
+    let verifyResult;
+    try {
+      verifyResult = verifyMissionDelivery(mission.mission_id, {
+        otp_code: cleanInputOtp,
+        verified_by: "WORKER_OTP_HANDOVER",
+        quantity_liters: mission.volume_liters,
+      });
+    } catch (verifErr) {
       return res.status(400).json({
         success: false,
-        error: `Invalid OTP (${cleanInputOtp}). Citizen OTP verification failed.`,
+        error: verifErr.message,
       });
     }
-
-    // Mark as Delivered
-    mission.delivery_status = "Delivered";
-    mission.completed_at = new Date().toISOString();
-    mission.eta_minutes = 0;
 
     // Update corresponding citizen reports
     for (const r of activeReports) {
@@ -385,11 +356,13 @@ router.post("/worker/verify-delivery", async (req, res) => {
       success: true,
       message: "Proof of Delivery authenticated via Citizen OTP.",
       status: "Delivered",
-      delivery_timestamp: mission.completed_at,
+      delivery_timestamp: mission.completed_at || verifyResult.verified_at,
       tanker_id: mission.tanker_id,
       volume_delivered_liters: mission.volume_liters,
       destination: mission.destination_address,
-      audit_token: `VERIF-SCADA-${Date.now()}-${cleanInputOtp}`,
+      verification_state: "VERIFIED",
+      audit_token: verifyResult.audit_trace_id || `VERIF-SCADA-${Date.now()}-${cleanInputOtp}`,
+      closed_loop_feedback: verifyResult.closed_loop_feedback || null,
     });
   } catch (err) {
     console.error("Error in POST /api/worker/verify-delivery:", err);
@@ -405,11 +378,14 @@ router.post("/worker/verify-delivery", async (req, res) => {
 router.post("/worker/status", (req, res) => {
   try {
     const { tanker_id, status } = req.body;
-    const mission = activeDispatches.find(
+    const dispatches = getActiveDispatches();
+    const mission = dispatches.find(
       (d) => d.tanker_id.toUpperCase() === String(tanker_id || "T-08").toUpperCase()
-    ) || activeDispatches[0];
+    ) || dispatches[0];
 
     mission.delivery_status = status || "arrived";
+    mission.status = status || "arrived";
+    mission.updated_at = new Date().toISOString();
     if (status === "arrived") {
       mission.eta_minutes = 0;
     }

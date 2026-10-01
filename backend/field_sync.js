@@ -15,40 +15,270 @@ const PROCESSED_OPERATIONS = new Map(); // operation_id → { result, processed_
 const MISSION_VERSIONS = new Map();     // mission_id → { version, status, updated_at, ... }
 const SYNC_LOG = [];                     // Audit trail of all sync attempts
 
-// Initialize demo missions (linked to existing activeDispatches in mobile_api.js)
+// Initialize demo missions (authoritative mission registry)
+const DELIVERY_VERIFIED_CALLBACKS = [];
+
+function registerDeliveryVerifiedCallback(cb) {
+  if (typeof cb === "function") {
+    DELIVERY_VERIFIED_CALLBACKS.push(cb);
+  }
+}
+
 function initDemoMissions() {
   if (MISSION_VERSIONS.size === 0) {
     MISSION_VERSIONS.set("501", {
+      id: "501",
       mission_id: "501",
       version: 1,
       status: "en_route",
+      delivery_status: "en_route",
       tanker_id: "T-08",
-      ward_code: "M/E",
-      volume_liters: 10000,
+      license_plate: "MH-03-BW-7821",
+      driver_name: "Rajesh Patil",
+      driver_phone: "+91-9820155432",
       assigned_worker: "Rajesh Patil",
+      destination_ward: "Ward M/East (Govandi)",
+      destination_address: "Shivaji Nagar Community Supply Point, Sector 4, Govandi, Mumbai 400043",
+      ward_code: "M/E",
+      lat: 19.0550,
+      lng: 72.9180,
+      volume_liters: 10000,
+      target_liters: 10000,
+      citizen_phone: "+91-9820012345",
+      otp_code: "7419",
+      eta_minutes: 14,
+      depot_name: "Trombay High Level Reservoir",
       verification_state: "UNVERIFIED",
+      verification_status: "UNVERIFIED",
       audit_trace: [],
       created_at: new Date(Date.now() - 20 * 60000).toISOString(),
       updated_at: new Date(Date.now() - 20 * 60000).toISOString(),
+      completed_at: null,
       cancelled: false,
       reassigned: false,
     });
     MISSION_VERSIONS.set("502", {
+      id: "502",
       mission_id: "502",
       version: 1,
       status: "en_route",
+      delivery_status: "en_route",
       tanker_id: "T-14",
-      ward_code: "L",
-      volume_liters: 8000,
+      license_plate: "MH-01-CV-4921",
+      driver_name: "Tanmay Menon",
+      driver_phone: "+91-9820388910",
       assigned_worker: "Tanmay Menon",
+      destination_ward: "Ward L (Kurla)",
+      destination_address: "Asalpha Hillside Booster Point, Kurla West, Mumbai 400072",
+      ward_code: "L",
+      lat: 19.0720,
+      lng: 72.8820,
+      volume_liters: 8000,
+      target_liters: 8000,
+      citizen_phone: "+91-9811223344",
+      otp_code: "3892",
+      eta_minutes: 22,
+      depot_name: "Veravali High Reservoir Depot",
       verification_state: "UNVERIFIED",
+      verification_status: "UNVERIFIED",
       audit_trace: [],
       created_at: new Date(Date.now() - 12 * 60000).toISOString(),
       updated_at: new Date(Date.now() - 12 * 60000).toISOString(),
+      completed_at: null,
       cancelled: false,
       reassigned: false,
     });
   }
+}
+
+/**
+ * Creates and registers a new dynamic dispatch mission.
+ */
+function createMission(details = {}) {
+  const missionId = details.mission_id ? String(details.mission_id) : String(500 + MISSION_VERSIONS.size + 1);
+  const volume = Number(details.target_liters || details.volume_liters || 10000);
+  const now = new Date().toISOString();
+
+  const mission = {
+    id: missionId,
+    mission_id: missionId,
+    version: 1,
+    status: details.status || "en_route",
+    delivery_status: details.delivery_status || details.status || "en_route",
+    tanker_id: details.tanker_id || "T-01",
+    license_plate: details.license_plate || `MH-02-${details.tanker_id || "T-01"}-1024`,
+    driver_name: details.driver_name || details.assigned_worker || "Municipal Fleet Driver",
+    driver_phone: details.driver_phone || "+91-9820099999",
+    assigned_worker: details.assigned_worker || details.driver_name || "Municipal Fleet Driver",
+    destination_ward: details.destination_ward || `Ward ${details.ward_code || "M/E"}`,
+    destination_address: details.destination_address || `Municipal Relief Standpost (${details.ward_code || "M/E"})`,
+    ward_code: details.ward_code || "M/E",
+    lat: Number(details.lat !== undefined ? details.lat : 19.0550),
+    lng: Number(details.lng !== undefined ? details.lng : 72.9180),
+    volume_liters: volume,
+    target_liters: volume,
+    citizen_phone: details.citizen_phone || "+91-9820012345",
+    otp_code: details.otp_code || String(Math.floor(1000 + Math.random() * 9000)),
+    eta_minutes: details.eta_minutes !== undefined ? Number(details.eta_minutes) : 18,
+    depot_name: details.depot_name || "Bhandup Complex Mega-Hub",
+    verification_state: "UNVERIFIED",
+    verification_status: "UNVERIFIED",
+    audit_trace: [
+      {
+        trace_id: `trace-dispatch-${Date.now().toString(36)}`,
+        action_type: "DISPATCHED",
+        version_before: 0,
+        version_after: 1,
+        server_timestamp: now,
+        worker_identity: details.assigned_worker || details.driver_name || "Municipal Fleet Driver",
+        status: "en_route",
+        verification_state: "UNVERIFIED",
+        details: {
+          requested_by: details.requested_by || "Central Command Operator",
+          depot: details.depot_name || "Bhandup Complex Mega-Hub",
+        },
+      },
+    ],
+    created_at: now,
+    updated_at: now,
+    completed_at: null,
+    cancelled: false,
+    reassigned: false,
+    governance_decision_id: details.governance_decision_id || null,
+  };
+
+  MISSION_VERSIONS.set(missionId, mission);
+  return mission;
+}
+
+/**
+ * Authoritatively verifies a completed delivery using citizen OTP and quantity envelope check.
+ * Transitions mission from PENDING_VERIFICATION to VERIFIED and invokes operational feedback.
+ */
+function verifyMissionDelivery(missionId, options = {}) {
+  const idStr = String(missionId);
+  const mission = MISSION_VERSIONS.get(idStr);
+  if (!mission) {
+    const err = new Error(`Mission ${idStr} not found on server`);
+    err.statusCode = 404;
+    throw err;
+  }
+
+  if (mission.cancelled) {
+    const err = new Error(`Mission ${idStr} was CANCELLED on the server. Cannot verify cancelled mission.`);
+    err.statusCode = 409;
+    throw err;
+  }
+
+  // Idempotency / conflict check
+  if (mission.verification_state === "VERIFIED" || mission.status === "VERIFIED") {
+    const conflictErr = new Error(`Mission ${idStr} is already in state VERIFIED`);
+    conflictErr.statusCode = 409;
+    throw conflictErr;
+  }
+
+  // Must be in a deliverable/delivered transit status
+  const verifiableStatuses = ["delivered", "arrived", "dispensing", "en_route"];
+  if (!verifiableStatuses.includes(mission.status)) {
+    const err = new Error(`Cannot verify mission in status '${mission.status}'.`);
+    err.statusCode = 400;
+    throw err;
+  }
+
+  // 1. OTP Validation
+  const inputOtp = String(options.otp_code || options.otp || "").trim();
+  const storedOtp = String(mission.otp_code || "").trim();
+  if (!inputOtp || inputOtp !== storedOtp) {
+    const otpErr = new Error(`Invalid citizen verification code: Input '${inputOtp}' does not match registered handover OTP.`);
+    otpErr.statusCode = 403;
+    throw otpErr;
+  }
+
+  // 2. Quantity Validation
+  const maxAllowable = (mission.volume_liters || mission.target_liters || 10000) * 1.5;
+  const qty = Number(
+    options.quantity_liters !== undefined
+      ? options.quantity_liters
+      : options.delivered_liters !== undefined
+      ? options.delivered_liters
+      : mission.delivery_quantity_liters || mission.volume_liters || 10000
+  );
+  if (isNaN(qty) || qty <= 0) {
+    const qtyErr = new Error("Invalid delivery quantity: quantity must be a positive number.");
+    qtyErr.statusCode = 400;
+    throw qtyErr;
+  }
+  if (qty > maxAllowable) {
+    const qtyErr = new Error(`Invalid delivery quantity: ${qty}L exceeds vehicle capacity envelope (${maxAllowable}L).`);
+    qtyErr.statusCode = 400;
+    throw qtyErr;
+  }
+
+  const prevVersion = mission.version;
+  mission.version++;
+  mission.status = "VERIFIED";
+  mission.delivery_status = "Delivered";
+  mission.verification_state = "VERIFIED";
+  mission.verification_status = "VERIFIED";
+  mission.delivery_quantity_liters = qty;
+  mission.verified_at = new Date().toISOString();
+  mission.completed_at = mission.verified_at;
+  mission.verified_by = options.verified_by || options.officer_id || "MUNICIPAL_VERIFICATION_OFFICER";
+  mission.updated_at = new Date().toISOString();
+
+  const traceRecord = {
+    trace_id: `trace-verif-${Date.now().toString(36)}`,
+    action_type: "DELIVERY_VERIFIED",
+    version_before: prevVersion,
+    version_after: mission.version,
+    server_timestamp: mission.verified_at,
+    worker_identity: mission.assigned_worker,
+    status: "VERIFIED",
+    verification_state: "VERIFIED",
+    quantity: qty,
+    verified_by: mission.verified_by,
+    otp_authenticated: true,
+  };
+  mission.audit_trace = mission.audit_trace || [];
+  mission.audit_trace.push(traceRecord);
+
+  // Invoke registered closed-loop operational callbacks
+  const txHash = `0x${Buffer.from(traceRecord.trace_id).toString("hex").slice(0, 32)}`;
+  const callbackData = {
+    mission_id: idStr,
+    ward_code: mission.ward_code,
+    quantity_delivered_liters: qty,
+    verified_at: mission.verified_at,
+    authorized_by: options.officer_id || mission.verified_by,
+    transaction_hash: txHash,
+    mission,
+    trace: traceRecord,
+  };
+
+  const callbackResults = [];
+  for (const cb of DELIVERY_VERIFIED_CALLBACKS) {
+    try {
+      const res = cb(callbackData, mission);
+      if (res) callbackResults.push(res);
+    } catch (cbErr) {
+      console.error(`Error in delivery verified callback: ${cbErr.message}`);
+    }
+  }
+
+  return {
+    success: true,
+    mission_id: idStr,
+    new_mission_version: mission.version,
+    verification_state: "VERIFIED",
+    status: "VERIFIED",
+    mission: { ...mission },
+    transaction_hash: txHash,
+    volume_delivered: qty,
+    verified_at: mission.verified_at,
+    verified_by: mission.verified_by,
+    audit_trace_id: traceRecord.trace_id,
+    closed_loop_feedback: callbackResults[0] || null,
+  };
 }
 
 // =============================================================================
@@ -176,6 +406,38 @@ function mountFieldSyncRoutes(app) {
       audit_trace: mission.audit_trace || [],
       server_timestamp: new Date().toISOString(),
     });
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // POST /api/field/missions/:id/verify — Authoritative delivery verification
+  // ─────────────────────────────────────────────────────────────────────────
+  app.post("/api/field/missions/:id/verify", (req, res) => {
+    try {
+      const result = verifyMissionDelivery(req.params.id, req.body);
+      res.json(result);
+    } catch (err) {
+      const statusCode = err.statusCode || (err.message.includes("not found") ? 404 : 400);
+      res.status(statusCode).json({
+        success: false,
+        error: err.message,
+      });
+    }
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // POST /api/field/dispatch — Create and register dynamic field dispatch
+  // ─────────────────────────────────────────────────────────────────────────
+  app.post("/api/field/dispatch", (req, res) => {
+    try {
+      const mission = createMission(req.body);
+      res.status(201).json({
+        success: true,
+        message: `Mission #${mission.mission_id} dispatched to ${mission.destination_ward}`,
+        mission,
+      });
+    } catch (err) {
+      res.status(400).json({ success: false, error: err.message });
+    }
   });
 }
 
@@ -372,15 +634,21 @@ function applyAction(mission, op) {
       break;
     }
 
+    case "RECORD_DELIVERY":
     case "DELIVERY_RECORD": {
-      if (mission.status === "delivered") {
+      if (mission.status === "delivered" || mission.status === "VERIFIED") {
         throw new Error("Mission already delivered. Cannot record another delivery.");
       }
-      const qty = payload.quantity_liters !== undefined ? Number(payload.quantity_liters) : mission.volume_liters;
+      const qty =
+        payload.quantity_liters !== undefined
+          ? Number(payload.quantity_liters)
+          : payload.delivered_liters !== undefined
+          ? Number(payload.delivered_liters)
+          : mission.volume_liters || 10000;
       if (isNaN(qty) || qty <= 0) {
         throw new Error("Invalid delivery quantity: quantity must be a positive number");
       }
-      if (qty > (mission.volume_liters || 10000) * 1.5) {
+      if (qty > (mission.volume_liters || mission.target_liters || 10000) * 1.5) {
         throw new Error(`Invalid delivery quantity: ${qty}L exceeds maximum tanker capacity envelope`);
       }
 
@@ -388,11 +656,12 @@ function applyAction(mission, op) {
       mission.delivery_timestamp = op.local_timestamp || new Date().toISOString();
       mission.delivery_quantity_liters = qty;
       mission.delivery_gps = payload.gps || null;
-      mission.delivery_otp = payload.otp_code || null;
-      mission.delivery_notes = payload.notes || null;
+      mission.delivery_otp = payload.otp_code || payload.recipient_otp || null;
+      mission.delivery_notes = payload.notes || payload.delivery_notes || null;
       // CRITICAL: Local delivery recording does NOT mark mission VERIFIED.
       // It sets verification_state to PENDING_VERIFICATION until civic OTP / authority verifies.
       mission.verification_state = "PENDING_VERIFICATION";
+      mission.verification_status = "PENDING_VERIFICATION";
       mission.version++;
       mission.updated_at = new Date().toISOString();
       applyDetails = { delivery_recorded: true, quantity: mission.delivery_quantity_liters, verification_state: mission.verification_state };
@@ -478,4 +747,8 @@ module.exports = {
   cancelMission,
   reassignMission,
   initDemoMissions,
+  createMission,
+  verifyMissionDelivery,
+  registerDeliveryVerifiedCallback,
+  DELIVERY_VERIFIED_CALLBACKS,
 };

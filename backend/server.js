@@ -65,7 +65,14 @@ app.use("/api", mobileApiRouter);
 // ---------------------------------------------------------------------------
 const { mountResilienceRoutes } = require("./resilience_engine");
 const { mountAutonomyRoutes } = require("./autonomy_engine");
-const { mountFieldSyncRoutes } = require("./field_sync");
+const {
+  mountFieldSyncRoutes,
+  createMission,
+  verifyMissionDelivery,
+  registerDeliveryVerifiedCallback,
+  MISSION_VERSIONS,
+  resetFieldSyncState,
+} = require("./field_sync");
 
 // ---------------------------------------------------------------------------
 // Phase 2: WhatsApp Multi-Lingual NLP Webhook (Meta & Twilio Compatible)
@@ -614,8 +621,24 @@ async function callAIEngine(endpoint, body) {
 }
 
 // ---------------------------------------------------------------------------
-// Helper: Fetch data from DB or fallback to mock
+// Mutable Operational State (Initialized from Seed 42 Baseline Dataset)
 // ---------------------------------------------------------------------------
+
+let wardsState = JSON.parse(JSON.stringify(MOCK_WARDS));
+let tankersState = JSON.parse(JSON.stringify(MOCK_TANKERS));
+let depotsState = JSON.parse(JSON.stringify(MOCK_DEPOTS));
+let alertsState = JSON.parse(JSON.stringify(MOCK_ALERTS));
+
+function resetOperationalState() {
+  wardsState = JSON.parse(JSON.stringify(MOCK_WARDS));
+  tankersState = JSON.parse(JSON.stringify(MOCK_TANKERS));
+  depotsState = JSON.parse(JSON.stringify(MOCK_DEPOTS));
+  alertsState = JSON.parse(JSON.stringify(MOCK_ALERTS));
+  if (typeof resetFieldSyncState === "function") {
+    resetFieldSyncState();
+  }
+  console.log("🔄 Operational state reset to Seed 42 baseline.");
+}
 
 async function getWards() {
   if (dbAvailable) {
@@ -628,10 +651,10 @@ async function getWards() {
       );
       return res.rows;
     } catch (e) {
-      console.log("⚠️  DB query failed, using mock:", e.message);
+      console.log("⚠️  DB query failed, using state fallback:", e.message);
     }
   }
-  return MOCK_WARDS;
+  return wardsState;
 }
 
 async function getTankers() {
@@ -644,10 +667,10 @@ async function getTankers() {
       );
       return res.rows;
     } catch (e) {
-      console.log("⚠️  DB query failed, using mock:", e.message);
+      console.log("⚠️  DB query failed, using state fallback:", e.message);
     }
   }
-  return MOCK_TANKERS;
+  return tankersState;
 }
 
 async function getDepots() {
@@ -659,10 +682,10 @@ async function getDepots() {
       );
       return res.rows;
     } catch (e) {
-      console.log("⚠️  DB query failed, using mock:", e.message);
+      console.log("⚠️  DB query failed, using state fallback:", e.message);
     }
   }
-  return MOCK_DEPOTS;
+  return depotsState;
 }
 
 async function getAlerts() {
@@ -677,10 +700,10 @@ async function getAlerts() {
       );
       return res.rows;
     } catch (e) {
-      console.log("⚠️  DB query failed, using mock:", e.message);
+      console.log("⚠️  DB query failed, using state fallback:", e.message);
     }
   }
-  return MOCK_ALERTS;
+  return alertsState;
 }
 
 // ---------------------------------------------------------------------------
@@ -795,6 +818,111 @@ function computeEquityLocal(wards, totalSupply = 800000) {
   };
 }
 
+/**
+ * Deterministic Constrained Allocation Engine
+ * Constraints:
+ * 1. Non-negativity: x_i >= 0
+ * 2. Demand ceiling: x_i <= D_i (ward.demand_liters)
+ * 3. Total supply budget: sum(x_i) <= NetSupply
+ *    NetSupply = GrossSupply * (1 - strategic_reserve_fraction)
+ * 4. Water quality gate: if !water_quality_safe, dispatch frozen (0 allocation)
+ *
+ * Benchmark Note: MoHUA 135 LPCD is an operational benchmark target, not a statutory entitlement.
+ */
+function computeConstrainedAllocation({
+  wards,
+  available_supply_liters = 800000,
+  strategic_reserve_fraction = 0.15,
+  water_quality_safe = true,
+}) {
+  const grossSupply = Math.max(0, Number(available_supply_liters) || 0);
+  const reserveFrac = Math.min(Math.max(Number(strategic_reserve_fraction) || 0, 0), 1);
+  const reserveLiters = Math.round(grossSupply * reserveFrac);
+  const netSupply = water_quality_safe ? Math.max(0, grossSupply - reserveLiters) : 0;
+
+  const totalDemand = wards.reduce((sum, w) => sum + (Number(w.demand_liters) || 0), 0);
+
+  // If water quality compromised, lock down dispatches
+  if (!water_quality_safe) {
+    const zeroAllocations = wards.map(w => ({
+      ward_id: w.ward_id,
+      ward_number: w.ward_number,
+      name: w.name,
+      priority_score: 0,
+      demand_liters: w.demand_liters || 0,
+      allocated_liters: 0,
+      unmet_demand_liters: w.demand_liters || 0,
+      satisfaction_ratio: 0,
+      allocation_pct: 0,
+    }));
+    return {
+      status: "WATER_QUALITY_LOCKOUT",
+      is_feasible: false,
+      reason: "Contamination/turbidity threshold breached; emergency freeze on municipal dispatches",
+      gross_supply_liters: grossSupply,
+      strategic_reserve_held_liters: grossSupply,
+      net_supply_liters: 0,
+      total_demand_liters: totalDemand,
+      total_allocated_liters: 0,
+      total_unmet_demand_liters: totalDemand,
+      allocations: zeroAllocations,
+      provenance: "CONSTRAINED_ALLOCATION_ENGINE",
+      policy_benchmark: "MoHUA_135_LPCD_BENCHMARK_TARGET",
+    };
+  }
+
+  // Priority scoring for ranking
+  const rankedWards = computePriorityQueueLocal(wards);
+
+  let remainingSupply = netSupply;
+  const wardAllocMap = {};
+
+  // First pass: Allocate strictly along priority ranking up to demand ceiling and supply budget
+  for (const item of rankedWards) {
+    const demand = item.ward ? (item.ward.demand_liters || 0) : (item.recommended_volume || 0);
+    const alloc = Math.min(demand, remainingSupply);
+    wardAllocMap[item.ward_number] = alloc;
+    remainingSupply -= alloc;
+  }
+
+  const allocations = wards.map(w => {
+    const demand = Number(w.demand_liters) || 0;
+    const allocated = wardAllocMap[w.ward_number] || 0;
+    const unmet = Math.max(0, demand - allocated);
+    const satisfaction = demand > 0 ? Math.round((allocated / demand) * 1000) / 1000 : 1.0;
+    return {
+      ward_id: w.ward_id,
+      ward_number: w.ward_number,
+      name: w.name,
+      priority_score: rankedWards.find(r => r.ward_number === w.ward_number)?.total_score || 50,
+      demand_liters: demand,
+      allocated_liters: allocated,
+      unmet_demand_liters: unmet,
+      satisfaction_ratio: satisfaction,
+      allocation_pct: Math.round(satisfaction * 100),
+    };
+  });
+
+  const totalAllocated = allocations.reduce((sum, a) => sum + a.allocated_liters, 0);
+  const totalUnmet = allocations.reduce((sum, a) => sum + a.unmet_demand_liters, 0);
+  const isFeasible = grossSupply > 0 && (totalDemand === 0 || netSupply > 0);
+
+  return {
+    status: totalUnmet === 0 ? "OPTIMAL_FULL_SATISFACTION" : (totalAllocated > 0 ? "PARTIALLY_CONSTRAINED" : "SUPPLY_EXHAUSTED"),
+    is_feasible: isFeasible,
+    gross_supply_liters: grossSupply,
+    strategic_reserve_held_liters: reserveLiters,
+    net_supply_liters: netSupply,
+    total_demand_liters: totalDemand,
+    total_allocated_liters: totalAllocated,
+    total_unmet_demand_liters: totalUnmet,
+    unmet_demand_pct: totalDemand > 0 ? Math.round((totalUnmet / totalDemand) * 100) : 0,
+    allocations,
+    provenance: "CONSTRAINED_ALLOCATION_ENGINE",
+    policy_benchmark: "MoHUA_135_LPCD_BENCHMARK_TARGET",
+  };
+}
+
 // ---------------------------------------------------------------------------
 // GET /api/dashboard — Main dashboard endpoint
 // ---------------------------------------------------------------------------
@@ -834,6 +962,22 @@ app.get("/api/dashboard", async (req, res) => {
     const activeRequests = wards.filter((w) => w.demand_liters > 0).length;
     const criticalWards = wards.filter((w) => w.dry_pipe_hours >= 40 || w.status === "critical").length;
 
+    const constrainedAlloc = computeConstrainedAllocation({
+      wards,
+      available_supply_liters: waterAvailable,
+      strategic_reserve_fraction: 0.15,
+      water_quality_safe: true,
+    });
+
+    const allMissions = Array.from(MISSION_VERSIONS.values());
+    const activeMissions = allMissions.filter((m) => !m.cancelled);
+    const pendingVerificationsCount = allMissions.filter(
+      (m) =>
+        m.verification_status === "PENDING_VERIFICATION" ||
+        m.status === "delivered" ||
+        m.verification_state === "PENDING_VERIFICATION"
+    ).length;
+
     const kpis = {
       active_requests: activeRequests,
       fleet_available: fleetAvailable,
@@ -846,6 +990,8 @@ app.get("/api/dashboard", async (req, res) => {
       unmet_demand_kl: Math.round(totalDemand / 1000),
       equity_index: equityResult ? Math.round(equityResult.waterflow_ai.equity_index) : 88,
       critical_alerts: criticalWards,
+      active_missions_count: activeMissions.length,
+      pending_verifications: pendingVerificationsCount,
     };
 
     res.json({
@@ -858,6 +1004,18 @@ app.get("/api/dashboard", async (req, res) => {
       alerts,
       priority_queue: priorityQueue,
       equity: equityResult,
+      active_missions: activeMissions,
+      pending_verifications_count: pendingVerificationsCount,
+      constrained_allocation: constrainedAlloc,
+      provenance_metadata: {
+        policy_standard: "MoHUA_135_LPCD_SERVICE_BENCHMARK",
+        policy_disclaimer: "MoHUA 135 LPCD is an operational benchmark target, not a statutory entitlement",
+        baseline_seed: 42,
+        mode: "DEPLOYABLE_OPERATIONAL_DEMONSTRATOR",
+        scada_live_connected: false,
+        hydraulic_live_connected: false,
+        synthetic_telemetry: true,
+      },
       timestamp: new Date().toISOString(),
     });
   } catch (err) {
@@ -1607,16 +1765,290 @@ mountFieldSyncRoutes(app);
 console.log("✅ Resilience Engine, Autonomy Engine, and Field Sync routes mounted");
 
 // ---------------------------------------------------------------------------
-// Start server
+// Closed-Loop Operational Feedback: Field Delivery Verification -> Demand Fulfillment
 // ---------------------------------------------------------------------------
 
-app.listen(PORT, () => {
-  console.log(`\n🌊 WaterFlow OS Gateway running on http://localhost:${PORT}`);
-  console.log(`   City:       Mumbai BMC (24 Administrative Wards)`);
-  console.log(`   Dashboard:  GET  http://localhost:${PORT}/api/dashboard`);
-  console.log(`   Resilience: POST http://localhost:${PORT}/api/resilience/simulate`);
-  console.log(`   Autonomy:   POST http://localhost:${PORT}/api/automation/evaluate`);
-  console.log(`   Field Sync: POST http://localhost:${PORT}/api/field/sync`);
-  console.log(`   AI Engine:  ${AI_ENGINE_URL}`);
-  console.log(`   DB Status:  ${dbAvailable ? "✅ Connected" : "⚠️  Mumbai BMC Mock Fallback"}\n`);
+registerDeliveryVerifiedCallback((verificationData) => {
+  const { mission_id, ward_code, quantity_delivered_liters, verified_at, authorized_by, transaction_hash } = verificationData;
+  console.log(`🔄 Closed-Loop Feedback Triggered: Mission #${mission_id} delivered ${quantity_delivered_liters}L to Ward ${ward_code}`);
+
+  // 1. Decrement target ward demand and clear dry pipe hours if satisfied
+  const ward = wardsState.find(w => w.ward_number === ward_code || w.ward_code === ward_code);
+  let prevDemand = 0;
+  let newDemand = 0;
+  if (ward) {
+    prevDemand = ward.demand_liters;
+    ward.demand_liters = Math.max(0, ward.demand_liters - quantity_delivered_liters);
+    newDemand = ward.demand_liters;
+    if (ward.demand_liters === 0) {
+      ward.dry_pipe_hours = 0;
+      ward.status = "normal";
+      ward.water_deficit_pct = Math.max(0, (ward.water_deficit_pct || 50) - 50);
+    } else {
+      const satisfiedFraction = quantity_delivered_liters / Math.max(prevDemand, 1);
+      ward.dry_pipe_hours = Math.max(0, Math.round((ward.dry_pipe_hours || 0) * (1 - satisfiedFraction)));
+      ward.water_deficit_pct = Math.max(0, Math.round((ward.water_deficit_pct || 50) * (1 - satisfiedFraction)));
+      if (ward.dry_pipe_hours < 24) ward.status = "warning";
+    }
+    console.log(`   Ward ${ward_code}: Demand ${prevDemand}L -> ${newDemand}L | Dry Hours -> ${ward.dry_pipe_hours}h`);
+  }
+
+  // 2. Return tanker to available pool
+  const mission = verificationData.mission || MISSION_VERSIONS.get(String(mission_id));
+  const tankerId = mission ? mission.tanker_id : null;
+  if (tankerId) {
+    const tanker = tankersState.find(t => t.transponder_id === tankerId || t.tanker_id === tankerId);
+    if (tanker) {
+      tanker.status = "available";
+      tanker.current_load = 0;
+      tanker.assigned_ward = null;
+      tanker.eta_minutes = null;
+      console.log(`   Tanker ${tankerId}: Status returned to 'available', current load 0L`);
+    }
+  }
+
+  // 3. Append to governance audit log
+  GOVERNANCE_AUDIT_LOG.push({
+    audit_id: `audit-loop-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+    decision_id: `delivery-${mission_id}`,
+    action: "DELIVERY_VERIFIED_CLOSED_LOOP",
+    officer_id: authorized_by || "OFFICER_FIELD_OPS",
+    officer_name: "Operations Field Supervisor",
+    ward_code,
+    volume_delivered: quantity_delivered_liters,
+    transaction_hash,
+    timestamp: verified_at || new Date().toISOString(),
+    governance_tier: 1,
+    decision_type: "delivery_closed_loop_feedback",
+    details: `Ward ${ward_code} demand satisfied by ${quantity_delivered_liters}L. Tanker ${tankerId || "N/A"} returned to pool.`,
+  });
 });
+
+// ---------------------------------------------------------------------------
+// POST /api/dispatch — Operational Dispatch Mission Generation
+// ---------------------------------------------------------------------------
+
+app.post("/api/dispatch", async (req, res) => {
+  try {
+    const {
+      ward_code,
+      volume_liters,
+      tanker_id: requestedTankerId,
+      pin,
+      officer_id,
+      officer_name,
+      notes,
+    } = req.body;
+
+    if (!ward_code) {
+      return res.status(400).json({ success: false, error: "ward_code is required" });
+    }
+
+    const wards = await getWards();
+    const ward = wards.find(w => w.ward_number === ward_code || w.ward_code === ward_code);
+    if (!ward) {
+      return res.status(404).json({ success: false, error: `Ward ${ward_code} not found` });
+    }
+
+    const volume = Number(volume_liters) || ward.demand_liters || 10000;
+    if (volume <= 0) {
+      return res.status(400).json({ success: false, error: "volume_liters must be a positive number" });
+    }
+
+    // Determine governance tier
+    // Tier 3: Critical ward with >48h dry or volume > 15,000L or extreme vulnerability >= 0.90
+    let governanceTier = 1;
+    if (volume > 15000 || (ward.dry_pipe_hours >= 48 && ward.vulnerability_index >= 0.90)) {
+      governanceTier = 3;
+    } else if (volume > 12000 || ward.vulnerability_index >= 0.85) {
+      governanceTier = 2;
+    }
+
+    // Executive PIN check for Tier 3
+    if (governanceTier === 3) {
+      const validPins = ["4491", "admin123", "7419"];
+      if (!pin || !validPins.includes(String(pin).trim())) {
+        return res.status(403).json({
+          success: false,
+          error: "TIER_3_PIN_REQUIRED: Critical Tier 3 dispatch requires valid executive PIN authorization",
+          governance_tier: 3,
+        });
+      }
+    }
+
+    // Find available tanker
+    const tankers = await getTankers();
+    let tanker = null;
+    if (requestedTankerId) {
+      tanker = tankers.find(
+        t => (t.transponder_id === requestedTankerId || t.tanker_id === requestedTankerId) && t.status === "available"
+      );
+      if (!tanker) {
+        return res.status(409).json({ success: false, error: `Requested tanker ${requestedTankerId} is not available` });
+      }
+    } else {
+      tanker = tankers.find(t => t.status === "available" && t.capacity >= volume);
+      if (!tanker) {
+        tanker = tankers.find(t => t.status === "available");
+      }
+    }
+
+    if (!tanker) {
+      return res.status(409).json({
+        success: false,
+        error: "FLEET_DEPLETED: No available tanker in fleet for dispatch",
+      });
+    }
+
+    // Assign tanker
+    tanker.status = "en_route";
+    tanker.assigned_ward = ward.ward_number;
+    tanker.current_load = volume;
+    tanker.eta_minutes = Math.max(10, Math.round((ward.depot_distance_km || 5) * 3));
+
+    // Create authoritative mission in field_sync
+    const mission = createMission({
+      tanker_id: tanker.transponder_id,
+      ward_code: ward.ward_number,
+      target_liters: volume,
+      destination_address: ward.name,
+      destination_lat: ward.lat,
+      destination_lng: ward.lng,
+      driver_name: tanker.driver_name || "Assigned Driver",
+      driver_phone: "+91 98200 44910",
+      notes: notes || `Direct operational dispatch to Ward ${ward.ward_number}`,
+    });
+
+    // Record in governance decisions
+    const decisionId = `disp-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+    const govDecision = {
+      decision_id: decisionId,
+      decision_type: "routine_dispatch",
+      governance_tier: governanceTier,
+      status: "executed",
+      ward_code: ward.ward_number,
+      volume_liters: volume,
+      tanker_id: tanker.transponder_id,
+      mission_id: mission.id,
+      description: `Dispatched ${volume}L via tanker ${tanker.transponder_id} to ${ward.name}`,
+      risk_level: governanceTier === 3 ? "critical" : governanceTier === 2 ? "medium" : "low",
+      timestamp: new Date().toISOString(),
+      authorized_by: officer_name || (governanceTier === 3 ? "Executive Officer (PIN Verified)" : "Operations Supervisor"),
+      justification: notes || `Operational dispatch: Priority Ward ${ward.ward_number}`,
+    };
+    GOVERNANCE_DECISIONS.push(govDecision);
+
+    GOVERNANCE_AUDIT_LOG.push({
+      audit_id: `audit-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+      decision_id: decisionId,
+      action: "DISPATCH_EXECUTED",
+      officer_id: officer_id || "OP_SUP_01",
+      officer_name: officer_name || "Operations Supervisor",
+      pin_used: pin ? "****" + String(pin).slice(-2) : null,
+      ward_code: ward.ward_number,
+      volume_liters: volume,
+      tanker_id: tanker.transponder_id,
+      mission_id: mission.id,
+      governance_tier: governanceTier,
+      timestamp: new Date().toISOString(),
+    });
+
+    console.log(`🚀 Dispatch Executed: Mission #${mission.id} -> Ward ${ward.ward_number} via Tanker ${tanker.transponder_id} (${volume}L) [Tier ${governanceTier}]`);
+
+    res.json({
+      success: true,
+      message: `Mission #${mission.id} dispatched successfully`,
+      mission,
+      tanker: {
+        transponder_id: tanker.transponder_id,
+        status: tanker.status,
+        assigned_ward: tanker.assigned_ward,
+        eta_minutes: tanker.eta_minutes,
+      },
+      governance_tier: governanceTier,
+      otp_code: mission.otp_code,
+    });
+  } catch (err) {
+    console.error("Dispatch error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/allocation/evaluate — Direct Constrained Allocation Evaluation
+// ---------------------------------------------------------------------------
+
+app.post("/api/allocation/evaluate", async (req, res) => {
+  try {
+    const wards = await getWards();
+    const depots = await getDepots();
+    const totalStock = depots.reduce((sum, d) => sum + (d.current_stock || 0), 0);
+
+    const available_supply_liters = req.body.available_supply_liters !== undefined
+      ? req.body.available_supply_liters
+      : totalStock;
+    const strategic_reserve_fraction = req.body.strategic_reserve_fraction !== undefined
+      ? req.body.strategic_reserve_fraction
+      : 0.15;
+    const water_quality_safe = req.body.water_quality_safe !== undefined
+      ? req.body.water_quality_safe
+      : true;
+
+    const result = computeConstrainedAllocation({
+      wards,
+      available_supply_liters,
+      strategic_reserve_fraction,
+      water_quality_safe,
+    });
+
+    res.json(result);
+  } catch (err) {
+    console.error("Allocation evaluation error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/operational-state/reset — Reset to Baseline Seed 42 State
+// ---------------------------------------------------------------------------
+
+app.post("/api/operational-state/reset", (req, res) => {
+  resetOperationalState();
+  res.json({
+    success: true,
+    message: "Operational state reset to Seed 42 baseline",
+    wards_count: wardsState.length,
+    tankers_count: tankersState.length,
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Start server & Exports
+// ---------------------------------------------------------------------------
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`\n🌊 WaterFlow OS Gateway running on http://localhost:${PORT}`);
+    console.log(`   City:       Mumbai BMC (24 Administrative Wards)`);
+    console.log(`   Dashboard:  GET  http://localhost:${PORT}/api/dashboard`);
+    console.log(`   Resilience: POST http://localhost:${PORT}/api/resilience/simulate`);
+    console.log(`   Autonomy:   POST http://localhost:${PORT}/api/automation/evaluate`);
+    console.log(`   Field Sync: POST http://localhost:${PORT}/api/field/sync`);
+    console.log(`   Dispatch:   POST http://localhost:${PORT}/api/dispatch`);
+    console.log(`   AI Engine:  ${AI_ENGINE_URL}`);
+    console.log(`   DB Status:  ${dbAvailable ? "✅ Connected" : "⚠️  Mumbai BMC Mock Fallback"}\n`);
+  });
+}
+
+module.exports = {
+  app,
+  getWards,
+  getTankers,
+  getDepots,
+  getAlerts,
+  resetOperationalState,
+  computeConstrainedAllocation,
+  GOVERNANCE_DECISIONS,
+  GOVERNANCE_AUDIT_LOG,
+};
+

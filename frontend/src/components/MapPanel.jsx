@@ -9,9 +9,11 @@ export default function MapPanel({
   priorityQueue,
   onSelectWard,
   onNavigateToSpatial,
+  onDispatch,
 }) {
   const [internalSelectedWard, setInternalSelectedWard] = useState(null);
-  const [tankerAssigned, setTankerAssigned] = useState(false);
+  const [dispatching, setDispatching] = useState(false);
+  const [dispatchedMission, setDispatchedMission] = useState(null);
 
   // Spotlight ward is either user-clicked or top ranked
   const spotlightWard =
@@ -28,13 +30,42 @@ export default function MapPanel({
       ) || ward;
 
     setInternalSelectedWard(enriched);
-    setTankerAssigned(false);
+    setDispatchedMission(null);
     if (onSelectWard) onSelectWard(enriched);
   };
 
-  const handleAssignTanker = () => {
-    setTankerAssigned(true);
-    setTimeout(() => setTankerAssigned(false), 4000);
+  const handleAssignTanker = async () => {
+    if (!spotlightWard || dispatching) return;
+    setDispatching(true);
+    try {
+      if (onDispatch) {
+        const res = await onDispatch(spotlightWard);
+        if (res?.success) {
+          setDispatchedMission(res.mission);
+          setTimeout(() => setDispatchedMission(null), 5000);
+        }
+      } else {
+        const res = await fetch("http://localhost:3001/api/dispatch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ward_code: spotlightWard.ward_number || spotlightWard.ward_code,
+            volume_liters: spotlightWard.demand_liters || 10000,
+            pin: "4491",
+            notes: "MapPanel direct dispatch",
+          }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          setDispatchedMission(data.mission);
+          setTimeout(() => setDispatchedMission(null), 5000);
+        }
+      }
+    } catch (e) {
+      console.error("Assign tanker error:", e);
+    } finally {
+      setDispatching(false);
+    }
   };
 
   const activeTankerCount =
@@ -195,21 +226,26 @@ export default function MapPanel({
             </div>
             <button
               onClick={handleAssignTanker}
+              disabled={dispatching}
               className={`px-3 py-1 rounded text-xs font-bold shadow-2xs flex items-center space-x-1.5 transition-all ${
-                tankerAssigned
+                dispatchedMission
                   ? "bg-olive-green text-white"
+                  : dispatching
+                  ? "bg-blue-400 text-white cursor-wait"
                   : "bg-deep-blue hover:bg-blue-700 active:bg-blue-800 text-white"
               }`}
             >
-              {tankerAssigned ? (
+              {dispatchedMission ? (
                 <>
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Dispatched T-08!</span>
+                  <span>Mission #{dispatchedMission.id} Dispatched!</span>
                 </>
+              ) : dispatching ? (
+                <span>Dispatching...</span>
               ) : (
                 <>
                   <Truck className="w-3.5 h-3.5" />
-                  <span>Assign Tanker T-08 Now</span>
+                  <span>Assign Tanker Now</span>
                 </>
               )}
             </button>

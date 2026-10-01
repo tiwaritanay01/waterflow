@@ -148,6 +148,62 @@ function AppContent() {
     return () => clearInterval(timer);
   }, []);
 
+  const [dispatchNotification, setDispatchNotification] = useState(null);
+
+  const handleDispatchWard = async (ward, options = {}) => {
+    try {
+      const wardCode = ward?.ward_number || ward?.ward_code;
+      if (!wardCode) return { success: false, error: "No ward specified" };
+      const volume = options.volume || ward.demand_liters || 10000;
+      const pin = options.pin || "4491";
+
+      const res = await fetch(`${API_URL}/api/dispatch`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ward_code: wardCode,
+          volume_liters: volume,
+          pin,
+          officer_id: user?.officer_id || "EXEC_OPS_01",
+          officer_name: user?.name || "Operations Supervisor",
+          notes: `Operational dispatch to Ward ${wardCode}`,
+        }),
+      });
+
+      const resData = await res.json();
+      if (resData.success) {
+        setDispatchNotification({
+          type: "success",
+          message: `Mission #${resData.mission.id} Dispatched! Tanker ${resData.tanker.transponder_id} en route to Ward ${wardCode} (${volume.toLocaleString()} L). Citizen OTP: ${resData.otp_code}`,
+        });
+        // Refresh dashboard immediately
+        try {
+          const dashRes = await fetch(`${API_URL}/api/dashboard`);
+          const dashJson = await dashRes.json();
+          setData(dashJson);
+        } catch (e) {
+          // ignore
+        }
+        setTimeout(() => setDispatchNotification(null), 8000);
+        return resData;
+      } else {
+        setDispatchNotification({
+          type: "error",
+          message: `Dispatch rejected: ${resData.error}`,
+        });
+        setTimeout(() => setDispatchNotification(null), 8000);
+        return resData;
+      }
+    } catch (err) {
+      setDispatchNotification({
+        type: "error",
+        message: `Network error during dispatch: ${err.message}`,
+      });
+      setTimeout(() => setDispatchNotification(null), 8000);
+      return { success: false, error: err.message };
+    }
+  };
+
   const kpis = data?.kpis;
   const wards = data?.wards;
   const tankers = data?.tankers;
@@ -239,6 +295,18 @@ function AppContent() {
 
   return (
     <div className="h-screen w-screen flex flex-col bg-canvas text-head-text font-sans antialiased overflow-hidden">
+      {/* Real-time Dispatch Toast Notification */}
+      {dispatchNotification && (
+        <div className={`fixed top-4 right-4 z-50 px-4 py-2.5 rounded-lg shadow-xl border text-xs font-semibold flex items-center space-x-2 transition-all ${
+          dispatchNotification.type === "success"
+            ? "bg-emerald-50 border-emerald-300 text-emerald-800"
+            : "bg-red-50 border-red-300 text-red-800"
+        }`}>
+          <span>{dispatchNotification.message}</span>
+          <button onClick={() => setDispatchNotification(null)} className="ml-2 font-bold hover:opacity-75">✕</button>
+        </div>
+      )}
+
       {/* ============================================================ */}
       {/* TOP HEADER BAR */}
       {/* ============================================================ */}
@@ -535,11 +603,12 @@ function AppContent() {
                     depots={depots}
                     priorityQueue={priorityQueue}
                     onNavigateToSpatial={() => setActiveTab("spatial")}
+                    onDispatch={handleDispatchWard}
                   />
                 </div>
                 {/* Right: Queue + Resources + Alerts */}
                 <div className="w-full lg:w-[38%] h-full flex flex-col gap-2 min-h-0 overflow-hidden">
-                  <PriorityQueue queue={priorityQueue} />
+                  <PriorityQueue queue={priorityQueue} onDispatch={handleDispatchWard} />
                   <ResourcePanel kpis={kpis} depots={depots} />
                   <AlertTicker alerts={alerts} />
                 </div>
@@ -645,7 +714,12 @@ function AppContent() {
                             <td className="py-2 px-3 font-mono font-black text-deep-blue">{Math.round(ward.total_score)} / 100</td>
                             <td className="py-2 px-3 text-sec-text">{topFactor?.factor} (+{Math.round(topFactor?.weighted_score || 0)})</td>
                             <td className="py-2 px-3 text-right">
-                              <button className={`px-2.5 py-1 rounded text-[11px] font-bold ${idx === 0 ? "bg-deep-blue text-white" : "bg-slate-100 hover:bg-slate-200 text-deep-blue"}`}>Dispatch</button>
+                              <button
+                                onClick={() => handleDispatchWard(ward)}
+                                className={`px-2.5 py-1 rounded text-[11px] font-bold transition-colors ${idx === 0 ? "bg-deep-blue text-white hover:bg-blue-700" : "bg-slate-100 hover:bg-slate-200 text-deep-blue"}`}
+                              >
+                                Dispatch
+                              </button>
                             </td>
                           </tr>
                         );
@@ -920,7 +994,16 @@ function AppContent() {
                         </div>
                         <p className="text-xs text-sec-text mt-0.5">{alert.description}</p>
                       </div>
-                      <button className="px-3 py-1 bg-deep-blue text-white rounded text-xs font-bold shrink-0 ml-4">
+                      <button
+                        onClick={() => {
+                          if (alert.severity === "critical" && alert.ward_number) {
+                            handleDispatchWard({ ward_number: alert.ward_number, demand_liters: 10000 });
+                          } else {
+                            setActiveTab("spatial");
+                          }
+                        }}
+                        className="px-3 py-1 bg-deep-blue hover:bg-blue-700 text-white rounded text-xs font-bold shrink-0 ml-4 transition-colors"
+                      >
                         {alert.severity === "critical" ? "Dispatch Aux Tanker" : "View Details"}
                       </button>
                     </div>
