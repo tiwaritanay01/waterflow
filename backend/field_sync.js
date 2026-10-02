@@ -265,19 +265,23 @@ function verifyMissionDelivery(missionId, options = {}) {
     }
   }
 
+  const postActionEffect = callbackResults[0] || null;
+  mission.post_action_effect = postActionEffect;
+
   return {
     success: true,
     mission_id: idStr,
     new_mission_version: mission.version,
     verification_state: "VERIFIED",
     status: "VERIFIED",
-    mission: { ...mission },
+    mission: { ...mission, post_action_effect: postActionEffect },
     transaction_hash: txHash,
     volume_delivered: qty,
     verified_at: mission.verified_at,
     verified_by: mission.verified_by,
     audit_trace_id: traceRecord.trace_id,
-    closed_loop_feedback: callbackResults[0] || null,
+    closed_loop_feedback: postActionEffect,
+    post_action_effect: postActionEffect,
   };
 }
 
@@ -653,6 +657,7 @@ function applyAction(mission, op) {
       }
 
       mission.status = "delivered";
+      mission.delivery_status = "delivered";
       mission.delivery_timestamp = op.local_timestamp || new Date().toISOString();
       mission.delivery_quantity_liters = qty;
       mission.delivery_gps = payload.gps || null;

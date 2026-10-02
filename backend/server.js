@@ -621,6 +621,435 @@ async function callAIEngine(endpoint, body) {
 }
 
 // ---------------------------------------------------------------------------
+// Demonstration Executive Authorization Gate (Non-production mechanism)
+// ---------------------------------------------------------------------------
+const DEMO_EXECUTIVE_AUTH_TOKENS = (
+  process.env.DEMO_EXECUTIVE_AUTH_TOKENS ||
+  "DEMO_EXEC_PIN_4491,DEMO_OVERRIDE_TOKEN,4491,admin123,7419"
+).split(",").map(t => t.trim());
+
+function verifyDemoExecutiveAuth(token) {
+  if (!token) {
+    return {
+      valid: false,
+      reason: "TIER_3_PIN_REQUIRED: Critical Tier 3 dispatch requires valid demonstration authorization",
+    };
+  }
+  const cleaned = String(token).trim();
+  if (DEMO_EXECUTIVE_AUTH_TOKENS.includes(cleaned)) {
+    return {
+      valid: true,
+      mode: "DEMO_EXECUTIVE_AUTH",
+      token_masked: "****" + (cleaned.length > 2 ? cleaned.slice(-2) : cleaned),
+      label: "[DEMO AUTHORIZATION GATE — NOT PRODUCTION CREDENTIAL]",
+    };
+  }
+  return {
+    valid: false,
+    reason: "TIER_3_PIN_REQUIRED: Invalid executive authorization PIN or demonstration token",
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Canonical Provenance Taxonomy (9 Canonical Classes)
+// ---------------------------------------------------------------------------
+const CANONICAL_PROVENANCE_CLASSES = [
+  "REAL_OBSERVATION",
+  "REFERENCE_DATA",
+  "DERIVED",
+  "REFERENCE_CONSTANT",
+  "LEGAL_RULE",
+  "SYNTHETIC_SEEDED",
+  "ENGINEERING_ASSUMPTION",
+  "SCENARIO_PARAMETER",
+  "DOCUMENTED_ONLY",
+];
+
+// Authoritative Governance Classification Helper
+function getAuthoritativeGovernanceTier(ward, volumeLiters) {
+  const vol = Number(volumeLiters) || ward.demand_liters || 10000;
+  if (vol > 15000 || ((ward.dry_pipe_hours || 0) >= 48 && (ward.vulnerability_index || 0) >= 0.90)) {
+    return 3;
+  }
+  if (vol > 12000 || (ward.vulnerability_index || 0) >= 0.85) {
+    return 2;
+  }
+  return 1;
+}
+
+// ---------------------------------------------------------------------------
+// Authoritative Priority Scoring Function (Policy v2.4.0 Hardened Baseline)
+// P_i = 0.30*V_i + 0.25*D_i + 0.20*Pop_i + 0.15*H_i + 0.10*Dist_i
+// ---------------------------------------------------------------------------
+
+const WEIGHT_VULNERABILITY = 0.30;
+const WEIGHT_DRY_PIPE = 0.25;
+const WEIGHT_POPULATION = 0.20;
+const WEIGHT_HISTORICAL_DEFICIT = 0.15;
+const WEIGHT_DEPOT_DISTANCE = 0.10;
+
+const MAX_DRY_PIPE_HOURS = 72.0;
+const MAX_POPULATION = 1000000.0; // 1 Million residents (calibrated for Mumbai BMC wards)
+const MAX_DEPOT_DISTANCE_KM = 20.0; // Max transit radius in MCGM jurisdiction
+
+function computePriorityLocal(ward) {
+  const vulnRaw = Number(ward.vulnerability_index !== undefined ? ward.vulnerability_index : 0);
+  const vulnNorm = Math.min(Math.max(vulnRaw, 0), 1);
+  const vulnScore = Math.round(vulnNorm * WEIGHT_VULNERABILITY * 100 * 10) / 10;
+  const vulnDesc = vulnNorm >= 0.85 ? "Extreme informal density" : vulnNorm >= 0.65 ? "High vulnerability" : vulnNorm >= 0.45 ? "Moderate vulnerability" : "Stable residential";
+
+  const dryRaw = Number(ward.dry_pipe_hours !== undefined ? ward.dry_pipe_hours : 0);
+  const dryNorm = Math.min(Math.max(dryRaw, 0) / MAX_DRY_PIPE_HOURS, 1);
+  const dryScore = Math.round(dryNorm * WEIGHT_DRY_PIPE * 100 * 10) / 10;
+  const dryDesc = `${Math.round(dryRaw)}h pipe dry`;
+
+  const popRaw = Number(ward.population !== undefined ? ward.population : 0);
+  const popNorm = Math.min(Math.max(popRaw, 0) / MAX_POPULATION, 1);
+  const popScore = Math.round(popNorm * WEIGHT_POPULATION * 100 * 10) / 10;
+  const popDesc = `${(popRaw / 1000).toFixed(0)}k residents`;
+
+  const deficitRaw = Number(ward.historical_deficit !== undefined ? ward.historical_deficit : 0);
+  const deficitNorm = Math.min(Math.max(deficitRaw, 0), 1);
+  const deficitScore = Math.round(deficitNorm * WEIGHT_HISTORICAL_DEFICIT * 100 * 10) / 10;
+  const deficitDesc = `${Math.round(deficitNorm * 100)}% last deficit`;
+
+  const distRaw = Number(ward.depot_distance_km !== undefined ? ward.depot_distance_km : 0);
+  const distNorm = Math.min(Math.max(distRaw, 0) / MAX_DEPOT_DISTANCE_KM, 1);
+  const distScore = Math.round(distNorm * WEIGHT_DEPOT_DISTANCE * 100 * 10) / 10;
+  const distDesc = `${distRaw.toFixed(1)}km to depot (peripheral transit distance)`;
+
+  // Mathematical Invariant: Total score is the exact sum of weighted factor contributions
+  // Factor normalizations (in [0, 1]) and weights (summing to 1.00) guarantee factorSum in [0, 100].
+  // Silent clipping is strictly forbidden: total_score strictly equals factorSum.
+  const factorSum = Math.round((vulnScore + dryScore + popScore + deficitScore + distScore) * 10) / 10;
+  if (factorSum < 0 || factorSum > 100.001) {
+    throw new RangeError(`Priority score invariant violation: factorSum ${factorSum} outside [0, 100]`);
+  }
+  const total = factorSum;
+  const tier = total >= 75 ? 1 : total >= 55 ? 2 : total >= 35 ? 3 : 4;
+
+  const factors = [
+    {
+      factor: "Vulnerability",
+      factor_name: "Vulnerability Exposure",
+      weight: WEIGHT_VULNERABILITY,
+      raw_value: vulnRaw,
+      normalized: Math.round(vulnNorm * 1000) / 1000,
+      normalized_value: Math.round(vulnNorm * 1000) / 1000,
+      weighted_score: vulnScore,
+      weighted_contribution: vulnScore,
+      direction: "INCREASES_PRIORITY",
+      provenance: "SYNTHETIC_SEEDED",
+      provenance_class: "SYNTHETIC_SEEDED",
+      provenance_subtype: "SOCIOECONOMIC_SLUM_INDEX",
+      provenance_metadata: { class: "SYNTHETIC_SEEDED", subtype: "SOCIOECONOMIC_SLUM_INDEX" },
+      description: vulnDesc,
+    },
+    {
+      factor: "Dry Pipe Time",
+      factor_name: "Dry Pipe Duration",
+      weight: WEIGHT_DRY_PIPE,
+      raw_value: dryRaw,
+      normalized: Math.round(dryNorm * 1000) / 1000,
+      normalized_value: Math.round(dryNorm * 1000) / 1000,
+      weighted_score: dryScore,
+      weighted_contribution: dryScore,
+      direction: "INCREASES_PRIORITY",
+      provenance: "SYNTHETIC_SEEDED",
+      provenance_class: "SYNTHETIC_SEEDED",
+      provenance_subtype: "SCADA_TELEMETRY",
+      provenance_metadata: { class: "SYNTHETIC_SEEDED", subtype: "SCADA_TELEMETRY" },
+      description: dryDesc,
+    },
+    {
+      factor: "Population",
+      factor_name: "Population Density",
+      weight: WEIGHT_POPULATION,
+      raw_value: popRaw,
+      normalized: Math.round(popNorm * 1000) / 1000,
+      normalized_value: Math.round(popNorm * 1000) / 1000,
+      weighted_score: popScore,
+      weighted_contribution: popScore,
+      direction: "INCREASES_PRIORITY",
+      provenance: "REFERENCE_DATA",
+      provenance_class: "REFERENCE_DATA",
+      provenance_subtype: "CENSUS_2011_PROJECTED",
+      provenance_metadata: { class: "REFERENCE_DATA", subtype: "CENSUS_2011_PROJECTED" },
+      description: popDesc,
+    },
+    {
+      factor: "Historical Deficit",
+      factor_name: "Historical Service Deficit",
+      weight: WEIGHT_HISTORICAL_DEFICIT,
+      raw_value: deficitRaw,
+      normalized: Math.round(deficitNorm * 1000) / 1000,
+      normalized_value: Math.round(deficitNorm * 1000) / 1000,
+      weighted_score: deficitScore,
+      weighted_contribution: deficitScore,
+      direction: "INCREASES_PRIORITY",
+      provenance: "DERIVED",
+      provenance_class: "DERIVED",
+      provenance_subtype: "HISTORICAL_QUOTA_LOGS",
+      provenance_metadata: { class: "DERIVED", subtype: "HISTORICAL_QUOTA_LOGS" },
+      description: deficitDesc,
+    },
+    {
+      factor: "Depot Distance",
+      factor_name: "Depot Distance",
+      weight: WEIGHT_DEPOT_DISTANCE,
+      raw_value: distRaw,
+      normalized: Math.round(distNorm * 1000) / 1000,
+      normalized_value: Math.round(distNorm * 1000) / 1000,
+      weighted_score: distScore,
+      weighted_contribution: distScore,
+      direction: "INCREASES_PRIORITY",
+      provenance: "DERIVED",
+      provenance_class: "DERIVED",
+      provenance_subtype: "GIS_TRANSIT_NETWORK",
+      provenance_metadata: { class: "DERIVED", subtype: "GIS_TRANSIT_NETWORK" },
+      description: distDesc,
+    },
+  ];
+
+  const whyFactors = [
+    `+ Vulnerability exposure (${vulnRaw.toFixed(2)}) → +${vulnScore.toFixed(1)} pts`,
+    `+ Dry pipe outage (${Math.round(dryRaw)}h) → +${dryScore.toFixed(1)} pts`,
+    `+ Population served (${(popRaw / 1000).toFixed(0)}k residents) → +${popScore.toFixed(1)} pts`,
+    `+ Historical service deficit (${Math.round(deficitNorm * 100)}%) → +${deficitScore.toFixed(1)} pts`,
+    `+ Depot transit distance (${distRaw.toFixed(1)} km) → +${distScore.toFixed(1)} pts`,
+  ];
+
+  const recommendedAction = total >= 75
+    ? "Prioritize immediate tanker intervention (Tier 3 emergency protocol)."
+    : total >= 55
+    ? "Prioritize scheduled tanker delivery (Tier 2 review protocol)."
+    : "Monitor pipeline distribution; nominal supply sufficient.";
+
+  return {
+    ward_id: ward.ward_id,
+    ward_number: ward.ward_number,
+    ward_code: ward.ward_code || ward.ward_number,
+    name: ward.name,
+    zone: ward.zone,
+    demand_liters: ward.demand_liters,
+    total_score: total,
+    tier,
+    lat: ward.lat,
+    lng: ward.lng,
+    coverage_pct: ward.coverage_pct,
+    water_deficit_pct: ward.water_deficit_pct || Math.round((1 - (ward.coverage_pct || 50) / 100) * 100),
+    dry_pipe_hours: ward.dry_pipe_hours,
+    population: ward.population,
+    vulnerability_index: ward.vulnerability_index,
+    breakdown: factors,
+    priority_factors: factors,
+    why_factors: whyFactors,
+    why_summary: whyFactors.join(" | "),
+    recommended_action: recommendedAction,
+    recommended_volume: ward.demand_liters,
+    description: ward.description,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Canonical Operational Decision Record Store & Generator
+// ---------------------------------------------------------------------------
+const OPERATIONAL_DECISION_RECORDS = new Map();
+
+function generateDecisionRecord({
+  ward,
+  volume_liters,
+  tanker,
+  governance_tier,
+  officer_name,
+  officer_id,
+  mission,
+  pin,
+  notes,
+  status = "DISPATCHED",
+  decision_id_override,
+}) {
+  const decisionId = decision_id_override || `dec_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+  const priorityInfo = computePriorityLocal(ward);
+  const now = new Date().toISOString();
+
+  const constraintsApplied = [
+    "SUPPLY_BUDGET",
+    "DEMAND_CEILING",
+    "STRATEGIC_RESERVE_PROTECTION",
+    "WATER_QUALITY_ASSURANCE",
+    "TANKER_FLEET_CAPACITY",
+    "ROAD_NETWORK_ACCESSIBILITY",
+  ];
+
+  const bindingConstraints = [];
+  if (volume_liters >= (ward.demand_liters || 0)) {
+    bindingConstraints.push("DEMAND_CEILING_BOUND");
+  } else {
+    bindingConstraints.push("TANKER_CAPACITY_LIMIT");
+  }
+
+  const dataProvenance = {
+    demand: {
+      value: `${ward.demand_liters || 0} L (135 LPCD benchmark target)`,
+      class: "REFERENCE_CONSTANT",
+      source_type: "REFERENCE_CONSTANT",
+      subtype: "MOHUA_CPHEEO_GUIDELINES",
+      reference: "MoHUA / CPHEEO Urban Guidelines",
+      freshness: "CURRENT",
+      status: "operational benchmark target",
+    },
+    vulnerability_index: {
+      value: ward.vulnerability_index !== undefined ? ward.vulnerability_index : 0,
+      class: "SYNTHETIC_SEEDED",
+      source_type: "SYNTHETIC_SEEDED",
+      subtype: "SEED_42_DEMO_DATASET",
+      reference: "Seed 42 demonstration dataset",
+      freshness: "CURRENT",
+    },
+    population: {
+      value: ward.population !== undefined ? ward.population : 0,
+      class: "REFERENCE_DATA",
+      source_type: "REFERENCE_DATA",
+      subtype: "CENSUS_WARD_DEMOGRAPHICS",
+      reference: "BMC Ward Census Demographics (2011 + Projections)",
+      freshness: "CURRENT",
+    },
+    dry_pipe_duration: {
+      value: `${ward.dry_pipe_hours !== undefined ? ward.dry_pipe_hours : 0} hours`,
+      class: "SYNTHETIC_SEEDED",
+      source_type: "SYNTHETIC_SEEDED",
+      subtype: "SCADA_TELEMETRY",
+      reference: "Seed 42 demonstration telemetry",
+      freshness: "CURRENT",
+    },
+    depot_distance: {
+      value: `${ward.depot_distance_km !== undefined ? ward.depot_distance_km : 5} km`,
+      class: "DERIVED",
+      source_type: "DERIVED",
+      subtype: "GIS_TRANSIT_ESTIMATE",
+      reference: "Centroid-to-depot spatial distance estimate",
+      freshness: "CURRENT",
+    },
+  };
+
+  const alternatives = tanker ? [
+    {
+      option_id: `opt-${tanker.transponder_id}`,
+      tanker_id: tanker.transponder_id,
+      capacity_liters: tanker.capacity,
+      eta_minutes: tanker.eta_minutes || 15,
+      unmet_demand_after: Math.max(0, (ward.demand_liters || 0) - volume_liters),
+      selection_status: "SELECTED",
+    }
+  ] : [];
+
+  const effectiveTier = governance_tier !== undefined ? governance_tier : getAuthoritativeGovernanceTier(ward, volume_liters);
+  const govTierName = effectiveTier === 3
+    ? "TIER_3_EXECUTIVE"
+    : effectiveTier === 2
+    ? "TIER_2_SUPERVISORY"
+    : "TIER_1_AUTOMATED";
+
+  const decisionReason = `Priority score ${priorityInfo.total_score} driven by ${priorityInfo.why_factors[0]} and ${priorityInfo.why_factors[1]}. Dispatched ${volume_liters}L via tanker ${tanker ? tanker.transponder_id : "N/A"}. Governance: ${govTierName}.`;
+
+  const record = {
+    decision_id: decisionId,
+    timestamp: now,
+    scenario_id: "SEED_42_BASELINE",
+    target_ward: ward.ward_number || ward.ward_code,
+    target_facility: (ward.critical_facilities && ward.critical_facilities[0]) || null,
+    decision_type: "TANKER_DISPATCH",
+    recommended_action: `Dispatch ${volume_liters}L relief to Ward ${ward.ward_number} (${ward.name})`,
+    priority: priorityInfo.total_score,
+    priority_factors: priorityInfo.priority_factors,
+    priority_breakdown: {
+      total_score: priorityInfo.total_score,
+      scale: 100,
+      factors: priorityInfo.priority_factors,
+      sum_contributions: Math.round(priorityInfo.priority_factors.reduce((s, f) => s + f.weighted_contribution, 0) * 10) / 10,
+      invariant_holds: Math.abs(priorityInfo.total_score - priorityInfo.priority_factors.reduce((s, f) => s + f.weighted_contribution, 0)) < 0.01,
+    },
+    // Explicit Allocation Field Semantics (Clarified & Unambiguous)
+    ward_unmet_demand_before_liters: ward.demand_liters || 0,
+    tanker_requested_liters: volume_liters,
+    tanker_allocated_liters: volume_liters,
+    ward_unmet_demand_after_liters: Math.max(0, (ward.demand_liters || 0) - volume_liters),
+    // Backward-Compatible Legacy Aliases
+    allocation_requested: volume_liters,
+    allocation_granted: volume_liters,
+    unmet_demand: Math.max(0, (ward.demand_liters || 0) - volume_liters),
+    constraints_applied: constraintsApplied,
+    binding_constraints: bindingConstraints,
+    governance_tier: govTierName,
+    authorization_status: "AUTHORIZED",
+    authorized_by: officer_name || (effectiveTier === 3 ? "DEMO_EXECUTIVE_AUTH" : "Operations Supervisor"),
+    data_sources: [
+      "BMC Ward Census Demographics",
+      "Seed 42 Baseline Operational Telemetry",
+      "MoHUA 135 LPCD Service Benchmark",
+      "Depot Stock Telemetry",
+    ],
+    data_provenance: dataProvenance,
+    freshness: "CURRENT",
+    assumptions: [
+      "MoHUA 135 LPCD is an operational benchmark target, not a statutory entitlement",
+      "Tanker dispatch transit speed 15 km/h in urban traffic",
+      "Seed 42 initial conditions baseline",
+    ],
+    alternatives_considered: alternatives,
+    decision_reason: decisionReason,
+    execution_status: status,
+    mission_id: mission ? String(mission.id) : null,
+    tanker_id: tanker ? tanker.transponder_id : null,
+    verification_status: "UNVERIFIED",
+    post_action_effect: null,
+    limitations: "Deployable operational demonstrator (Seed 42 baseline). Not connected to live Mumbai SCADA, live GPS, or statutory municipal authority.",
+  };
+
+  OPERATIONAL_DECISION_RECORDS.set(decisionId, record);
+  return record;
+}
+
+function seedInitialDecisionRecords() {
+  OPERATIONAL_DECISION_RECORDS.clear();
+  const wardME = MOCK_WARDS.find(w => w.ward_number === "M/E");
+  const wardL = MOCK_WARDS.find(w => w.ward_number === "L");
+  const tankerT08 = MOCK_TANKERS.find(t => t.transponder_id === "T-08");
+  const tankerT14 = MOCK_TANKERS.find(t => t.transponder_id === "T-14");
+
+  if (wardME) {
+    const govTier = getAuthoritativeGovernanceTier(wardME, 10000);
+    const dec501 = generateDecisionRecord({
+      ward: wardME,
+      volume_liters: 10000,
+      tanker: tankerT08,
+      governance_tier: govTier,
+      officer_name: "DEMO_EXECUTIVE_AUTH",
+      mission: { id: "501" },
+      status: "EN_ROUTE",
+      decision_id_override: "dec-seed42-501",
+    });
+    dec501.target_facility = "Shivaji Nagar Community Supply Point";
+  }
+
+  if (wardL) {
+    const govTier = getAuthoritativeGovernanceTier(wardL, 8000);
+    const dec502 = generateDecisionRecord({
+      ward: wardL,
+      volume_liters: 8000,
+      tanker: tankerT14,
+      governance_tier: govTier,
+      officer_name: "Operations Supervisor",
+      mission: { id: "502" },
+      status: "EN_ROUTE",
+      decision_id_override: "dec-seed42-502",
+    });
+    dec502.target_facility = "Asalpha Hillside Booster Point";
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Mutable Operational State (Initialized from Seed 42 Baseline Dataset)
 // ---------------------------------------------------------------------------
 
@@ -628,6 +1057,9 @@ let wardsState = JSON.parse(JSON.stringify(MOCK_WARDS));
 let tankersState = JSON.parse(JSON.stringify(MOCK_TANKERS));
 let depotsState = JSON.parse(JSON.stringify(MOCK_DEPOTS));
 let alertsState = JSON.parse(JSON.stringify(MOCK_ALERTS));
+
+// Seed initial decisions on load
+seedInitialDecisionRecords();
 
 function resetOperationalState() {
   wardsState = JSON.parse(JSON.stringify(MOCK_WARDS));
@@ -637,6 +1069,7 @@ function resetOperationalState() {
   if (typeof resetFieldSyncState === "function") {
     resetFieldSyncState();
   }
+  seedInitialDecisionRecords();
   console.log("🔄 Operational state reset to Seed 42 baseline.");
 }
 
@@ -704,67 +1137,6 @@ async function getAlerts() {
     }
   }
   return alertsState;
-}
-
-// ---------------------------------------------------------------------------
-// Priority Scoring Algorithm (Algorithmic Equity Formula)
-// P_i = 0.30*V_i + 0.25*D_i + 0.20*Pop_i + 0.15*H_i + 0.10*Dist_i
-// ---------------------------------------------------------------------------
-
-function computePriorityLocal(ward) {
-  const MAX_DRY = 72;
-  const MAX_POP = 1000000; // 1 Million for Mumbai wards
-  const MAX_DIST = 20;
-
-  const vulnNorm = Math.min(Math.max(ward.vulnerability_index || 0, 0), 1);
-  const vulnScore = vulnNorm * 0.30 * 100;
-  const vulnDesc = vulnNorm >= 0.85 ? "Extreme informal density" : vulnNorm >= 0.65 ? "High vulnerability" : vulnNorm >= 0.45 ? "Moderate vulnerability" : "Stable residential";
-
-  const demandNorm = Math.min((ward.dry_pipe_hours || 0) / MAX_DRY, 1);
-  const demandScore = demandNorm * 0.25 * 100;
-  const demandDesc = `${Math.round(ward.dry_pipe_hours || 0)}h pipe dry`;
-
-  const popNorm = Math.min((ward.population || 0) / MAX_POP, 1);
-  const popScore = popNorm * 0.20 * 100;
-  const popDesc = `${((ward.population || 0) / 1000).toFixed(0)}k residents`;
-
-  const deficitNorm = Math.min(Math.max(ward.historical_deficit || 0, 0), 1);
-  const deficitScore = deficitNorm * 0.15 * 100;
-  const deficitDesc = `${Math.round(deficitNorm * 100)}% last deficit`;
-
-  const distNorm = Math.min((ward.depot_distance_km || 0) / MAX_DIST, 1);
-  const distScore = distNorm * 0.10 * 100;
-  const distDesc = `${(ward.depot_distance_km || 0).toFixed(1)}km to depot`;
-
-  const total = Math.min(Math.round((vulnScore + demandScore + popScore + deficitScore + distScore) * 10) / 10, 100);
-  const tier = total >= 75 ? 1 : total >= 55 ? 2 : total >= 35 ? 3 : 4;
-
-  return {
-    ward_id: ward.ward_id,
-    ward_number: ward.ward_number,
-    ward_code: ward.ward_code || ward.ward_number,
-    name: ward.name,
-    zone: ward.zone,
-    demand_liters: ward.demand_liters,
-    total_score: total,
-    tier,
-    lat: ward.lat,
-    lng: ward.lng,
-    coverage_pct: ward.coverage_pct,
-    water_deficit_pct: ward.water_deficit_pct || Math.round((1 - (ward.coverage_pct || 50) / 100) * 100),
-    dry_pipe_hours: ward.dry_pipe_hours,
-    population: ward.population,
-    vulnerability_index: ward.vulnerability_index,
-    breakdown: [
-      { factor: "Vulnerability",      weight: 0.30, raw_value: ward.vulnerability_index, normalized: Math.round(vulnNorm * 1000) / 1000, weighted_score: Math.round(vulnScore * 10) / 10, description: vulnDesc },
-      { factor: "Dry Pipe Time",      weight: 0.25, raw_value: ward.dry_pipe_hours,      normalized: Math.round(demandNorm * 1000) / 1000, weighted_score: Math.round(demandScore * 10) / 10, description: demandDesc },
-      { factor: "Population",         weight: 0.20, raw_value: ward.population,          normalized: Math.round(popNorm * 1000) / 1000, weighted_score: Math.round(popScore * 10) / 10, description: popDesc },
-      { factor: "Historical Deficit", weight: 0.15, raw_value: ward.historical_deficit,  normalized: Math.round(deficitNorm * 1000) / 1000, weighted_score: Math.round(deficitScore * 10) / 10, description: deficitDesc },
-      { factor: "Depot Distance",     weight: 0.10, raw_value: ward.depot_distance_km,   normalized: Math.round(distNorm * 1000) / 1000, weighted_score: Math.round(distScore * 10) / 10, description: distDesc },
-    ],
-    recommended_volume: ward.demand_liters,
-    description: ward.description,
-  };
 }
 
 function computePriorityQueueLocal(wards) {
@@ -854,18 +1226,114 @@ function computeConstrainedAllocation({
       unmet_demand_liters: w.demand_liters || 0,
       satisfaction_ratio: 0,
       allocation_pct: 0,
+      binding_constraints: ["WATER_QUALITY_LOCKOUT"],
     }));
     return {
       status: "WATER_QUALITY_LOCKOUT",
+      code: "QUALITY_LOCKOUT",
       is_feasible: false,
-      reason: "Contamination/turbidity threshold breached; emergency freeze on municipal dispatches",
+      reason: "QUALITY_LOCKOUT: Contamination/turbidity threshold breached; emergency freeze on municipal dispatches",
       gross_supply_liters: grossSupply,
       strategic_reserve_held_liters: grossSupply,
       net_supply_liters: 0,
       total_demand_liters: totalDemand,
       total_allocated_liters: 0,
       total_unmet_demand_liters: totalDemand,
+      binding_constraints: ["WATER_QUALITY_LOCKOUT"],
       allocations: zeroAllocations,
+      explanation: {
+        requested_liters: totalDemand,
+        available_liters: 0,
+        reserved_liters: grossSupply,
+        allocated_liters: 0,
+        unmet_liters: totalDemand,
+        binding_constraints: ["WATER_QUALITY_LOCKOUT"],
+        summary: "Water quality gate lockout: 0 L allocated due to contamination alert.",
+      },
+      provenance: "CONSTRAINED_ALLOCATION_ENGINE",
+      policy_benchmark: "MoHUA_135_LPCD_BENCHMARK_TARGET",
+    };
+  }
+
+  // Zero supply condition
+  if (grossSupply === 0 && totalDemand > 0) {
+    const zeroAllocations = wards.map(w => ({
+      ward_id: w.ward_id,
+      ward_number: w.ward_number,
+      name: w.name,
+      priority_score: 0,
+      demand_liters: w.demand_liters || 0,
+      allocated_liters: 0,
+      unmet_demand_liters: w.demand_liters || 0,
+      satisfaction_ratio: 0,
+      allocation_pct: 0,
+      binding_constraints: ["SUPPLY_BUDGET_REACHED"],
+    }));
+    return {
+      status: "SUPPLY_EXHAUSTED",
+      feasibility_status: "INFEASIBLE",
+      code: "SUPPLY_LIMIT",
+      is_feasible: false,
+      reason: "SUPPLY_LIMIT: Reservoir supply is zero; unable to fulfill municipal demand",
+      gross_supply_liters: 0,
+      strategic_reserve_held_liters: 0,
+      net_supply_liters: 0,
+      total_demand_liters: totalDemand,
+      total_allocated_liters: 0,
+      total_unmet_demand_liters: totalDemand,
+      binding_constraints: ["SUPPLY_BUDGET_REACHED"],
+      allocations: zeroAllocations,
+      explanation: {
+        requested_liters: totalDemand,
+        available_liters: 0,
+        reserved_liters: 0,
+        allocated_liters: 0,
+        unmet_liters: totalDemand,
+        binding_constraints: ["SUPPLY_BUDGET_REACHED"],
+        summary: "Zero usable supply: All municipal allocations constrained by supply budget.",
+      },
+      provenance: "CONSTRAINED_ALLOCATION_ENGINE",
+      policy_benchmark: "MoHUA_135_LPCD_BENCHMARK_TARGET",
+    };
+  }
+
+  // 100% reserve held condition
+  if (netSupply === 0 && grossSupply > 0 && totalDemand > 0) {
+    const zeroAllocations = wards.map(w => ({
+      ward_id: w.ward_id,
+      ward_number: w.ward_number,
+      name: w.name,
+      priority_score: 0,
+      demand_liters: w.demand_liters || 0,
+      allocated_liters: 0,
+      unmet_demand_liters: w.demand_liters || 0,
+      satisfaction_ratio: 0,
+      allocation_pct: 0,
+      binding_constraints: ["STRATEGIC_RESERVE_PROTECTION"],
+    }));
+    return {
+      status: "SUPPLY_EXHAUSTED",
+      feasibility_status: "INFEASIBLE",
+      code: "RESERVE_PROTECTION",
+      is_feasible: false,
+      reason: "RESERVE_PROTECTION: Entire reservoir supply protected under strategic emergency reserve",
+      gross_supply_liters: grossSupply,
+      strategic_reserve_held_liters: reserveLiters,
+      net_supply_liters: 0,
+      total_demand_liters: totalDemand,
+      total_allocated_liters: 0,
+      total_unmet_demand_liters: totalDemand,
+      binding_constraints: ["STRATEGIC_RESERVE_PROTECTION"],
+      allocations: zeroAllocations,
+      explanation: {
+        requested_liters: totalDemand,
+        available_liters: 0,
+        reserved_liters: reserveLiters,
+        allocated_liters: 0,
+        unmet_liters: totalDemand,
+        binding_constraints: ["STRATEGIC_RESERVE_PROTECTION"],
+        summary: "Strategic reserve protection binds 100% of water stock.",
+      },
       provenance: "CONSTRAINED_ALLOCATION_ENGINE",
       policy_benchmark: "MoHUA_135_LPCD_BENCHMARK_TARGET",
     };
@@ -876,6 +1344,7 @@ function computeConstrainedAllocation({
 
   let remainingSupply = netSupply;
   const wardAllocMap = {};
+  const wardBindingMap = {};
 
   // First pass: Allocate strictly along priority ranking up to demand ceiling and supply budget
   for (const item of rankedWards) {
@@ -883,6 +1352,18 @@ function computeConstrainedAllocation({
     const alloc = Math.min(demand, remainingSupply);
     wardAllocMap[item.ward_number] = alloc;
     remainingSupply -= alloc;
+
+    const bindings = [];
+    if (alloc === demand && demand > 0) {
+      bindings.push("DEMAND_CEILING_BOUND");
+    }
+    if (alloc < demand && remainingSupply === 0) {
+      bindings.push("SUPPLY_BUDGET_REACHED");
+      if (reserveLiters > 0) {
+        bindings.push("STRATEGIC_RESERVE_PROTECTION");
+      }
+    }
+    wardBindingMap[item.ward_number] = bindings;
   }
 
   const allocations = wards.map(w => {
@@ -890,6 +1371,7 @@ function computeConstrainedAllocation({
     const allocated = wardAllocMap[w.ward_number] || 0;
     const unmet = Math.max(0, demand - allocated);
     const satisfaction = demand > 0 ? Math.round((allocated / demand) * 1000) / 1000 : 1.0;
+    const binding = wardBindingMap[w.ward_number] || (demand === 0 ? ["DEMAND_CEILING_BOUND"] : []);
     return {
       ward_id: w.ward_id,
       ward_number: w.ward_number,
@@ -900,15 +1382,34 @@ function computeConstrainedAllocation({
       unmet_demand_liters: unmet,
       satisfaction_ratio: satisfaction,
       allocation_pct: Math.round(satisfaction * 100),
+      binding_constraints: binding,
     };
   });
 
   const totalAllocated = allocations.reduce((sum, a) => sum + a.allocated_liters, 0);
   const totalUnmet = allocations.reduce((sum, a) => sum + a.unmet_demand_liters, 0);
-  const isFeasible = grossSupply > 0 && (totalDemand === 0 || netSupply > 0);
+
+  // Active binding constraints across all wards
+  const globalBinding = [];
+  if (totalAllocated >= netSupply && netSupply < totalDemand) {
+    globalBinding.push("SUPPLY_BUDGET_REACHED");
+    if (reserveLiters > 0) {
+      globalBinding.push("STRATEGIC_RESERVE_PROTECTION");
+    }
+  }
+  if (totalUnmet === 0) {
+    globalBinding.push("DEMAND_CEILING_BOUND");
+  }
+
+  const isFeasible = true;
+  const status = totalUnmet === 0 ? "OPTIMAL_FULL_SATISFACTION" : (totalAllocated > 0 ? "PARTIALLY_CONSTRAINED" : "SUPPLY_EXHAUSTED");
+  const feasibilityStatus = totalUnmet === 0 ? "FEASIBLE" : "PARTIALLY_FEASIBLE";
+  const code = totalUnmet === 0 ? "DEMAND_CEILING" : "SUPPLY_LIMIT";
 
   return {
-    status: totalUnmet === 0 ? "OPTIMAL_FULL_SATISFACTION" : (totalAllocated > 0 ? "PARTIALLY_CONSTRAINED" : "SUPPLY_EXHAUSTED"),
+    status,
+    feasibility_status: feasibilityStatus,
+    code,
     is_feasible: isFeasible,
     gross_supply_liters: grossSupply,
     strategic_reserve_held_liters: reserveLiters,
@@ -917,7 +1418,17 @@ function computeConstrainedAllocation({
     total_allocated_liters: totalAllocated,
     total_unmet_demand_liters: totalUnmet,
     unmet_demand_pct: totalDemand > 0 ? Math.round((totalUnmet / totalDemand) * 100) : 0,
+    binding_constraints: globalBinding,
     allocations,
+    explanation: {
+      requested_liters: totalDemand,
+      available_liters: netSupply,
+      reserved_liters: reserveLiters,
+      allocated_liters: totalAllocated,
+      unmet_liters: totalUnmet,
+      binding_constraints: globalBinding,
+      summary: `Gross supply: ${grossSupply}L | Reserved: ${reserveLiters}L | Usable: ${netSupply}L | Requested: ${totalDemand}L | Allocated: ${totalAllocated}L | Unmet: ${totalUnmet}L | Binding constraints: ${globalBinding.join(", ") || "None"}`,
+    },
     provenance: "CONSTRAINED_ALLOCATION_ENGINE",
     policy_benchmark: "MoHUA_135_LPCD_BENCHMARK_TARGET",
   };
@@ -1454,7 +1965,7 @@ const GOVERNANCE_DECISIONS = [
     risk_level: "low",
     timestamp: new Date(Date.now() - 25 * 60000).toISOString(),
     authorized_by: "AI Engine (Auto)",
-    justification: "Tier 1 auto-execution. Score 62.4, volume ≤15,000L, standard route.",
+    justification: "Tier 1 auto-execution. Priority score 71.8, volume ≤15,000L, standard route.",
   },
   {
     decision_id: "gov-t1-002",
@@ -1698,11 +2209,11 @@ app.post("/api/governance/authorize", (req, res) => {
     return res.status(409).json({ success: false, error: `Decision already ${decision.status}` });
   }
 
-  // Tier 3 requires valid executive PIN
+  // Tier 3 requires valid demonstration executive authorization
   if (decision.governance_tier === 3 && action === "AUTHORIZE") {
-    const validPins = ["4491", "admin123", "7419"];
-    if (!validPins.includes(pin)) {
-      return res.status(403).json({ success: false, error: "Invalid executive authorization PIN" });
+    const authCheck = verifyDemoExecutiveAuth(pin);
+    if (!authCheck.valid) {
+      return res.status(403).json({ success: false, error: authCheck.reason || "Invalid executive authorization PIN" });
     }
   }
 
@@ -1711,9 +2222,10 @@ app.post("/api/governance/authorize", (req, res) => {
     audit_id: `audit-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
     decision_id,
     action,
-    officer_id: officer_id || "UNKNOWN",
-    officer_name: officer_name || "Unknown Officer",
-    pin_used: pin ? "****" + pin.slice(-2) : null,
+    officer_id: officer_id || "DEMO_OFFICER_01",
+    officer_name: officer_name || "Demonstration Operations Supervisor",
+    pin_used: pin ? "****" + (String(pin).length > 2 ? String(pin).slice(-2) : String(pin)) : null,
+    authorization_gate: "[DEMO AUTHORIZATION GATE — NOT PRODUCTION CREDENTIAL]",
     justification: justification || "",
     timestamp: new Date().toISOString(),
     governance_tier: decision.governance_tier,
@@ -1776,8 +2288,11 @@ registerDeliveryVerifiedCallback((verificationData) => {
   const ward = wardsState.find(w => w.ward_number === ward_code || w.ward_code === ward_code);
   let prevDemand = 0;
   let newDemand = 0;
+  let prevDryHours = 0;
+  let newDryHours = 0;
   if (ward) {
     prevDemand = ward.demand_liters;
+    prevDryHours = ward.dry_pipe_hours || 0;
     ward.demand_liters = Math.max(0, ward.demand_liters - quantity_delivered_liters);
     newDemand = ward.demand_liters;
     if (ward.demand_liters === 0) {
@@ -1790,6 +2305,7 @@ registerDeliveryVerifiedCallback((verificationData) => {
       ward.water_deficit_pct = Math.max(0, Math.round((ward.water_deficit_pct || 50) * (1 - satisfiedFraction)));
       if (ward.dry_pipe_hours < 24) ward.status = "warning";
     }
+    newDryHours = ward.dry_pipe_hours;
     console.log(`   Ward ${ward_code}: Demand ${prevDemand}L -> ${newDemand}L | Dry Hours -> ${ward.dry_pipe_hours}h`);
   }
 
@@ -1807,6 +2323,30 @@ registerDeliveryVerifiedCallback((verificationData) => {
     }
   }
 
+  const postActionEffect = {
+    verified_volume_delivered: quantity_delivered_liters,
+    pre_delivery_unmet_demand: prevDemand,
+    post_delivery_unmet_demand: newDemand,
+    unmet_demand_reduction_liters: Math.max(0, prevDemand - newDemand),
+    pre_delivery_dry_pipe_hours: prevDryHours,
+    post_delivery_dry_pipe_hours: newDryHours,
+    state_delta_summary: `Ward ${ward_code}: Unmet demand reduced from ${prevDemand}L to ${newDemand}L (-${quantity_delivered_liters}L). Dry pipe hours updated from ${prevDryHours}h to ${newDryHours}h. Tanker ${tankerId || "N/A"} released to pool.`,
+  };
+
+  if (mission) {
+    mission.post_action_effect = postActionEffect;
+  }
+
+  // Update linked decision record in OPERATIONAL_DECISION_RECORDS
+  for (const [, dec] of OPERATIONAL_DECISION_RECORDS) {
+    if (dec.mission_id === String(mission_id) || dec.target_ward === ward_code) {
+      dec.execution_status = "DELIVERED";
+      dec.verification_status = "VERIFIED";
+      dec.post_action_effect = postActionEffect;
+      break;
+    }
+  }
+
   // 3. Append to governance audit log
   GOVERNANCE_AUDIT_LOG.push({
     audit_id: `audit-loop-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
@@ -1820,8 +2360,11 @@ registerDeliveryVerifiedCallback((verificationData) => {
     timestamp: verified_at || new Date().toISOString(),
     governance_tier: 1,
     decision_type: "delivery_closed_loop_feedback",
-    details: `Ward ${ward_code} demand satisfied by ${quantity_delivered_liters}L. Tanker ${tankerId || "N/A"} returned to pool.`,
+    post_action_effect: postActionEffect,
+    details: postActionEffect.state_delta_summary,
   });
+
+  return postActionEffect;
 });
 
 // ---------------------------------------------------------------------------
@@ -1850,10 +2393,10 @@ app.post("/api/dispatch", async (req, res) => {
       return res.status(404).json({ success: false, error: `Ward ${ward_code} not found` });
     }
 
-    const volume = Number(volume_liters) || ward.demand_liters || 10000;
-    if (volume <= 0) {
+    if (volume_liters !== undefined && (isNaN(Number(volume_liters)) || Number(volume_liters) <= 0)) {
       return res.status(400).json({ success: false, error: "volume_liters must be a positive number" });
     }
+    const volume = volume_liters !== undefined ? Number(volume_liters) : (ward.demand_liters || 10000);
 
     // Determine governance tier
     // Tier 3: Critical ward with >48h dry or volume > 15,000L or extreme vulnerability >= 0.90
@@ -1866,11 +2409,11 @@ app.post("/api/dispatch", async (req, res) => {
 
     // Executive PIN check for Tier 3
     if (governanceTier === 3) {
-      const validPins = ["4491", "admin123", "7419"];
-      if (!pin || !validPins.includes(String(pin).trim())) {
+      const authCheck = verifyDemoExecutiveAuth(pin);
+      if (!authCheck.valid) {
         return res.status(403).json({
           success: false,
-          error: "TIER_3_PIN_REQUIRED: Critical Tier 3 dispatch requires valid executive PIN authorization",
+          error: "TIER_3_PIN_REQUIRED: Critical Tier 3 dispatch requires valid executive demonstration authorization",
           governance_tier: 3,
         });
       }
@@ -1884,7 +2427,7 @@ app.post("/api/dispatch", async (req, res) => {
         t => (t.transponder_id === requestedTankerId || t.tanker_id === requestedTankerId) && t.status === "available"
       );
       if (!tanker) {
-        return res.status(409).json({ success: false, error: `Requested tanker ${requestedTankerId} is not available` });
+        return res.status(409).json({ success: false, error: `Requested tanker ${requestedTankerId} is not available`, reason: "NO_AVAILABLE_TANKER" });
       }
     } else {
       tanker = tankers.find(t => t.status === "available" && t.capacity >= volume);
@@ -1897,6 +2440,9 @@ app.post("/api/dispatch", async (req, res) => {
       return res.status(409).json({
         success: false,
         error: "FLEET_DEPLETED: No available tanker in fleet for dispatch",
+        reason: "NO_AVAILABLE_TANKER",
+        status: "INFEASIBLE",
+        binding_constraints: ["NO_AVAILABLE_TANKER"],
       });
     }
 
@@ -1919,10 +2465,22 @@ app.post("/api/dispatch", async (req, res) => {
       notes: notes || `Direct operational dispatch to Ward ${ward.ward_number}`,
     });
 
+    const decisionRecord = generateDecisionRecord({
+      ward,
+      volume_liters: volume,
+      tanker,
+      governance_tier: governanceTier,
+      officer_name,
+      officer_id,
+      mission,
+      pin,
+      notes,
+    });
+    mission.decision_id = decisionRecord.decision_id;
+
     // Record in governance decisions
-    const decisionId = `disp-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
     const govDecision = {
-      decision_id: decisionId,
+      decision_id: decisionRecord.decision_id,
       decision_type: "routine_dispatch",
       governance_tier: governanceTier,
       status: "executed",
@@ -1930,21 +2488,22 @@ app.post("/api/dispatch", async (req, res) => {
       volume_liters: volume,
       tanker_id: tanker.transponder_id,
       mission_id: mission.id,
+      operational_decision_id: decisionRecord.decision_id,
       description: `Dispatched ${volume}L via tanker ${tanker.transponder_id} to ${ward.name}`,
       risk_level: governanceTier === 3 ? "critical" : governanceTier === 2 ? "medium" : "low",
       timestamp: new Date().toISOString(),
-      authorized_by: officer_name || (governanceTier === 3 ? "Executive Officer (PIN Verified)" : "Operations Supervisor"),
+      authorized_by: officer_name || (governanceTier === 3 ? "Executive Officer (DEMO_EXECUTIVE_AUTH)" : "Operations Supervisor"),
       justification: notes || `Operational dispatch: Priority Ward ${ward.ward_number}`,
     };
     GOVERNANCE_DECISIONS.push(govDecision);
 
     GOVERNANCE_AUDIT_LOG.push({
       audit_id: `audit-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
-      decision_id: decisionId,
+      decision_id: decisionRecord.decision_id,
       action: "DISPATCH_EXECUTED",
       officer_id: officer_id || "OP_SUP_01",
       officer_name: officer_name || "Operations Supervisor",
-      pin_used: pin ? "****" + String(pin).slice(-2) : null,
+      pin_used: pin ? "****" + (String(pin).length > 2 ? String(pin).slice(-2) : String(pin)) : null,
       ward_code: ward.ward_number,
       volume_liters: volume,
       tanker_id: tanker.transponder_id,
@@ -1953,12 +2512,14 @@ app.post("/api/dispatch", async (req, res) => {
       timestamp: new Date().toISOString(),
     });
 
-    console.log(`🚀 Dispatch Executed: Mission #${mission.id} -> Ward ${ward.ward_number} via Tanker ${tanker.transponder_id} (${volume}L) [Tier ${governanceTier}]`);
+    console.log(`🚀 Dispatch Executed: Mission #${mission.id} -> Ward ${ward.ward_number} via Tanker ${tanker.transponder_id} (${volume}L) [Tier ${governanceTier}] Decision: ${decisionRecord.decision_id}`);
 
     res.json({
       success: true,
       message: `Mission #${mission.id} dispatched successfully`,
       mission,
+      decision_record: decisionRecord,
+      decision_id: decisionRecord.decision_id,
       tanker: {
         transponder_id: tanker.transponder_id,
         status: tanker.status,
@@ -1972,6 +2533,79 @@ app.post("/api/dispatch", async (req, res) => {
     console.error("Dispatch error:", err);
     res.status(500).json({ success: false, error: err.message });
   }
+});
+
+// ---------------------------------------------------------------------------
+// Operational Decision Record Endpoints (Day 2 Hardened)
+// ---------------------------------------------------------------------------
+
+app.get("/api/decisions", (req, res) => {
+  const { ward, tier, status } = req.query;
+  let list = Array.from(OPERATIONAL_DECISION_RECORDS.values());
+  if (ward) list = list.filter(d => d.target_ward === ward);
+  if (tier) list = list.filter(d => d.governance_tier && d.governance_tier.includes(tier.toUpperCase()));
+  if (status) list = list.filter(d => d.execution_status === status || d.authorization_status === status);
+  list.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  res.json({
+    success: true,
+    total: list.length,
+    decisions: list,
+  });
+});
+
+app.get("/api/decisions/:id", (req, res) => {
+  const id = req.params.id;
+  let record = OPERATIONAL_DECISION_RECORDS.get(id);
+  if (!record) {
+    record = Array.from(OPERATIONAL_DECISION_RECORDS.values()).find(d => d.mission_id === id);
+  }
+  if (!record) {
+    return res.status(404).json({ success: false, error: `Decision record '${id}' not found` });
+  }
+
+  let missionDetails = null;
+  if (record.mission_id) {
+    missionDetails = MISSION_VERSIONS.get(String(record.mission_id)) || null;
+  }
+
+  res.json({
+    success: true,
+    decision: record,
+    linked_mission: missionDetails,
+    complete_trace: {
+      decision_id: record.decision_id,
+      priority: record.priority,
+      priority_factors: record.priority_factors,
+      allocation: {
+        requested: record.allocation_requested,
+        granted: record.allocation_granted,
+        unmet_demand: record.unmet_demand,
+        binding_constraints: record.binding_constraints,
+      },
+      governance: {
+        tier: record.governance_tier,
+        status: record.authorization_status,
+        authorized_by: record.authorized_by,
+      },
+      mission_id: record.mission_id,
+      tanker_id: record.tanker_id,
+      execution_status: record.execution_status,
+      verification_status: record.verification_status,
+      post_action_effect: record.post_action_effect,
+    },
+  });
+});
+
+app.get("/api/priority-ranking", async (req, res) => {
+  const wards = await getWards();
+  const queue = computePriorityQueueLocal(wards);
+  res.json({
+    success: true,
+    policy_version: "2.4.0-hardened",
+    total_wards: queue.length,
+    provenance_badge: "SYNTHETIC_SEEDED: Seed 42 baseline",
+    queue,
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -2019,6 +2653,7 @@ app.post("/api/operational-state/reset", (req, res) => {
     message: "Operational state reset to Seed 42 baseline",
     wards_count: wardsState.length,
     tankers_count: tankersState.length,
+    decisions_count: OPERATIONAL_DECISION_RECORDS.size,
   });
 });
 
@@ -2031,6 +2666,8 @@ if (require.main === module) {
     console.log(`\n🌊 WaterFlow OS Gateway running on http://localhost:${PORT}`);
     console.log(`   City:       Mumbai BMC (24 Administrative Wards)`);
     console.log(`   Dashboard:  GET  http://localhost:${PORT}/api/dashboard`);
+    console.log(`   Decisions:  GET  http://localhost:${PORT}/api/decisions`);
+    console.log(`   Priority:   GET  http://localhost:${PORT}/api/priority-ranking`);
     console.log(`   Resilience: POST http://localhost:${PORT}/api/resilience/simulate`);
     console.log(`   Autonomy:   POST http://localhost:${PORT}/api/automation/evaluate`);
     console.log(`   Field Sync: POST http://localhost:${PORT}/api/field/sync`);
@@ -2048,7 +2685,14 @@ module.exports = {
   getAlerts,
   resetOperationalState,
   computeConstrainedAllocation,
+  computePriorityLocal,
+  computePriorityQueueLocal,
+  generateDecisionRecord,
+  verifyDemoExecutiveAuth,
+  OPERATIONAL_DECISION_RECORDS,
   GOVERNANCE_DECISIONS,
   GOVERNANCE_AUDIT_LOG,
+  CANONICAL_PROVENANCE_CLASSES,
+  getAuthoritativeGovernanceTier,
 };
 

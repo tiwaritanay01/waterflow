@@ -321,15 +321,15 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
   const unmetScore = Math.min(1.0, (detectedWard.dry_pipe_hours || 36) / 72);
   const popScore = Math.min(1.0, (detectedWard.population || 500000) / 1000000);
   const deficitScore = Math.min(1.0, (detectedWard.water_deficit_pct || 35) / 100);
-  const distPenalty = Math.min(1.0, (detectedWard.distance_to_depot_km || 4.2) / 20);
-  const proxScore = Math.max(0.0, 1.0 - distPenalty);
+  const distRaw = Number(detectedWard.distance_to_depot_km || detectedWard.depot_distance_km || 4.2);
+  const distNorm = Math.min(1.0, Math.max(0.0, distRaw) / 20.0);
+  const distContrib = distNorm * 10.0;
 
   const vulnContrib = vulnScore * 30.0;
   const unmetContrib = unmetScore * 25.0;
   const popContrib = popScore * 20.0;
   const deficitContrib = deficitScore * 15.0;
-  const proxContrib = proxScore * 10.0;
-  const totalScore = (vulnContrib + unmetContrib + popContrib + deficitContrib + proxContrib).toFixed(1);
+  const totalScore = (vulnContrib + unmetContrib + popContrib + deficitContrib + distContrib).toFixed(1);
 
   const dominantDriver = unmetScore >= vulnScore
     ? `${detectedWard.dry_pipe_hours || 36}h continuous dry pipeline duration`
@@ -816,11 +816,11 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
               <td className="py-1 text-right font-bold text-[#0056b3]">+{deficitContrib.toFixed(2)}</td>
             </tr>
             <tr>
-              <td className="py-1 font-sans font-bold text-slate-800">Depot Proximity (Logistics)</td>
-              <td className="py-1 text-right text-slate-600">{(detectedWard.distance_to_depot_km || 4.2).toFixed(1)} km</td>
-              <td className="py-1 text-right text-slate-700">{proxScore.toFixed(2)}</td>
+              <td className="py-1 font-sans font-bold text-slate-800">Depot Distance (Transit Need)</td>
+              <td className="py-1 text-right text-slate-600">{distRaw.toFixed(1)} km</td>
+              <td className="py-1 text-right text-slate-700">{distNorm.toFixed(2)}</td>
               <td className="py-1 text-right text-slate-500">× 10%</td>
-              <td className="py-1 text-right font-bold text-[#0056b3]">+{proxContrib.toFixed(2)}</td>
+              <td className="py-1 text-right font-bold text-[#0056b3]">+{distContrib.toFixed(2)}</td>
             </tr>
             <tr className="border-t-2 border-slate-300 font-bold bg-sky-50/50">
               <td className="py-1.5 font-sans text-slate-900">Total Score (Sum)</td>

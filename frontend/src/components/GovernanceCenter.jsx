@@ -158,27 +158,27 @@ function PinAuthDialog({ decision, onAuthorize, onReject, onClose }) {
         body: JSON.stringify({
           decision_id: decision.decision_id,
           action: "AUTHORIZE",
-          officer_id: user?.id || "ADM-BMC-4491",
-          officer_name: user?.name || "Er. Kulkarni",
+          officer_id: user?.id || "DEMO_EXEC_01",
+          officer_name: user?.name || "DEMO_OPERATOR",
           pin: pin,
-          justification: justification || "Authorized after review",
+          justification: justification || "Authorized after supervisory review (Demo Gate)",
         }),
       });
       const data = await res.json();
       if (data.success) {
         onAuthorize(decision.decision_id, data);
       } else {
-        setError(data.error || "Authorization failed. Invalid PIN.");
+        setError(data.error || "Authorization failed. Invalid demonstration token.");
       }
     } catch (err) {
       // Fallback for demo: accept PIN "4491" locally
-      if (pin === "4491" || pin === "admin123") {
+      if (pin === "4491" || pin === "admin123" || pin === "DEMO_EXEC_PIN_4491") {
         onAuthorize(decision.decision_id, {
           success: true,
           audit_id: `auth-${Date.now().toString(36)}`,
         });
       } else {
-        setError("Invalid executive PIN. Try: 4491");
+        setError("Invalid demonstration token. Try: 4491 or DEMO_EXEC_PIN_4491");
       }
     }
     setIsSubmitting(false);
@@ -193,10 +193,10 @@ function PinAuthDialog({ decision, onAuthorize, onReject, onClose }) {
         body: JSON.stringify({
           decision_id: decision.decision_id,
           action: "REJECT",
-          officer_id: user?.id || "ADM-BMC-4491",
-          officer_name: user?.name || "Er. Kulkarni",
+          officer_id: user?.id || "DEMO_EXEC_01",
+          officer_name: user?.name || "DEMO_OPERATOR",
           pin: pin,
-          justification: justification || "Rejected after review",
+          justification: justification || "Rejected after supervisory review (Demo Gate)",
         }),
       });
     } catch {
@@ -291,33 +291,44 @@ function PinAuthDialog({ decision, onAuthorize, onReject, onClose }) {
 
           {/* PIN Keypad */}
           <div>
-            <label className="text-[11px] font-bold text-sec-text uppercase tracking-wider flex items-center space-x-1.5">
-              <KeyRound className="w-3 h-3" />
-              <span>Executive Authorization PIN</span>
+            <label className="text-[11px] font-bold text-sec-text uppercase tracking-wider flex items-center justify-between">
+              <span className="flex items-center space-x-1.5">
+                <KeyRound className="w-3 h-3 text-deep-blue" />
+                <span>Executive Authorization (Demo Gate)</span>
+              </span>
+              <span className="text-[8px] font-mono bg-amber-50 text-amber-700 border border-amber-200 px-1 py-0.5 rounded">
+                DEMO MODE — NOT PRODUCTION CREDENTIAL
+              </span>
             </label>
             <div className="flex items-center space-x-2 mt-1.5">
               <input
                 ref={inputRef}
-                type="password"
-                maxLength={6}
+                type="text"
+                maxLength={20}
                 value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/[^0-9]/g, ""))}
-                className="flex-1 px-3 py-2.5 text-center text-lg font-mono font-black tracking-[0.5em] border-2 border-card-border rounded-lg bg-slate-50 focus:bg-white focus:border-deep-blue outline-none transition-all"
-                placeholder="● ● ● ●"
+                onChange={(e) => setPin(e.target.value)}
+                className="flex-1 px-3 py-2 text-center text-sm font-mono font-bold tracking-widest border-2 border-card-border rounded-lg bg-slate-50 focus:bg-white focus:border-deep-blue outline-none transition-all"
+                placeholder="Token: 4491 or DEMO_EXEC_PIN_4491"
                 onKeyDown={(e) => e.key === "Enter" && handleAuthorize()}
               />
             </div>
-            {/* Numeric keypad for touch */}
-            <div className="grid grid-cols-5 gap-1.5 mt-2">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => (
-                <button
-                  key={d}
-                  onClick={() => handleKeyPress(String(d))}
-                  className="keypad-btn py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-bold text-head-text transition-colors border border-card-border"
-                >
-                  {d}
-                </button>
-              ))}
+            {/* Quick demo select buttons */}
+            <div className="flex items-center space-x-1.5 mt-2">
+              <span className="text-[9px] text-sec-text">Quick Demo Tokens:</span>
+              <button
+                type="button"
+                onClick={() => setPin("DEMO_EXEC_PIN_4491")}
+                className="text-[9px] font-mono font-bold bg-slate-100 hover:bg-slate-200 text-deep-blue px-1.5 py-0.5 rounded border border-card-border"
+              >
+                DEMO_EXEC_PIN_4491
+              </button>
+              <button
+                type="button"
+                onClick={() => setPin("4491")}
+                className="text-[9px] font-mono font-bold bg-slate-100 hover:bg-slate-200 text-deep-blue px-1.5 py-0.5 rounded border border-card-border"
+              >
+                4491
+              </button>
             </div>
             {error && (
               <p className="text-[11px] text-crit-red font-semibold mt-1.5 flex items-center space-x-1">
@@ -837,7 +848,7 @@ const DEMO_DECISIONS = [
     risk_level: "low",
     timestamp: new Date(Date.now() - 25 * 60000).toISOString(),
     authorized_by: "AI Engine (Auto)",
-    justification: "Tier 1 auto-execution. Score 62.4, volume ≤15,000L, standard route.",
+    justification: "Tier 1 auto-execution. Priority score 71.8, volume ≤15,000L, standard route.",
   },
   {
     decision_id: "gov-t1-002",
