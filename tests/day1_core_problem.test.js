@@ -402,7 +402,7 @@ async function runAllTests() {
       assert.strictEqual(verifyJson.success, true);
       assert.strictEqual(verifyJson.mission.status, "VERIFIED");
       assert.strictEqual(verifyJson.mission.verification_status, "VERIFIED");
-      assert.ok(verifyJson.transaction_hash, "Must provide cryptographic verification hash");
+      assert.ok(verifyJson.transaction_hash, "Must provide Digital Delivery Receipt ID");
 
       // Verify closed-loop demand decrement in ward state
       const wardsAfter = await getWards();

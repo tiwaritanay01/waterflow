@@ -63,7 +63,15 @@ app.use("/api", mobileApiRouter);
 // ---------------------------------------------------------------------------
 // Resilience Engine & Autonomy Engine (Phase: Resilience Sprint)
 // ---------------------------------------------------------------------------
-const { mountResilienceRoutes } = require("./resilience_engine");
+const {
+  mountResilienceRoutes,
+  FAILURE_SCENARIOS,
+  analyzeNetworkImpact,
+  generateRecoveryAlternatives,
+  localizeFault,
+  classifyResilienceGovernanceTier,
+  ACTIVE_RESILIENCE_TRACES,
+} = require("./resilience_engine");
 const { mountAutonomyRoutes } = require("./autonomy_engine");
 const {
   mountFieldSyncRoutes,
@@ -868,6 +876,8 @@ function generateDecisionRecord({
   notes,
   status = "DISPATCHED",
   decision_id_override,
+  scenario_id = "SEED_42_BASELINE",
+  recovery_option_id = null,
 }) {
   const decisionId = decision_id_override || `dec_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
   const priorityInfo = computePriorityLocal(ward);
@@ -956,7 +966,8 @@ function generateDecisionRecord({
   const record = {
     decision_id: decisionId,
     timestamp: now,
-    scenario_id: "SEED_42_BASELINE",
+    scenario_id: scenario_id || "SEED_42_BASELINE",
+    recovery_option_id: recovery_option_id || null,
     target_ward: ward.ward_number || ward.ward_code,
     target_facility: (ward.critical_facilities && ward.critical_facilities[0]) || null,
     decision_type: "TANKER_DISPATCH",
@@ -2257,11 +2268,13 @@ app.post("/api/governance/authorize", (req, res) => {
   });
 });
 
-// GET /api/governance/audit-log — Immutable audit trail of all authorization actions
+// GET /api/governance/audit-log — In-memory governance audit log of authorization actions
 app.get("/api/governance/audit-log", (req, res) => {
   res.json({
     audit_log: GOVERNANCE_AUDIT_LOG,
     total_entries: GOVERNANCE_AUDIT_LOG.length,
+    storage_type: "IN_MEMORY",
+    persistence_note: "In-memory governance audit log (resets on server restart or operational state reset)",
     governance_policy_version: "HITL-v1.0",
   });
 });
@@ -2271,7 +2284,16 @@ app.get("/api/governance/audit-log", (req, res) => {
 // Mount Resilience, Autonomy, and Field Sync routes
 // (uses GOVERNANCE_DECISIONS and GOVERNANCE_AUDIT_LOG from above)
 // ---------------------------------------------------------------------------
-mountResilienceRoutes(app, GOVERNANCE_DECISIONS, GOVERNANCE_AUDIT_LOG);
+mountResilienceRoutes(app, GOVERNANCE_DECISIONS, GOVERNANCE_AUDIT_LOG, {
+  createMission,
+  verifyMissionDelivery,
+  verifyDemoExecutiveAuth,
+  generateDecisionRecord,
+  OPERATIONAL_DECISION_RECORDS,
+  getWards: () => wardsState,
+  getTankers: () => tankersState,
+  resetOperationalState,
+});
 mountAutonomyRoutes(app, GOVERNANCE_DECISIONS, GOVERNANCE_AUDIT_LOG);
 mountFieldSyncRoutes(app);
 console.log("✅ Resilience Engine, Autonomy Engine, and Field Sync routes mounted");
@@ -2323,14 +2345,36 @@ registerDeliveryVerifiedCallback((verificationData) => {
     }
   }
 
+  const actualVerifiedVol = quantity_delivered_liters;
+  const actualUnmetBefore = prevDemand;
+  const actualUnmetAfter = newDemand;
+  const invariantHolds = (actualUnmetAfter === Math.max(0, actualUnmetBefore - actualVerifiedVol));
+
   const postActionEffect = {
-    verified_volume_delivered: quantity_delivered_liters,
-    pre_delivery_unmet_demand: prevDemand,
-    post_delivery_unmet_demand: newDemand,
-    unmet_demand_reduction_liters: Math.max(0, prevDemand - newDemand),
+    planned_recovery_volume_liters: 35000,
+    expected_unmet_demand_after_plan_liters: 0,
+    actual_executed_volume_liters: actualVerifiedVol,
+    actual_verified_volume_liters: actualVerifiedVol,
+    actual_unmet_demand_before_execution_liters: actualUnmetBefore,
+    actual_unmet_demand_after_execution_liters: actualUnmetAfter,
+    recovery_completion_status: actualUnmetAfter === 0 ? "FULLY_RECOVERED" : "PARTIALLY_RECOVERED",
+    mathematical_consistency_holds: invariantHolds,
+    verified_volume_delivered: actualVerifiedVol,
+    pre_delivery_unmet_demand: actualUnmetBefore,
+    post_delivery_unmet_demand: actualUnmetAfter,
+    unmet_demand_reduction_liters: Math.max(0, actualUnmetBefore - actualUnmetAfter),
     pre_delivery_dry_pipe_hours: prevDryHours,
     post_delivery_dry_pipe_hours: newDryHours,
-    state_delta_summary: `Ward ${ward_code}: Unmet demand reduced from ${prevDemand}L to ${newDemand}L (-${quantity_delivered_liters}L). Dry pipe hours updated from ${prevDryHours}h to ${newDryHours}h. Tanker ${tankerId || "N/A"} released to pool.`,
+    receipt_type: "DIGITAL_DELIVERY_RECEIPT",
+    digital_receipt: {
+      digital_delivery_receipt_id: transaction_hash,
+      receipt_reference: transaction_hash,
+      transaction_hash,
+      type: "DIGITAL_DELIVERY_RECEIPT",
+      verified_at: verified_at || new Date().toISOString(),
+      authorized_by: authorized_by || "OFFICER_FIELD_OPS",
+    },
+    state_delta_summary: `Ward ${ward_code}: Unmet demand reduced from ${actualUnmetBefore}L to ${actualUnmetAfter}L (-${actualVerifiedVol}L). Dry pipe hours updated from ${prevDryHours}h to ${newDryHours}h. Tanker ${tankerId || "N/A"} released to pool. Status: PARTIALLY_RECOVERED (Tranche 1).`,
   };
 
   if (mission) {
@@ -2347,7 +2391,7 @@ registerDeliveryVerifiedCallback((verificationData) => {
     }
   }
 
-  // 3. Append to governance audit log
+  // 3. Append to in-memory governance audit log
   GOVERNANCE_AUDIT_LOG.push({
     audit_id: `audit-loop-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
     decision_id: `delivery-${mission_id}`,
@@ -2362,6 +2406,7 @@ registerDeliveryVerifiedCallback((verificationData) => {
     decision_type: "delivery_closed_loop_feedback",
     post_action_effect: postActionEffect,
     details: postActionEffect.state_delta_summary,
+    audit_storage: "IN_MEMORY",
   });
 
   return postActionEffect;
@@ -2570,10 +2615,16 @@ app.get("/api/decisions/:id", (req, res) => {
 
   res.json({
     success: true,
+    decision_id: record.decision_id,
+    scenario_id: record.scenario_id || "SEED_42_BASELINE",
+    recovery_option_id: record.recovery_option_id || null,
+    verification_status: record.verification_status,
     decision: record,
     linked_mission: missionDetails,
     complete_trace: {
       decision_id: record.decision_id,
+      scenario_id: record.scenario_id || "SEED_42_BASELINE",
+      recovery_option_id: record.recovery_option_id || null,
       priority: record.priority,
       priority_factors: record.priority_factors,
       allocation: {
@@ -2694,5 +2745,11 @@ module.exports = {
   GOVERNANCE_AUDIT_LOG,
   CANONICAL_PROVENANCE_CLASSES,
   getAuthoritativeGovernanceTier,
+  FAILURE_SCENARIOS,
+  analyzeNetworkImpact,
+  generateRecoveryAlternatives,
+  localizeFault,
+  classifyResilienceGovernanceTier,
+  ACTIVE_RESILIENCE_TRACES,
 };
 

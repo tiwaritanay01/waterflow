@@ -242,7 +242,7 @@ function verifyMissionDelivery(missionId, options = {}) {
   mission.audit_trace = mission.audit_trace || [];
   mission.audit_trace.push(traceRecord);
 
-  // Invoke registered closed-loop operational callbacks
+  // Digital Delivery Receipt ID (hex-encoded trace identifier, not a cryptographic hash)
   const txHash = `0x${Buffer.from(traceRecord.trace_id).toString("hex").slice(0, 32)}`;
   const callbackData = {
     mission_id: idStr,
@@ -251,6 +251,8 @@ function verifyMissionDelivery(missionId, options = {}) {
     verified_at: mission.verified_at,
     authorized_by: options.officer_id || mission.verified_by,
     transaction_hash: txHash,
+    receipt_reference: txHash,
+    digital_delivery_receipt_id: txHash,
     mission,
     trace: traceRecord,
   };
@@ -276,6 +278,8 @@ function verifyMissionDelivery(missionId, options = {}) {
     status: "VERIFIED",
     mission: { ...mission, post_action_effect: postActionEffect },
     transaction_hash: txHash,
+    receipt_reference: txHash,
+    digital_delivery_receipt_id: txHash,
     volume_delivered: qty,
     verified_at: mission.verified_at,
     verified_by: mission.verified_by,
@@ -519,7 +523,7 @@ function processOperation(op) {
   const clientVersion = op.mission_version || 0;
   if (clientVersion < mission.version) {
     // Stale version — determine if conflict is safety-relevant
-    const safetyRelevantActions = ["DELIVERY_RECORD", "STATUS_UPDATE"];
+    const safetyRelevantActions = ["DELIVERY_RECORD", "RECORD_DELIVERY", "STATUS_UPDATE"];
     if (safetyRelevantActions.includes(op.action_type)) {
       const result = {
         operation_id: op.operation_id,
