@@ -15,6 +15,8 @@ const PROCESSED_OPERATIONS = new Map(); // operation_id → { result, processed_
 const MISSION_VERSIONS = new Map();     // mission_id → { version, status, updated_at, ... }
 const SYNC_LOG = [];                     // Audit trail of all sync attempts
 
+const dbAdapters = require("./db_adapters.js");
+
 // Initialize demo missions (authoritative mission registry)
 const DELIVERY_VERIFIED_CALLBACKS = [];
 
@@ -22,6 +24,20 @@ function registerDeliveryVerifiedCallback(cb) {
   if (typeof cb === "function") {
     DELIVERY_VERIFIED_CALLBACKS.push(cb);
   }
+}
+
+async function getMission(idStr) {
+  if (dbAdapters.getAllMissions) {
+    const allDb = await dbAdapters.getAllMissions();
+    if (allDb) {
+       const found = allDb.find(m => m.id === idStr);
+       if (found) {
+          const base = MISSION_VERSIONS.get(idStr) || {};
+          return { ...base, ...found };
+       }
+    }
+  }
+  return MISSION_VERSIONS.get(idStr);
 }
 
 function initDemoMissions() {
@@ -289,6 +305,26 @@ function verifyMissionDelivery(missionId, options = {}) {
   };
 }
 
+async function verifyMissionDeliveryAsync(missionId, options = {}) {
+  const result = verifyMissionDelivery(missionId, options);
+  
+  if (result.success) {
+    const qty = result.volume_delivered;
+    const mission = result.mission;
+    const opId = options.operation_id || `verify-${missionId}-${Date.now()}`;
+    const success = await dbAdapters.executeVerificationTransaction(
+      missionId, qty, mission.ward_code, mission.tanker_id, opId, 
+      { qty, officer_id: mission.verified_by, otp_authenticated: true }
+    );
+    if (!success) {
+      const duplicateErr = new Error(`Mission ${missionId} verification already processed in DB`);
+      duplicateErr.statusCode = 409;
+      throw duplicateErr;
+    }
+  }
+  return result;
+}
+
 // =============================================================================
 // ROUTE HANDLERS
 // =============================================================================
@@ -299,29 +335,39 @@ function mountFieldSyncRoutes(app) {
   // ─────────────────────────────────────────────────────────────────────────
   // GET /api/field/missions — Get missions for a worker (for offline caching)
   // ─────────────────────────────────────────────────────────────────────────
-  app.get("/api/field/missions", (req, res) => {
+  app.get("/api/field/missions", async (req, res) => {
     const { worker_id, tanker_id } = req.query;
 
+    let allMissions = [];
+    if (dbAdapters.getAllMissions) {
+        const dbMissions = await dbAdapters.getAllMissions();
+        if (dbMissions) allMissions = dbMissions;
+    }
+
+    if (allMissions.length === 0) {
+      allMissions = Array.from(MISSION_VERSIONS.values());
+    }
+
     const missions = [];
-    for (const [, mission] of MISSION_VERSIONS) {
+    for (const mission of allMissions) {
       if (tanker_id && mission.tanker_id !== tanker_id) continue;
-      missions.push({ ...mission });
+      const full = await getMission(mission.id || mission.mission_id);
+      if (full) missions.push({ ...full });
     }
 
     res.json({
       success: true,
       missions,
       server_timestamp: new Date().toISOString(),
-      mode: "DEMO / OPERATIONAL SIMULATION",
-      persistence_note: "In-memory store. Data does not survive server restart.",
+      mode: "OPERATIONAL",
     });
   });
 
   // ─────────────────────────────────────────────────────────────────────────
   // GET /api/field/missions/:id — Get a specific mission with version info
   // ─────────────────────────────────────────────────────────────────────────
-  app.get("/api/field/missions/:id", (req, res) => {
-    const mission = MISSION_VERSIONS.get(req.params.id);
+  app.get("/api/field/missions/:id", async (req, res) => {
+    const mission = await getMission(req.params.id);
     if (!mission) {
       return res.status(404).json({ success: false, error: `Mission ${req.params.id} not found` });
     }
@@ -329,15 +375,14 @@ function mountFieldSyncRoutes(app) {
       success: true,
       mission: { ...mission },
       server_timestamp: new Date().toISOString(),
+      mode: "OPERATIONAL",
     });
   });
 
   // ─────────────────────────────────────────────────────────────────────────
-  // POST /api/field/sync — Idempotent synchronization endpoint
-  // Accepts a batch of offline actions from the field worker.
-  // Each action must have a globally unique operation_id.
+  // POST /api/field/sync — Sync operations (from driver client/app)
   // ─────────────────────────────────────────────────────────────────────────
-  app.post("/api/field/sync", (req, res) => {
+  app.post("/api/field/sync", async (req, res) => {
     const { operations } = req.body;
 
     if (!operations || !Array.isArray(operations) || operations.length === 0) {
@@ -353,7 +398,7 @@ function mountFieldSyncRoutes(app) {
     let duplicate = 0;
 
     for (const op of operations) {
-      const opResult = processOperation(op);
+      const opResult = await processOperationAsync(op);
       results.push(opResult);
 
       if (opResult.status === "ACCEPTED") accepted++;
@@ -382,7 +427,7 @@ function mountFieldSyncRoutes(app) {
         duplicate,
       },
       server_timestamp: new Date().toISOString(),
-      mode: "DEMO / OPERATIONAL SIMULATION",
+      mode: "OPERATIONAL",
     });
   });
 
@@ -419,9 +464,9 @@ function mountFieldSyncRoutes(app) {
   // ─────────────────────────────────────────────────────────────────────────
   // POST /api/field/missions/:id/verify — Authoritative delivery verification
   // ─────────────────────────────────────────────────────────────────────────
-  app.post("/api/field/missions/:id/verify", (req, res) => {
+  app.post("/api/field/missions/:id/verify", async (req, res) => {
     try {
-      const result = verifyMissionDelivery(req.params.id, req.body);
+      const result = await verifyMissionDeliveryAsync(req.params.id, req.body);
       res.json(result);
     } catch (err) {
       const statusCode = err.statusCode || (err.message.includes("not found") ? 404 : 400);
@@ -602,6 +647,37 @@ function processOperation(op) {
     applied: applyResult,
     server_timestamp: new Date().toISOString(),
   };
+}
+
+async function processOperationAsync(op) {
+  // DB Check
+  const isUnique = await dbAdapters.recordFieldOperation(op);
+  if (!isUnique) {
+    const prev = PROCESSED_OPERATIONS.get(op.operation_id) || { processed_at: new Date().toISOString(), result: "ACCEPTED" };
+    return {
+      operation_id: op.operation_id,
+      status: "DUPLICATE",
+      reason: `Operation already processed at ${prev.processed_at}`,
+      original_result: prev.result,
+    };
+  }
+
+  const res = processOperation(op);
+  
+  if (res.status === "ACCEPTED") {
+    try {
+      const mission = MISSION_VERSIONS.get(op.mission_id);
+      if (mission) {
+        await dbAdapters.saveMission(mission);
+        if (mission.status === "en_route" || mission.status === "dispensing" || mission.status === "arrived") {
+          await dbAdapters.updateTankerStatus(mission.tanker_id, mission.status, mission.ward_code, mission.target_liters || 10000, mission.eta_minutes);
+        }
+      }
+    } catch (e) {
+      console.error("DB save error in sync", e);
+    }
+  }
+  return res;
 }
 
 /**

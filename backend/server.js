@@ -26,34 +26,14 @@ const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
 app.use(cors({ origin: [FRONTEND_ORIGIN, "http://localhost:5173"] }));
 app.use(express.json());
 
+const db = require("./db.js");
+const dbAdapters = require("./db_adapters.js");
+const { pool, getDbAvailable } = db;
+
+
 // ---------------------------------------------------------------------------
-// PostgreSQL connection pool (optional — graceful fallback if unavailable)
+// DB Fallback removed, handled by db.js
 // ---------------------------------------------------------------------------
-
-const pool = new Pool({
-  host: process.env.PGHOST || "localhost",
-  port: parseInt(process.env.PGPORT || "5432"),
-  database: process.env.PGDATABASE || "waterflow_os",
-  user: process.env.PGUSER || "postgres",
-  password: process.env.PGPASSWORD || "YOUR_DB_PASSWORD",
-  max: 10,
-  connectionTimeoutMillis: 3000,
-});
-
-let dbAvailable = false;
-app.locals.pool = pool;
-app.locals.dbAvailable = false;
-
-pool
-  .query("SELECT 1")
-  .then(() => {
-    dbAvailable = true;
-    app.locals.dbAvailable = true;
-    console.log("✅ PostgreSQL connected");
-  })
-  .catch(() => {
-    console.log("⚠️  PostgreSQL unavailable — using 24 Mumbai BMC wards fallback");
-  });
 
 // ---------------------------------------------------------------------------
 // Mobile APIs for Citizen Portal & Worker Portal
@@ -909,10 +889,14 @@ function resetOperationalState() {
   GOVERNANCE_AUDIT_LOG.length = 0;
   seedInitialDecisionRecords();
   console.log("🔄 Operational state reset to Seed 42 baseline.");
+  
+  if (getDbAvailable()) {
+    console.log("⚠️  In-memory reset invoked, but Supabase is authoritative. Please run `node scripts/seed_demo_data.js` for DB reset.");
+  }
 }
 
 async function getWards() {
-  if (dbAvailable) {
+  if (getDbAvailable()) {
     try {
       const res = await pool.query(
         `SELECT id AS ward_id, ward_number, name, population, vulnerability_index,
@@ -929,7 +913,7 @@ async function getWards() {
 }
 
 async function getTankers() {
-  if (dbAvailable) {
+  if (getDbAvailable()) {
     try {
       const res = await pool.query(
         `SELECT id AS tanker_id, transponder_id, capacity, current_load, status,
@@ -945,7 +929,7 @@ async function getTankers() {
 }
 
 async function getDepots() {
-  if (dbAvailable) {
+  if (getDbAvailable()) {
     try {
       const res = await pool.query(
         `SELECT id, name, total_capacity, current_stock, is_active
@@ -960,7 +944,7 @@ async function getDepots() {
 }
 
 async function getAlerts() {
-  if (dbAvailable) {
+  if (getDbAvailable()) {
     try {
       const res = await pool.query(
         `SELECT a.id, a.title, a.description, a.severity,
@@ -1552,7 +1536,7 @@ app.get("/health", (req, res) => {
     audit_baseline_version: "1.0.0",
     operating_mode: "DEMO / OPERATIONAL SIMULATION",
     is_live: false,
-    db_connected: dbAvailable,
+    db_connected: getDbAvailable(),
     ai_engine_url: AI_ENGINE_URL,
     total_wards: MOCK_WARDS.length,
   });
@@ -1568,7 +1552,7 @@ app.get(["/version", "/api/version"], (req, res) => {
     operating_mode: "DEMO / OPERATIONAL SIMULATION",
     is_live: false,
     data_provenance: "REFERENCE_DATA + SYNTHETIC_SEEDED",
-    db_connected: dbAvailable,
+    db_connected: getDbAvailable(),
   });
 });
 
@@ -1579,7 +1563,7 @@ app.get("/ready", (req, res) => {
     application_version: "1.0.0-RC1",
     policy_version: "3.0.0-research",
     operating_mode: "DEMO / OPERATIONAL SIMULATION",
-    db_connected: dbAvailable,
+    db_connected: getDbAvailable(),
     wards_loaded: MOCK_WARDS.length === 24,
     depots_loaded: MOCK_DEPOTS.length === 4,
     tankers_loaded: MOCK_TANKERS.length === 25,
@@ -2004,7 +1988,7 @@ app.get("/api/governance/stats", (req, res) => {
 });
 
 // POST /api/governance/authorize — Authorize, approve, or reject a governance decision
-app.post("/api/governance/authorize", (req, res) => {
+app.post("/api/governance/authorize", async (req, res) => {
   const { decision_id, action, officer_id, officer_name, pin, justification } = req.body;
 
   if (!decision_id || !action) {
@@ -2054,6 +2038,10 @@ app.post("/api/governance/authorize", (req, res) => {
     decision.authorized_by = officer_name || officer_id;
     decision.justification = justification || "Rejected — re-route or escalate";
   }
+
+  // PERSIST TO DATABASE
+  await dbAdapters.saveGovernanceDecision(decision);
+  await dbAdapters.saveAuditLog(auditRecord);
 
   console.log(`🔐 Governance ${action}: ${decision_id} by ${officer_name} (Tier ${decision.governance_tier})`);
 
@@ -2342,7 +2330,7 @@ app.post("/api/dispatch", async (req, res) => {
     };
     GOVERNANCE_DECISIONS.push(govDecision);
 
-    GOVERNANCE_AUDIT_LOG.push({
+    const auditLogObj = {
       audit_id: `audit-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
       decision_id: decisionRecord.decision_id,
       action: "DISPATCH_EXECUTED",
@@ -2355,7 +2343,11 @@ app.post("/api/dispatch", async (req, res) => {
       mission_id: mission.id,
       governance_tier: governanceTier,
       timestamp: new Date().toISOString(),
-    });
+    };
+    GOVERNANCE_AUDIT_LOG.push(auditLogObj);
+
+    // PERSIST TO DATABASE
+    await dbAdapters.executeDispatchTransaction(tanker, ward, mission, decisionRecord, govDecision, auditLogObj);
 
     console.log(`🚀 Dispatch Executed: Mission #${mission.id} -> Ward ${ward.ward_number} via Tanker ${tanker.transponder_id} (${volume}L) [Tier ${governanceTier}] Decision: ${decisionRecord.decision_id}`);
 
@@ -2514,7 +2506,7 @@ app.post("/api/operational-state/reset", (req, res) => {
 
 app.get("/health", async (req, res) => {
   let dbStatus = "disconnected";
-  if (dbAvailable) {
+  if (getDbAvailable()) {
     try {
       await pool.query("SELECT 1");
       dbStatus = "connected";
@@ -2523,7 +2515,7 @@ app.get("/health", async (req, res) => {
     }
   }
   res.json({
-    ok: dbStatus === "connected" || !dbAvailable, // Return true if DB is optional
+    ok: dbStatus === "connected" || !getDbAvailable(), // Return true if DB is optional
     service: "waterflow-api",
     version: "1.0.0",
     environment: process.env.NODE_ENV || "development",
@@ -2544,7 +2536,7 @@ if (require.main === module) {
     console.log(`   Dispatch:   POST http://localhost:${PORT}/api/dispatch`);
     console.log(`   Health:     GET  http://localhost:${PORT}/health`);
     console.log(`   AI Engine:  ${AI_ENGINE_URL}`);
-    console.log(`   DB Status:  ${dbAvailable ? "✅ Connected" : "⚠️  Mumbai BMC Mock Fallback"}\n`);
+    console.log(`   DB Status:  ${getDbAvailable() ? "✅ Connected" : "⚠️  Mumbai BMC Mock Fallback"}\n`);
   });
 }
 
