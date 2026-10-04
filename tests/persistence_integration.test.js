@@ -19,15 +19,15 @@ async function fetchJson(url, options) {
 
 async function runTest() {
   console.log("Starting Persistence Integration Test...");
-  const db = require("../backend/db.js");
+  process.env.APP_MODE = "PRODUCTION"; process.env.DATABASE_URL = process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:54322/postgres"; const db = require("../backend/db.js");
   await new Promise(r => setTimeout(r, 1000)); // wait for db connection
   if (!db.getDbAvailable()) {
     console.error("❌ Database is not available. Persistence test requires running PostgreSQL database.");
-    process.exit(0); // Soft fail if no DB in CI
+    process.exit(1); // Hard fail as required
   }
 
   // Clear require cache to simulate fresh start
-  let serverModule = require("../backend/server.js");
+  let serverModule = require("../backend/server.js"); await require("../backend/db.js").checkDb();
   let server = serverModule.app.listen(3015);
   console.log("Server 1 started on 3015");
 
@@ -35,12 +35,12 @@ async function runTest() {
   const dispatchRes = await fetchJson("http://localhost:3015/api/dispatch", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ward_code: "M/E", volume_liters: 1000, tanker_id: "T-01" })
+    body: JSON.stringify({ ward_code: "1", volume_liters: 1000, tanker_id: "T-01", pin: "4491" })
   });
 
   const parsed = JSON.parse(dispatchRes.data);
   const missionId = parsed.mission?.id;
-  console.log("Dispatch response:", dispatchRes.status, "Mission ID:", missionId);
+  console.log("Dispatch response:", dispatchRes.status, dispatchRes.data);
 
   server.close();
   console.log("Server 1 closed.");
@@ -53,7 +53,7 @@ async function runTest() {
   });
 
   // Start fresh server
-  serverModule = require("../backend/server.js");
+  serverModule = require("../backend/server.js"); await require("../backend/db.js").checkDb();
   server = serverModule.app.listen(3016);
   console.log("Server 2 started on 3016 (Fresh Process Simulation)");
 

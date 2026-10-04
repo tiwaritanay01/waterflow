@@ -3,7 +3,16 @@ const { pool, getDbAvailable } = require("./db.js");
 // These functions will execute SQL transactions when db is available.
 // If db is not available, they will rely on the caller updating the in-memory array.
 
+function enforceDbForProduction() {
+  if (!getDbAvailable() && process.env.APP_MODE !== "DEMO") {
+    const err = new Error("503 DATABASE_UNAVAILABLE");
+    err.statusCode = 503;
+    throw err;
+  }
+}
+
 async function executeDispatchTransaction(tanker, ward, mission, decisionRecord, govDecision, auditRecord) {
+  enforceDbForProduction();
   if (!getDbAvailable()) return;
   const client = await pool.connect();
   try {
@@ -13,7 +22,7 @@ async function executeDispatchTransaction(tanker, ward, mission, decisionRecord,
     await client.query(`
       UPDATE tankers 
       SET status = $2, assigned_ward = $3, current_load = $4, eta_minutes = $5
-      WHERE tanker_id = $1 OR transponder_id = $1
+      WHERE tanker_id = $1
     `, [tanker.transponder_id, "en_route", ward.ward_number, tanker.current_load, tanker.eta_minutes]);
     
     // Save Mission
@@ -25,11 +34,12 @@ async function executeDispatchTransaction(tanker, ward, mission, decisionRecord,
     `, [mission.id, mission.ward_code, mission.tanker_id, mission.target_liters, mission.status, mission.priority_tier || 1, mission.version || 1]);
     
     // Save Decision
+    const tierInt = typeof decisionRecord.governance_tier === 'string' ? parseInt(decisionRecord.governance_tier.match(/\d+/)?.[0] || "1") : (decisionRecord.governance_tier || 1);
     await client.query(`
       INSERT INTO operational_decisions (decision_id, ward_id, tanker_id, priority_score, tier, status, decision_payload)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
       ON CONFLICT (decision_id) DO NOTHING
-    `, [decisionRecord.decision_id, decisionRecord.ward_code, decisionRecord.tanker_id, decisionRecord.priority_score, decisionRecord.governance_tier, "EXECUTED", JSON.stringify(decisionRecord)]);
+    `, [decisionRecord.decision_id, decisionRecord.ward_code, decisionRecord.tanker_id, decisionRecord.priority_score, tierInt, "EXECUTED", JSON.stringify(decisionRecord)]);
     
     // Save Gov Decision
     await client.query(`
@@ -54,6 +64,7 @@ async function executeDispatchTransaction(tanker, ward, mission, decisionRecord,
 }
 
 async function executeVerificationTransaction(missionId, qty, ward_code, tanker_id, opId, payload) {
+  enforceDbForProduction();
   if (!getDbAvailable()) return true;
   const client = await pool.connect();
   try {
@@ -91,7 +102,7 @@ async function executeVerificationTransaction(missionId, qty, ward_code, tanker_
     await client.query(`
       UPDATE tankers 
       SET status = 'available', current_load = 0, assigned_ward = NULL
-      WHERE tanker_id = $1 OR transponder_id = $1
+      WHERE tanker_id = $1
     `, [tanker_id]);
     
     await client.query('COMMIT');
@@ -106,6 +117,7 @@ async function executeVerificationTransaction(missionId, qty, ward_code, tanker_
 
 
 async function saveMission(mission) {
+  enforceDbForProduction();
   if (!getDbAvailable()) return;
   await pool.query(`
     INSERT INTO missions (mission_id, ward_id, tanker_id, volume_liters, status, priority_tier, version)
@@ -116,15 +128,17 @@ async function saveMission(mission) {
 }
 
 async function updateTankerStatus(tanker_id, status, assigned_ward, current_load, eta_minutes = null) {
+  enforceDbForProduction();
   if (!getDbAvailable()) return;
   await pool.query(`
     UPDATE tankers 
     SET status = $2, assigned_ward = $3, current_load = $4, eta_minutes = $5
-    WHERE tanker_id = $1 OR transponder_id = $1
+    WHERE tanker_id = $1
   `, [tanker_id, status, assigned_ward, current_load, eta_minutes]);
 }
 
 async function saveGovernanceDecision(govDecision) {
+  enforceDbForProduction();
   if (!getDbAvailable()) return;
   await pool.query(`
     INSERT INTO governance_decisions (decision_id, status, action, ward_id, reason, tier)
@@ -134,6 +148,7 @@ async function saveGovernanceDecision(govDecision) {
 }
 
 async function saveAuditLog(auditRecord) {
+  enforceDbForProduction();
   if (!getDbAvailable()) return;
   await pool.query(`
     INSERT INTO governance_audit_log (event, decision_id, ward_id, action, actor, auth_mode, details)
@@ -142,6 +157,7 @@ async function saveAuditLog(auditRecord) {
 }
 
 async function recordFieldOperation(op) {
+  enforceDbForProduction();
   if (!getDbAvailable()) return true; // Pretend it worked
   try {
     const res = await pool.query(`
@@ -158,6 +174,7 @@ async function recordFieldOperation(op) {
 }
 
 async function getAllMissions() {
+  enforceDbForProduction();
   if (!getDbAvailable()) return null;
   const res = await pool.query(`SELECT * FROM missions`);
   // Map back to JS object shape expected by frontend

@@ -7,15 +7,25 @@ const pool = new Pool({
 });
 
 let dbAvailable = false;
+let dbStatus = "DATABASE_UNAVAILABLE";
 
 async function checkDb() {
+  if (!process.env.DATABASE_URL) {
+    dbStatus = "DATABASE_UNAVAILABLE";
+    dbAvailable = false;
+    console.log("⚠️  DATABASE_UNAVAILABLE");
+    return;
+  }
+  dbStatus = "DATABASE_CONFIGURED";
   try {
     await pool.query("SELECT 1");
     dbAvailable = true;
-    console.log("✅ PostgreSQL connected");
+    dbStatus = "DATABASE_CONNECTED";
+    console.log("✅ DATABASE_CONNECTED");
   } catch (e) {
     dbAvailable = false;
-    console.log("⚠️  PostgreSQL unavailable — using Mock Fallback", e.message);
+    dbStatus = "DATABASE_UNAVAILABLE";
+    console.log("⚠️  DATABASE_UNAVAILABLE");
   }
 }
 
@@ -25,5 +35,6 @@ checkDb();
 module.exports = {
   pool,
   getDbAvailable: () => dbAvailable,
+  getDbStatus: () => dbStatus,
   checkDb
 };

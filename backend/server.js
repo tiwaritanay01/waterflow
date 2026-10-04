@@ -19,7 +19,11 @@ const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "http://localhost:8000";
+const AI_ENGINE_URL = process.env.AI_ENGINE_URL || process.env.FASTAPI_BASE_URL || (process.env.APP_MODE === "DEMO" ? "http://localhost:8000" : null);
+
+if (!AI_ENGINE_URL && process.env.APP_MODE !== "DEMO") {
+  console.warn("⚠️ WARNING: AI_ENGINE_URL is not set in production. AI features will fail.");
+}
 
 
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
@@ -28,7 +32,7 @@ app.use(express.json());
 
 const db = require("./db.js");
 const dbAdapters = require("./db_adapters.js");
-const { pool, getDbAvailable } = db;
+const { pool, getDbAvailable, getDbStatus } = db;
 
 
 // ---------------------------------------------------------------------------
@@ -871,6 +875,10 @@ let alertsState = JSON.parse(JSON.stringify(MOCK_ALERTS));
 seedInitialDecisionRecords();
 
 function resetOperationalState() {
+  if (process.env.APP_MODE !== "DEMO") {
+    console.warn("⚠️ Reset invoked outside DEMO mode. Operation aborted.");
+    return;
+  }
   wardsState = JSON.parse(JSON.stringify(MOCK_WARDS));
   tankersState = JSON.parse(JSON.stringify(MOCK_TANKERS));
   depotsState = JSON.parse(JSON.stringify(MOCK_DEPOTS));
@@ -899,10 +907,10 @@ async function getWards() {
   if (getDbAvailable()) {
     try {
       const res = await pool.query(
-        `SELECT id AS ward_id, ward_number, name, population, vulnerability_index,
+        `SELECT ward_id, ward_id AS ward_number, name, population, vulnerability_index,
                 dry_pipe_hours, historical_deficit, demand_liters, coverage_pct,
                 depot_distance_km, status, description
-         FROM wards ORDER BY id`
+         FROM wards ORDER BY ward_id`
       );
       return res.rows;
     } catch (e) {
@@ -916,9 +924,9 @@ async function getTankers() {
   if (getDbAvailable()) {
     try {
       const res = await pool.query(
-        `SELECT id AS tanker_id, transponder_id, capacity, current_load, status,
+        `SELECT tanker_id, tanker_id AS transponder_id, capacity_liters AS capacity, current_load, status,
                 assigned_ward, eta_minutes
-         FROM tankers ORDER BY transponder_id`
+         FROM tankers ORDER BY tanker_id`
       );
       return res.rows;
     } catch (e) {
@@ -931,10 +939,8 @@ async function getTankers() {
 async function getDepots() {
   if (getDbAvailable()) {
     try {
-      const res = await pool.query(
-        `SELECT id, name, total_capacity, current_stock, is_active
-         FROM depots ORDER BY id`
-      );
+      const res = await pool.query(`SELECT depot_id AS id, name, total_capacity, current_stock
+         FROM depots ORDER BY depot_id`);
       return res.rows;
     } catch (e) {
       console.log("⚠️  DB query failed, using state fallback:", e.message);
@@ -2490,6 +2496,13 @@ app.post("/api/allocation/evaluate", async (req, res) => {
 // ---------------------------------------------------------------------------
 
 app.post("/api/operational-state/reset", (req, res) => {
+  if (process.env.APP_MODE !== "DEMO") {
+    return res.status(403).json({
+      success: false,
+      error: "403 FORBIDDEN: State reset is disabled in production.",
+    });
+  }
+
   resetOperationalState();
   res.json({
     success: true,

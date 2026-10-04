@@ -1,11 +1,11 @@
 const http = require("http");
-const { app } = require("../backend/server.js");
+process.env.APP_MODE = "PRODUCTION"; process.env.DATABASE_URL = process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:54322/postgres"; const { app } = require("../backend/server.js"); const db = require("../backend/db.js");
 
 const PORT = 3009; // random port for testing
 let server;
 
 async function runSmokeTest() {
-  server = app.listen(PORT, () => {
+  await db.checkDb(); server = app.listen(PORT, () => {
     console.log(`Smoke test server listening on port ${PORT}`);
   });
 
@@ -61,7 +61,7 @@ async function runSmokeTest() {
   await check("POST /api/dispatch", fetchJson(`${baseUrl}/api/dispatch`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ward_code: "M/E", volume_liters: 1000, pin: "DEMO_EXEC_PIN_4491" })
+    body: JSON.stringify({ ward_code: "1", volume_liters: 1000, pin: "DEMO_EXEC_PIN_4491" })
   }).then(res => {
     if (res.status === 200 || res.status === 409) { 
       // It might be 409 No available tankers if they are all busy, that's fine for a smoke test
