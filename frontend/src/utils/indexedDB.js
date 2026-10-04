@@ -357,7 +357,7 @@ export async function clearAllQueuedActions() {
 /**
  * Tests live server reachability with a fast timeout (prevents false online assumption).
  */
-export async function checkServerReachability(apiBase = 'http://localhost:3001') {
+export async function checkServerReachability(apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3001') {
   if (typeof navigator !== 'undefined' && !navigator.onLine) {
     return false;
   }
@@ -382,7 +382,7 @@ export async function checkServerReachability(apiBase = 'http://localhost:3001')
  * - Retains unacknowledged or conflicting operations (never silent discards)
  * - Updates local mission version upon server acceptance
  */
-export async function syncOfflineQueue(apiBase = 'http://localhost:3001') {
+export async function syncOfflineQueue(apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3001') {
   const pending = await getPendingActions();
   if (!pending || pending.length === 0) {
     return {

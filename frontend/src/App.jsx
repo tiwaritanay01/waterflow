@@ -39,7 +39,7 @@ import PolicySandbox from "./components/PolicySandbox";
 import NetworkResilience from "./components/NetworkResilience";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
-const API_URL = "http://localhost:3001";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 const NAV_ITEMS = [
   { id: "overview", label: "Live Overview", icon: LayoutDashboard },

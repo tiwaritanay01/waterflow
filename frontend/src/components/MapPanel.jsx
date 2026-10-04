@@ -45,7 +45,7 @@ export default function MapPanel({
           setTimeout(() => setDispatchedMission(null), 5000);
         }
       } else {
-        const res = await fetch("http://localhost:3001/api/dispatch", {
+        const res = await fetch((import.meta.env.VITE_API_URL || "http://localhost:3001") + "/api/dispatch", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

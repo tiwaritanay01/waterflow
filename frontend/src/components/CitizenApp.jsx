@@ -38,7 +38,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, useMap } from
 import L from "leaflet";
 import { MUMBAI_WARDS_DATABASE, findNearestMumbaiWard } from "../utils/mumbaiWardsData";
 
-const API_BASE = "http://localhost:3001";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 // Bilingual dictionary for Marathi toggle
 const I18N = {

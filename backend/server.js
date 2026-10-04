@@ -18,7 +18,7 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "http://localhost:8000";
 
 
@@ -34,7 +34,7 @@ const pool = new Pool({
   port: parseInt(process.env.PGPORT || "5432"),
   database: process.env.PGDATABASE || "waterflow_os",
   user: process.env.PGUSER || "postgres",
-  password: process.env.PGPASSWORD || "postgres",
+  password: process.env.PGPASSWORD || "YOUR_DB_PASSWORD",
   max: 10,
   connectionTimeoutMillis: 3000,
 });
