@@ -1555,7 +1555,8 @@ app.get("/api/analytics/unmet-demand", async (req, res) => {
 // Health & Version & Readiness checks
 // ---------------------------------------------------------------------------
 
-app.get("/health", (req, res) => {
+app.get("/health", async (req, res) => {
+  await db.checkDb();
   res.json({
     status: "ok",
     service: "WaterFlow OS Gateway (Mumbai BMC)",
@@ -1571,7 +1572,8 @@ app.get("/health", (req, res) => {
   });
 });
 
-app.get(["/version", "/api/version"], (req, res) => {
+app.get(["/version", "/api/version"], async (req, res) => {
+  await db.checkDb();
   res.json({
     application: "WaterFlow OS",
     application_version: "1.0.0-RC1",
@@ -1585,7 +1587,8 @@ app.get(["/version", "/api/version"], (req, res) => {
   });
 });
 
-app.get("/ready", (req, res) => {
+app.get("/ready", async (req, res) => {
+  await db.checkDb();
   res.json({
     status: "ready",
     service: "WaterFlow OS Gateway (Mumbai BMC)",
