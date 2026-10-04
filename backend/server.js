@@ -2476,7 +2476,7 @@ app.get("/api/priority-ranking", async (req, res) => {
   const queue = computePriorityQueue(wards);
   res.json({
     success: true,
-    policy_version: "2.4.0-hardened",
+    policy_version: "3.0.0-research",
     total_wards: queue.length,
     provenance_badge: "SYNTHETIC_SEEDED: Seed 42 baseline",
     queue,
@@ -2581,6 +2581,7 @@ if (require.main === module) {
 
 Object.assign(app, {
   app,
+  MOCK_WARDS,
   getWards,
   getTankers,
   getDepots,

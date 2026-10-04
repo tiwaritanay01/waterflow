@@ -4,10 +4,8 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/waterflow_os"
 });
 
-const MOCK_WARDS = [
-  { ward_id: "1", ward_code: "M/E", name: "Govandi", zone: "Eastern", population: 807720, vulnerability_index: 0.96, dry_pipe_hours: 58, historical_deficit: 0.78, demand_liters: 32000, coverage_pct: 38, depot_distance_km: 4.8, lat: 19.055, lng: 72.918, status: "critical", water_deficit_pct: 82, description: "Demo" },
-  { ward_id: "2", ward_code: "G/N", name: "Dharavi", zone: "City", population: 599039, vulnerability_index: 0.93, dry_pipe_hours: 52, historical_deficit: 0.7, demand_liters: 28000, coverage_pct: 42, depot_distance_km: 3.6, lat: 19.043, lng: 72.846, status: "critical", water_deficit_pct: 78, description: "Demo" }
-];
+const server = require("../backend/server.js");
+const MOCK_WARDS = server.MOCK_WARDS;
 
 const MOCK_TANKERS = [
   { tanker_id: "T-01", capacity_liters: 10000, current_load: 10000, status: "available", location_lat: 19.05, location_lng: 72.9, assigned_ward: null, driver_name: "R. Kumar", contact: "9876543210", eta_minutes: 0 },
