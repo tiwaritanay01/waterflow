@@ -1,88 +1,44 @@
-# WaterFlow OS — Production Deployment & Operations Runbook
+# WaterFlow OS Deployment Guide
 
-**Document:** `docs/deployment.md`  
-**System Architecture:** Multi-Container Distributed Microservices  
-**Components:** React Frontend, Express API Gateway, FastAPI AI Optimization Engine, PostGIS Database  
+## 1. Supabase (Database)
+1. Create a new Supabase project.
+2. In Project Settings -> Database, locate your Connection String (URI).
+3. Ensure transaction pooling (pgbouncer/Supavisor) is enabled for serverless compatibility.
+4. Execute the schema migration via SQL Editor or CLI: `supabase/migrations/20261004000000_deployment_schema.sql`
+5. (Optional) Run `node scripts/seed_demo_data.js` to populate Seed 42 Demo Data.
+6. Set `DATABASE_URL` in your backend environment.
 
----
+## 2. Vercel (Backend API)
+1. From the project root (`stitch_waterflow_os_municipal_operations_dashboard`), deploy to Vercel.
+2. Ensure the framework preset is set to `Other`.
+3. Vercel will use the provided `vercel.json` to route API requests to `backend/server.js` using `@vercel/node`.
+4. **Environment Variables Required**:
+   - `DATABASE_URL` (Supabase Connection String)
+   - `FRONTEND_ORIGIN` (Your Render frontend URL)
+   - `AI_ENGINE_URL` (Your FastAPI URL)
+   - `DEMO_EXECUTIVE_AUTH` (Demo PIN)
+5. Verify deployment via `GET https://<your-vercel-domain>/health`.
 
-## 1. Quick Start: Local Deployment (Docker Compose)
+## 3. Render (Static Site Frontend)
+1. Create a new "Static Site" on Render.
+2. Connect the repository.
+3. **Build Command**: `npm --prefix frontend run build`
+4. **Publish Directory**: `frontend/dist`
+5. **Environment Variables**:
+   - `VITE_API_URL` (Your Vercel backend URL)
+6. Under Redirects/Rewrites, set:
+   - Source: `/*`
+   - Destination: `/index.html`
+   - Status: `200` (for SPA client-side routing fallback)
 
-The fastest method to stand up the complete stack from a clean machine:
+## 4. Render / Other (FastAPI Engine)
+1. Deploy the `ai_engine` directory as a standalone Python web service (e.g., Render Web Service).
+2. **Build Command**: `pip install -r requirements.txt`
+3. **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+4. Copy the public URL and set it as `AI_ENGINE_URL` in your Vercel backend environment.
 
-```bash
-# 1. Clone repository
-git clone https://github.com/tiwaritanay01/waterflow.git
-cd waterflow
-
-# 2. Configure environment
-cp .env.example .env
-
-# 3. Launch container stack
-docker compose up --build -d
-
-# 4. Verify service health
-docker compose ps
-curl http://localhost:3001/health
-curl http://localhost:8000/health
-```
-
-Access services:
-- **Command Center Dashboard:** `http://localhost` (Port 80)
-- **Express Municipal Gateway:** `http://localhost:3001`
-- **FastAPI AI / Optimization Engine:** `http://localhost:8000`
-- **Interactive OpenAPI Documentation:** `http://localhost:8000/docs`
-
----
-
-## 2. Manual Bare-Metal / Dev Setup
-
-### A. Python AI Engine Setup
-```bash
-# Python 3.10+ required
-python -m venv venv
-# On Windows:
-.\venv\Scripts\activate
-# On Linux/macOS:
-source venv/bin/activate
-
-pip install -r requirements.txt
-python ai_engine/main.py
-```
-
-### B. Express Gateway Setup
-```bash
-cd backend
-npm install
-node server.js
-```
-
-### C. React Frontend Setup
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
----
-
-## 3. Container Health & Readiness Probes
-
-All microservices implement standard three-tier health probes for Kubernetes and container schedulers:
-
-| Service | Liveness Probe | Readiness Probe | Detailed Diagnostic |
-| :--- | :--- | :--- | :--- |
-| **Express Gateway** | `GET /liveness` (200 OK) | `GET /ready` (Ward count check) | `GET /health` (DB & AI status) |
-| **FastAPI Engine** | `GET /liveness` (200 OK) | `GET /ready` (Solver availability) | `GET /health` (Policy version) |
-| **PostgreSQL** | `pg_isready` check | Table count assertion | `SELECT 1;` |
-
----
-
-## 4. Database Migrations & Reference Data Loading
-
-The PostgreSQL container automatically runs initialization scripts placed in `/docker-entrypoint-initdb.d/`:
-1. `backend/schema.sql`: Initializes tables for `wards`, `demands`, `tankers`, `complaints`, and PostGIS geometry columns.
-2. If running on a pre-existing Postgres cluster:
-   ```bash
-   psql -h $PGHOST -U $PGUSER -d $PGDATABASE -f backend/schema.sql
-   ```
+## 5. Local Verification
+- **Postgres**: Run a local Postgres instance, export `DATABASE_URL`, and run migrations.
+- **FastAPI**: `cd ai_engine && uvicorn main:app --reload` (Runs on 8000)
+- **Node API**: `npm --prefix backend run dev` (Runs on 3001)
+- **React**: `npm --prefix frontend run dev` (Runs on 5173)

@@ -22,7 +22,8 @@ const PORT = process.env.PORT || 3001;
 const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "http://localhost:8000";
 
 
-app.use(cors());
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
+app.use(cors({ origin: [FRONTEND_ORIGIN, "http://localhost:5173"] }));
 app.use(express.json());
 
 // ---------------------------------------------------------------------------
@@ -2511,6 +2512,25 @@ app.post("/api/operational-state/reset", (req, res) => {
 // Start server & Exports
 // ---------------------------------------------------------------------------
 
+app.get("/health", async (req, res) => {
+  let dbStatus = "disconnected";
+  if (dbAvailable) {
+    try {
+      await pool.query("SELECT 1");
+      dbStatus = "connected";
+    } catch (e) {
+      dbStatus = "error";
+    }
+  }
+  res.json({
+    ok: dbStatus === "connected" || !dbAvailable, // Return true if DB is optional
+    service: "waterflow-api",
+    version: "1.0.0",
+    environment: process.env.NODE_ENV || "development",
+    database: dbStatus
+  });
+});
+
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`\n🌊 WaterFlow OS Gateway running on http://localhost:${PORT}`);
@@ -2522,6 +2542,7 @@ if (require.main === module) {
     console.log(`   Autonomy:   POST http://localhost:${PORT}/api/automation/evaluate`);
     console.log(`   Field Sync: POST http://localhost:${PORT}/api/field/sync`);
     console.log(`   Dispatch:   POST http://localhost:${PORT}/api/dispatch`);
+    console.log(`   Health:     GET  http://localhost:${PORT}/health`);
     console.log(`   AI Engine:  ${AI_ENGINE_URL}`);
     console.log(`   DB Status:  ${dbAvailable ? "✅ Connected" : "⚠️  Mumbai BMC Mock Fallback"}\n`);
   });
