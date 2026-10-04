@@ -34,7 +34,13 @@ async function checkDb() {
   } catch (e) {
     dbAvailable = false;
     dbStatus = "DATABASE_UNAVAILABLE";
-    console.log("⚠️  DATABASE_UNAVAILABLE");
+    console.log("⚠️  DATABASE_UNAVAILABLE", {
+      name: e?.name,
+      code: e?.code,
+      message: e?.message,
+      errno: e?.errno,
+      syscall: e?.syscall
+    });
   }
 }
 
