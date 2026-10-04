@@ -1,12 +1,18 @@
 const { Pool } = require("pg");
 
+const fs = require("fs");
+const path = require("path");
+
 const connectionString = process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/waterflow_os";
 const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
 const pool = new Pool({
   connectionString,
   max: 10,
   connectionTimeoutMillis: 3000,
-  ssl: isLocal ? false : { rejectUnauthorized: false }
+  ssl: isLocal ? false : { 
+    rejectUnauthorized: true,
+    ca: fs.readFileSync(path.join(__dirname, 'supabase-ca.pem')).toString()
+  }
 });
 
 let dbAvailable = false;
