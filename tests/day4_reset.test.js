@@ -9,7 +9,7 @@ const {
 const { MISSION_VERSIONS, PROCESSED_OPERATIONS } = require("../backend/field_sync.js");
 const { EXECUTION_RECORDS, PROCESSED_OPERATION_IDS, automationState } = require("../backend/autonomy_engine.js");
 
-async function runResetTest() {
+async function runResetTest() { process.env.APP_MODE = 'DEMO';
   console.log("--- Initial State ---");
   console.log("Gov Decisions:", GOVERNANCE_DECISIONS.length);
   console.log("Missions:", MISSION_VERSIONS.size);

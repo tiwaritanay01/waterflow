@@ -602,6 +602,10 @@ const MOCK_ALERTS = [
 // ---------------------------------------------------------------------------
 
 async function callAIEngine(endpoint, body) {
+  if (!AI_ENGINE_URL || AI_ENGINE_URL === "null" || AI_ENGINE_URL === "undefined") {
+    console.log("⚠️  AI_ENGINE_UNAVAILABLE: Skipping " + endpoint);
+    return null;
+  }
   try {
     const response = await fetch(`${AI_ENGINE_URL}${endpoint}`, {
       method: "POST",
@@ -611,7 +615,7 @@ async function callAIEngine(endpoint, body) {
     if (!response.ok) throw new Error(`AI Engine ${response.status}`);
     return await response.json();
   } catch (err) {
-    console.log(`⚠️  AI Engine ${endpoint} unavailable: ${err.message}`);
+    console.log(`⚠️  AI_ENGINE_UNAVAILABLE: ${endpoint} failed - ${err.message}`);
     return null;
   }
 }
@@ -914,9 +918,12 @@ async function getWards() {
       );
       return res.rows;
     } catch (e) {
+      if (process.env.APP_MODE === "PRODUCTION") { throw new Error("503 DATABASE_UNAVAILABLE: " + e.message); }
+
       console.log("⚠️  DB query failed, using state fallback:", e.message);
     }
   }
+    if (process.env.APP_MODE === "PRODUCTION") { throw new Error("503 DATABASE_UNAVAILABLE"); }
   return wardsState;
 }
 
@@ -930,9 +937,12 @@ async function getTankers() {
       );
       return res.rows;
     } catch (e) {
+      if (process.env.APP_MODE === "PRODUCTION") { throw new Error("503 DATABASE_UNAVAILABLE: " + e.message); }
+
       console.log("⚠️  DB query failed, using state fallback:", e.message);
     }
   }
+    if (process.env.APP_MODE === "PRODUCTION") { throw new Error("503 DATABASE_UNAVAILABLE"); }
   return tankersState;
 }
 
@@ -943,28 +953,41 @@ async function getDepots() {
          FROM depots ORDER BY depot_id`);
       return res.rows;
     } catch (e) {
+      if (process.env.APP_MODE === "PRODUCTION") { throw new Error("503 DATABASE_UNAVAILABLE: " + e.message); }
+
       console.log("⚠️  DB query failed, using state fallback:", e.message);
     }
   }
+    if (process.env.APP_MODE === "PRODUCTION") { throw new Error("503 DATABASE_UNAVAILABLE"); }
   return depotsState;
 }
 
 async function getAlerts() {
-  if (getDbAvailable()) {
-    try {
-      const res = await pool.query(
-        `SELECT a.id, a.title, a.description, a.severity,
-                w.ward_number, a.badge_text
-         FROM alerts a LEFT JOIN wards w ON a.ward_id = w.id
-         WHERE a.is_active = true
-         ORDER BY CASE a.severity WHEN 'critical' THEN 0 WHEN 'warning' THEN 1 ELSE 2 END`
-      );
-      return res.rows;
-    } catch (e) {
-      console.log("⚠️  DB query failed, using state fallback:", e.message);
+  const wards = await getWards();
+  const alerts = [];
+  let id = 1;
+  for (const w of wards) {
+    if (w.dry_pipe_hours >= 48) {
+      alerts.push({
+        id: id++,
+        title: `Ward ${w.ward_number || w.ward_code || w.ward_id} - Severe Deficit Surge`,
+        description: `${w.name} pipe dry for ${w.dry_pipe_hours}h; urgent intervention required.`,
+        severity: "critical",
+        ward_number: w.ward_number || w.ward_code || w.ward_id,
+        badge_text: `${w.dry_pipe_hours}h Dry`
+      });
+    } else if (w.vulnerability_index > 0.8) {
+      alerts.push({
+        id: id++,
+        title: `Ward ${w.ward_number || w.ward_code || w.ward_id} - High Vulnerability`,
+        description: `${w.name} shows high vulnerability index (${w.vulnerability_index}).`,
+        severity: "warning",
+        ward_number: w.ward_number || w.ward_code || w.ward_id,
+        badge_text: `Vuln ${(w.vulnerability_index * 100).toFixed(0)}%`
+      });
     }
   }
-  return alertsState;
+  return alerts;
 }
 
 

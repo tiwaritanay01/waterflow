@@ -1,9 +1,12 @@
 const { Pool } = require("pg");
 
+const connectionString = process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/waterflow_os";
+const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/waterflow_os",
+  connectionString,
   max: 10,
   connectionTimeoutMillis: 3000,
+  ssl: isLocal ? false : { rejectUnauthorized: false }
 });
 
 let dbAvailable = false;

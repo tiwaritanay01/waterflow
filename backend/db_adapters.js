@@ -19,11 +19,14 @@ async function executeDispatchTransaction(tanker, ward, mission, decisionRecord,
     await client.query('BEGIN');
     
     // Update Tanker
-    await client.query(`
+    const res = await client.query(`
       UPDATE tankers 
       SET status = $2, assigned_ward = $3, current_load = $4, eta_minutes = $5
-      WHERE tanker_id = $1
+      WHERE tanker_id = $1 AND status = 'available'
     `, [tanker.transponder_id, "en_route", ward.ward_number, tanker.current_load, tanker.eta_minutes]);
+    if (res.rowCount === 0) {
+      throw new Error("Concurrency error: Tanker is no longer available.");
+    }
     
     // Save Mission
     await client.query(`

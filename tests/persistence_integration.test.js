@@ -20,7 +20,7 @@ async function fetchJson(url, options) {
 async function runTest() {
   console.log("Starting Persistence Integration Test...");
   process.env.APP_MODE = "PRODUCTION"; process.env.DATABASE_URL = process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:54322/postgres"; const db = require("../backend/db.js");
-  await new Promise(r => setTimeout(r, 1000)); // wait for db connection
+  await db.checkDb(); // check db connection
   if (!db.getDbAvailable()) {
     console.error("❌ Database is not available. Persistence test requires running PostgreSQL database.");
     process.exit(1); // Hard fail as required
