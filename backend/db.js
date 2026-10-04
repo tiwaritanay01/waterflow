@@ -8,10 +8,9 @@ const isLocal = connectionString.includes('localhost') || connectionString.inclu
 const pool = new Pool({
   connectionString,
   max: 10,
-  connectionTimeoutMillis: 3000,
+  connectionTimeoutMillis: 10000,
   ssl: isLocal ? false : { 
-    rejectUnauthorized: true,
-    ca: fs.readFileSync(path.join(__dirname, 'supabase-ca.pem')).toString()
+    rejectUnauthorized: false
   }
 });
 
