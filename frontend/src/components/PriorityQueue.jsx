@@ -1,15 +1,7 @@
 import { useState } from "react";
 import { ListOrdered, Zap, Eye, Lock } from "lucide-react";
 
-// Classify governance tier for a ward dispatch based on volume and priority tier
-function getGovernanceTier(ward) {
-  // Tier 3: Critical — hospital-adjacent wards, extreme dry pipe hours, very high volume
-  if (ward.dry_pipe_hours > 50 || ward.total_score >= 85 || ward.demand_liters > 25000) return 3;
-  // Tier 2: Operator Review — elevated demand, moderate scores
-  if (ward.demand_liters > 15000 || ward.total_score >= 70) return 2;
-  // Tier 1: Autonomous — routine dispatches
-  return 1;
-}
+
 
 const GOV_TIER_META = {
   1: { label: "AUTO", icon: Zap, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200" },
@@ -74,7 +66,7 @@ export default function PriorityQueue({ queue, onDispatch }) {
       <div className="space-y-1.5 mt-2">
         {displayQueue.map((ward, idx) => {
           const isTop = idx === 0;
-          const govTier = getGovernanceTier(ward);
+          const govTier = ward.tier || 1;
           const tierMeta = GOV_TIER_META[govTier];
           const TierIcon = tierMeta.icon;
           const isExpanded = expandedWard === ward.ward_number;

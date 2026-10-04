@@ -1687,7 +1687,12 @@ function generateExplanation(impact, recovery, recommended, metrics) {
 // EXPORTS
 // =============================================================================
 
+function resetResilienceState() {
+  ACTIVE_RESILIENCE_TRACES.clear();
+}
+
 module.exports = {
+  resetResilienceState,
   NODES,
   EDGES,
   FAILURE_SCENARIOS,

@@ -605,7 +605,14 @@ function mountAutonomyRoutes(app, GOVERNANCE_DECISIONS, GOVERNANCE_AUDIT_LOG) {
 // EXPORTS
 // =============================================================================
 
+function resetAutonomyState() {
+  EXECUTION_RECORDS.length = 0;
+  PROCESSED_OPERATION_IDS.clear();
+  automationState.kill_switch_enabled = true;
+}
+
 module.exports = {
+  resetAutonomyState,
   automationState,
   TIER1_ALLOWLIST,
   VALID_TRANSITIONS,

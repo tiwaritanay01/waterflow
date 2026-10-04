@@ -71,8 +71,9 @@ const {
   localizeFault,
   classifyResilienceGovernanceTier,
   ACTIVE_RESILIENCE_TRACES,
+  resetResilienceState
 } = require("./resilience_engine");
-const { mountAutonomyRoutes } = require("./autonomy_engine");
+const { mountAutonomyRoutes, resetAutonomyState } = require("./autonomy_engine");
 const {
   mountFieldSyncRoutes,
   createMission,
@@ -81,6 +82,8 @@ const {
   MISSION_VERSIONS,
   resetFieldSyncState,
 } = require("./field_sync");
+
+const { computePriority, computePriorityQueue, classifyWardGovernanceTier, classifyDecisionGovernanceTier, CANONICAL_PROVENANCE_CLASSES } = require("./core_algorithms");
 
 // ---------------------------------------------------------------------------
 // Phase 2: WhatsApp Multi-Lingual NLP Webhook (Meta & Twilio Compatible)
@@ -661,203 +664,17 @@ function verifyDemoExecutiveAuth(token) {
 // ---------------------------------------------------------------------------
 // Canonical Provenance Taxonomy (9 Canonical Classes)
 // ---------------------------------------------------------------------------
-const CANONICAL_PROVENANCE_CLASSES = [
-  "REAL_OBSERVATION",
-  "REFERENCE_DATA",
-  "DERIVED",
-  "REFERENCE_CONSTANT",
-  "LEGAL_RULE",
-  "SYNTHETIC_SEEDED",
-  "ENGINEERING_ASSUMPTION",
-  "SCENARIO_PARAMETER",
-  "DOCUMENTED_ONLY",
-];
+
 
 // Authoritative Governance Classification Helper
-function getAuthoritativeGovernanceTier(ward, volumeLiters) {
-  const vol = Number(volumeLiters) || ward.demand_liters || 10000;
-  if (vol > 15000 || ((ward.dry_pipe_hours || 0) >= 48 && (ward.vulnerability_index || 0) >= 0.90)) {
-    return 3;
-  }
-  if (vol > 12000 || (ward.vulnerability_index || 0) >= 0.85) {
-    return 2;
-  }
-  return 1;
-}
+
 
 // ---------------------------------------------------------------------------
 // Authoritative Priority Scoring Function (Policy v2.4.0 Hardened Baseline)
 // P_i = 0.30*V_i + 0.25*D_i + 0.20*Pop_i + 0.15*H_i + 0.10*Dist_i
 // ---------------------------------------------------------------------------
 
-const WEIGHT_VULNERABILITY = 0.30;
-const WEIGHT_DRY_PIPE = 0.25;
-const WEIGHT_POPULATION = 0.20;
-const WEIGHT_HISTORICAL_DEFICIT = 0.15;
-const WEIGHT_DEPOT_DISTANCE = 0.10;
 
-const MAX_DRY_PIPE_HOURS = 72.0;
-const MAX_POPULATION = 1000000.0; // 1 Million residents (calibrated for Mumbai BMC wards)
-const MAX_DEPOT_DISTANCE_KM = 20.0; // Max transit radius in MCGM jurisdiction
-
-function computePriorityLocal(ward) {
-  const vulnRaw = Number(ward.vulnerability_index !== undefined ? ward.vulnerability_index : 0);
-  const vulnNorm = Math.min(Math.max(vulnRaw, 0), 1);
-  const vulnScore = Math.round(vulnNorm * WEIGHT_VULNERABILITY * 100 * 10) / 10;
-  const vulnDesc = vulnNorm >= 0.85 ? "Extreme informal density" : vulnNorm >= 0.65 ? "High vulnerability" : vulnNorm >= 0.45 ? "Moderate vulnerability" : "Stable residential";
-
-  const dryRaw = Number(ward.dry_pipe_hours !== undefined ? ward.dry_pipe_hours : 0);
-  const dryNorm = Math.min(Math.max(dryRaw, 0) / MAX_DRY_PIPE_HOURS, 1);
-  const dryScore = Math.round(dryNorm * WEIGHT_DRY_PIPE * 100 * 10) / 10;
-  const dryDesc = `${Math.round(dryRaw)}h pipe dry`;
-
-  const popRaw = Number(ward.population !== undefined ? ward.population : 0);
-  const popNorm = Math.min(Math.max(popRaw, 0) / MAX_POPULATION, 1);
-  const popScore = Math.round(popNorm * WEIGHT_POPULATION * 100 * 10) / 10;
-  const popDesc = `${(popRaw / 1000).toFixed(0)}k residents`;
-
-  const deficitRaw = Number(ward.historical_deficit !== undefined ? ward.historical_deficit : 0);
-  const deficitNorm = Math.min(Math.max(deficitRaw, 0), 1);
-  const deficitScore = Math.round(deficitNorm * WEIGHT_HISTORICAL_DEFICIT * 100 * 10) / 10;
-  const deficitDesc = `${Math.round(deficitNorm * 100)}% last deficit`;
-
-  const distRaw = Number(ward.depot_distance_km !== undefined ? ward.depot_distance_km : 0);
-  const distNorm = Math.min(Math.max(distRaw, 0) / MAX_DEPOT_DISTANCE_KM, 1);
-  const distScore = Math.round(distNorm * WEIGHT_DEPOT_DISTANCE * 100 * 10) / 10;
-  const distDesc = `${distRaw.toFixed(1)}km to depot (peripheral transit distance)`;
-
-  // Mathematical Invariant: Total score is the exact sum of weighted factor contributions
-  // Factor normalizations (in [0, 1]) and weights (summing to 1.00) guarantee factorSum in [0, 100].
-  // Silent clipping is strictly forbidden: total_score strictly equals factorSum.
-  const factorSum = Math.round((vulnScore + dryScore + popScore + deficitScore + distScore) * 10) / 10;
-  if (factorSum < 0 || factorSum > 100.001) {
-    throw new RangeError(`Priority score invariant violation: factorSum ${factorSum} outside [0, 100]`);
-  }
-  const total = factorSum;
-  const tier = total >= 75 ? 1 : total >= 55 ? 2 : total >= 35 ? 3 : 4;
-
-  const factors = [
-    {
-      factor: "Vulnerability",
-      factor_name: "Vulnerability Exposure",
-      weight: WEIGHT_VULNERABILITY,
-      raw_value: vulnRaw,
-      normalized: Math.round(vulnNorm * 1000) / 1000,
-      normalized_value: Math.round(vulnNorm * 1000) / 1000,
-      weighted_score: vulnScore,
-      weighted_contribution: vulnScore,
-      direction: "INCREASES_PRIORITY",
-      provenance: "SYNTHETIC_SEEDED",
-      provenance_class: "SYNTHETIC_SEEDED",
-      provenance_subtype: "SOCIOECONOMIC_SLUM_INDEX",
-      provenance_metadata: { class: "SYNTHETIC_SEEDED", subtype: "SOCIOECONOMIC_SLUM_INDEX" },
-      description: vulnDesc,
-    },
-    {
-      factor: "Dry Pipe Time",
-      factor_name: "Dry Pipe Duration",
-      weight: WEIGHT_DRY_PIPE,
-      raw_value: dryRaw,
-      normalized: Math.round(dryNorm * 1000) / 1000,
-      normalized_value: Math.round(dryNorm * 1000) / 1000,
-      weighted_score: dryScore,
-      weighted_contribution: dryScore,
-      direction: "INCREASES_PRIORITY",
-      provenance: "SYNTHETIC_SEEDED",
-      provenance_class: "SYNTHETIC_SEEDED",
-      provenance_subtype: "SCADA_TELEMETRY",
-      provenance_metadata: { class: "SYNTHETIC_SEEDED", subtype: "SCADA_TELEMETRY" },
-      description: dryDesc,
-    },
-    {
-      factor: "Population",
-      factor_name: "Population Density",
-      weight: WEIGHT_POPULATION,
-      raw_value: popRaw,
-      normalized: Math.round(popNorm * 1000) / 1000,
-      normalized_value: Math.round(popNorm * 1000) / 1000,
-      weighted_score: popScore,
-      weighted_contribution: popScore,
-      direction: "INCREASES_PRIORITY",
-      provenance: "REFERENCE_DATA",
-      provenance_class: "REFERENCE_DATA",
-      provenance_subtype: "CENSUS_2011_PROJECTED",
-      provenance_metadata: { class: "REFERENCE_DATA", subtype: "CENSUS_2011_PROJECTED" },
-      description: popDesc,
-    },
-    {
-      factor: "Historical Deficit",
-      factor_name: "Historical Service Deficit",
-      weight: WEIGHT_HISTORICAL_DEFICIT,
-      raw_value: deficitRaw,
-      normalized: Math.round(deficitNorm * 1000) / 1000,
-      normalized_value: Math.round(deficitNorm * 1000) / 1000,
-      weighted_score: deficitScore,
-      weighted_contribution: deficitScore,
-      direction: "INCREASES_PRIORITY",
-      provenance: "DERIVED",
-      provenance_class: "DERIVED",
-      provenance_subtype: "HISTORICAL_QUOTA_LOGS",
-      provenance_metadata: { class: "DERIVED", subtype: "HISTORICAL_QUOTA_LOGS" },
-      description: deficitDesc,
-    },
-    {
-      factor: "Depot Distance",
-      factor_name: "Depot Distance",
-      weight: WEIGHT_DEPOT_DISTANCE,
-      raw_value: distRaw,
-      normalized: Math.round(distNorm * 1000) / 1000,
-      normalized_value: Math.round(distNorm * 1000) / 1000,
-      weighted_score: distScore,
-      weighted_contribution: distScore,
-      direction: "INCREASES_PRIORITY",
-      provenance: "DERIVED",
-      provenance_class: "DERIVED",
-      provenance_subtype: "GIS_TRANSIT_NETWORK",
-      provenance_metadata: { class: "DERIVED", subtype: "GIS_TRANSIT_NETWORK" },
-      description: distDesc,
-    },
-  ];
-
-  const whyFactors = [
-    `+ Vulnerability exposure (${vulnRaw.toFixed(2)}) → +${vulnScore.toFixed(1)} pts`,
-    `+ Dry pipe outage (${Math.round(dryRaw)}h) → +${dryScore.toFixed(1)} pts`,
-    `+ Population served (${(popRaw / 1000).toFixed(0)}k residents) → +${popScore.toFixed(1)} pts`,
-    `+ Historical service deficit (${Math.round(deficitNorm * 100)}%) → +${deficitScore.toFixed(1)} pts`,
-    `+ Depot transit distance (${distRaw.toFixed(1)} km) → +${distScore.toFixed(1)} pts`,
-  ];
-
-  const recommendedAction = total >= 75
-    ? "Prioritize immediate tanker intervention (Tier 3 emergency protocol)."
-    : total >= 55
-    ? "Prioritize scheduled tanker delivery (Tier 2 review protocol)."
-    : "Monitor pipeline distribution; nominal supply sufficient.";
-
-  return {
-    ward_id: ward.ward_id,
-    ward_number: ward.ward_number,
-    ward_code: ward.ward_code || ward.ward_number,
-    name: ward.name,
-    zone: ward.zone,
-    demand_liters: ward.demand_liters,
-    total_score: total,
-    tier,
-    lat: ward.lat,
-    lng: ward.lng,
-    coverage_pct: ward.coverage_pct,
-    water_deficit_pct: ward.water_deficit_pct || Math.round((1 - (ward.coverage_pct || 50) / 100) * 100),
-    dry_pipe_hours: ward.dry_pipe_hours,
-    population: ward.population,
-    vulnerability_index: ward.vulnerability_index,
-    breakdown: factors,
-    priority_factors: factors,
-    why_factors: whyFactors,
-    why_summary: whyFactors.join(" | "),
-    recommended_action: recommendedAction,
-    recommended_volume: ward.demand_liters,
-    description: ward.description,
-  };
-}
 
 // ---------------------------------------------------------------------------
 // Canonical Operational Decision Record Store & Generator
@@ -880,7 +697,7 @@ function generateDecisionRecord({
   recovery_option_id = null,
 }) {
   const decisionId = decision_id_override || `dec_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
-  const priorityInfo = computePriorityLocal(ward);
+  const priorityInfo = computePriority(ward);
   const now = new Date().toISOString();
 
   const constraintsApplied = [
@@ -954,7 +771,7 @@ function generateDecisionRecord({
     }
   ] : [];
 
-  const effectiveTier = governance_tier !== undefined ? governance_tier : getAuthoritativeGovernanceTier(ward, volume_liters);
+  const effectiveTier = governance_tier !== undefined ? governance_tier : classifyWardGovernanceTier(ward, volume_liters);
   const govTierName = effectiveTier === 3
     ? "TIER_3_EXECUTIVE"
     : effectiveTier === 2
@@ -1030,7 +847,7 @@ function seedInitialDecisionRecords() {
   const tankerT14 = MOCK_TANKERS.find(t => t.transponder_id === "T-14");
 
   if (wardME) {
-    const govTier = getAuthoritativeGovernanceTier(wardME, 10000);
+    const govTier = classifyWardGovernanceTier(wardME, 10000);
     const dec501 = generateDecisionRecord({
       ward: wardME,
       volume_liters: 10000,
@@ -1045,7 +862,7 @@ function seedInitialDecisionRecords() {
   }
 
   if (wardL) {
-    const govTier = getAuthoritativeGovernanceTier(wardL, 8000);
+    const govTier = classifyWardGovernanceTier(wardL, 8000);
     const dec502 = generateDecisionRecord({
       ward: wardL,
       volume_liters: 8000,
@@ -1080,6 +897,15 @@ function resetOperationalState() {
   if (typeof resetFieldSyncState === "function") {
     resetFieldSyncState();
   }
+  if (typeof resetResilienceState === "function") {
+    resetResilienceState();
+  }
+  if (typeof resetAutonomyState === "function") {
+    resetAutonomyState();
+  }
+  GOVERNANCE_DECISIONS.length = 0;
+  GOVERNANCE_DECISIONS.push(...INITIAL_GOV_DECISIONS);
+  GOVERNANCE_AUDIT_LOG.length = 0;
   seedInitialDecisionRecords();
   console.log("🔄 Operational state reset to Seed 42 baseline.");
 }
@@ -1150,11 +976,7 @@ async function getAlerts() {
   return alertsState;
 }
 
-function computePriorityQueueLocal(wards) {
-  const scored = wards.map(computePriorityLocal);
-  scored.sort((a, b) => b.total_score - a.total_score);
-  return scored;
-}
+
 
 function computeEquityLocal(wards, totalSupply = 800000) {
   // FCFS: sorted by ward_id (arbitrary order)
@@ -1169,7 +991,7 @@ function computeEquityLocal(wards, totalSupply = 800000) {
   for (const w of wards) if (!(w.ward_number in fcfsAlloc)) fcfsAlloc[w.ward_number] = 0;
 
   // AI: sorted strictly by priority score
-  const aiSorted = computePriorityQueueLocal(wards);
+  const aiSorted = computePriorityQueue(wards);
   const aiAlloc = {};
   remaining = totalSupply;
   for (const w of aiSorted) {
@@ -1351,7 +1173,7 @@ function computeConstrainedAllocation({
   }
 
   // Priority scoring for ranking
-  const rankedWards = computePriorityQueueLocal(wards);
+  const rankedWards = computePriorityQueue(wards);
 
   let remainingSupply = netSupply;
   const wardAllocMap = {};
@@ -1464,7 +1286,7 @@ app.get("/api/dashboard", async (req, res) => {
     });
     const priorityQueue = priorityResult
       ? priorityResult.queue
-      : computePriorityQueueLocal(wards);
+      : computePriorityQueue(wards);
 
     let equityResult = await callAIEngine("/api/simulate-equity", {
       wards: wards,
@@ -1961,7 +1783,7 @@ app.post("/api/sandbox/check-execution", (req, res) => {
 // Tier 3: CRITICAL     — Executive PIN authorization (hospital pre-emption, reserve breach, anti-mafia)
 // ---------------------------------------------------------------------------
 
-const GOVERNANCE_DECISIONS = [
+const INITIAL_GOV_DECISIONS = [
   // ── Tier 1: Autonomous (AI already executed) ──
   {
     decision_id: "gov-t1-001",
@@ -2119,33 +1941,10 @@ const GOVERNANCE_DECISIONS = [
   },
 ];
 
+const GOVERNANCE_DECISIONS = [...INITIAL_GOV_DECISIONS];
 const GOVERNANCE_AUDIT_LOG = [];
 
-/**
- * Classify a dispatch decision into its governance tier.
- * Tier 1: Routine (<15kL, standard route, auto-approved invoices, complaint dedup)
- * Tier 2: Minor variance (10-20% demand bump, borderline GPS, quality escrow)
- * Tier 3: Critical (hospital pre-emption, reserve breach, anti-mafia, emergency rationing)
- */
-function classifyGovernanceTier(decision) {
-  const { decision_type, volume_liters, risk_level } = decision;
 
-  // Hard-coded critical types always Tier 3
-  const criticalTypes = ["hospital_preemption", "reserve_breach", "fleet_freeze", "emergency_rationing"];
-  if (criticalTypes.includes(decision_type)) return 3;
-  if (risk_level === "critical") return 3;
-
-  // Review types always Tier 2
-  const reviewTypes = ["quota_variance", "quality_escrow", "gps_variance"];
-  if (reviewTypes.includes(decision_type)) return 2;
-  if (risk_level === "medium") return 2;
-
-  // Volume threshold: >15,000L requires at least review
-  if (volume_liters > 15000) return 2;
-
-  // Default: autonomous
-  return 1;
-}
 
 // GET /api/governance/decisions — Return all governance decisions with computed stats
 app.get("/api/governance/decisions", (req, res) => {
@@ -2649,7 +2448,7 @@ app.get("/api/decisions/:id", (req, res) => {
 
 app.get("/api/priority-ranking", async (req, res) => {
   const wards = await getWards();
-  const queue = computePriorityQueueLocal(wards);
+  const queue = computePriorityQueue(wards);
   res.json({
     success: true,
     policy_version: "2.4.0-hardened",
@@ -2736,15 +2535,17 @@ module.exports = {
   getAlerts,
   resetOperationalState,
   computeConstrainedAllocation,
-  computePriorityLocal,
-  computePriorityQueueLocal,
+  computePriorityLocal: computePriority,
+  computePriorityQueueLocal: computePriorityQueue,
+  computePriority,
+  computePriorityQueue,
   generateDecisionRecord,
   verifyDemoExecutiveAuth,
   OPERATIONAL_DECISION_RECORDS,
   GOVERNANCE_DECISIONS,
   GOVERNANCE_AUDIT_LOG,
   CANONICAL_PROVENANCE_CLASSES,
-  getAuthoritativeGovernanceTier,
+  classifyWardGovernanceTier,
   FAILURE_SCENARIOS,
   analyzeNetworkImpact,
   generateRecoveryAlternatives,
