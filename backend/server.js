@@ -2576,7 +2576,7 @@ if (require.main === module) {
   });
 }
 
-module.exports = {
+Object.assign(app, {
   app,
   getWards,
   getTankers,
@@ -2601,5 +2601,8 @@ module.exports = {
   localizeFault,
   classifyResilienceGovernanceTier,
   ACTIVE_RESILIENCE_TRACES,
-};
+});
+
+module.exports = app;
+
 
