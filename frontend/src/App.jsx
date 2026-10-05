@@ -38,6 +38,7 @@ import GovernanceCenter from "./components/GovernanceCenter";
 import PolicySandbox from "./components/PolicySandbox";
 import NetworkResilience from "./components/NetworkResilience";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { DEFAULT_MUMBAI_WARDS, DEFAULT_MUMBAI_DEPOTS, DEFAULT_MUMBAI_TANKERS } from "./utils/mumbaiWardsData";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -205,9 +206,9 @@ function AppContent() {
   };
 
   const kpis = data?.kpis;
-  const wards = data?.wards;
-  const tankers = data?.tankers;
-  const depots = data?.depots;
+  const wards = data?.wards?.length ? data.wards : DEFAULT_MUMBAI_WARDS;
+  const tankers = data?.tankers?.length ? data.tankers : DEFAULT_MUMBAI_TANKERS;
+  const depots = data?.depots?.length ? data.depots : DEFAULT_MUMBAI_DEPOTS;
   const alerts = data?.alerts;
   const priorityQueue = data?.priority_queue;
   const equity = data?.equity;

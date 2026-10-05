@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -6,23 +6,18 @@ import {
   Marker,
   Popup,
   Polyline,
-  Tooltip,
   useMap,
 } from "react-leaflet";
 import L from "leaflet";
 import {
   Truck,
-  Droplet,
   Layers,
-  Maximize2,
-  RefreshCw,
-  Clock,
-  Users,
-  ShieldAlert,
-  Flame,
-  Activity,
   Compass,
+  Palette,
+  Eye,
+  EyeOff,
 } from "lucide-react";
+import { DEFAULT_MUMBAI_WARDS } from "../utils/mumbaiWardsData";
 
 // Mumbai center coordinates
 const MUMBAI_CENTER = [19.085, 72.885];
@@ -152,15 +147,17 @@ export default function MumbaiLeafletMap({
   priorityQueue = [],
   selectedWard = null,
   onSelectWard = () => {},
-  isExpanded = false,
+  isExpanded: _isExpanded = false,
 }) {
   const [geoJsonData, setGeoJsonData] = useState(null);
   const [activeLayer, setActiveLayer] = useState("deficit"); // deficit | vulnerability | dry_pipe | priority
   const [tileSource, setTileSource] = useState("osm"); // osm | carto
+  const [showColors, setShowColors] = useState(true); // Toggle choropleth colors ON / OFF
   const [showTankers, setShowTankers] = useState(true);
   const [showDepots, setShowDepots] = useState(true);
   const [showRoutes, setShowRoutes] = useState(true);
   const [mapKey, setMapKey] = useState(0);
+  const geoJsonRef = useRef(null);
 
   // Load Mumbai GeoJSON
   useEffect(() => {
@@ -177,97 +174,214 @@ export default function MumbaiLeafletMap({
       });
   }, []);
 
+  // Merge live wards with baseline 24 BMC wards to ensure every polygon has metrics
+  const effectiveWards = useMemo(() => {
+    if (wards && wards.length >= 24) return wards;
+    const base = [...DEFAULT_MUMBAI_WARDS];
+    if (wards && wards.length > 0) {
+      const liveMap = {};
+      for (const w of wards) {
+        const k = String(w.ward_code || w.ward_number || "").toUpperCase().trim();
+        if (k) liveMap[k] = w;
+      }
+      return base.map((bw) => {
+        const k = String(bw.ward_code || bw.ward_number || "").toUpperCase().trim();
+        return liveMap[k] ? { ...bw, ...liveMap[k] } : bw;
+      });
+    }
+    return base;
+  }, [wards]);
+
   // Quick lookup dictionary for ward metrics by ward code (e.g. 'M/E', 'G/N', 'A')
   const wardMap = useMemo(() => {
     const map = {};
-    for (const w of wards) {
+    for (const w of effectiveWards) {
       const key = String(w.ward_code || w.ward_number || "").toUpperCase().trim();
-      map[key] = w;
+      if (key) map[key] = w;
     }
     return map;
-  }, [wards]);
+  }, [effectiveWards]);
 
   // Priority queue rank dictionary
   const rankMap = useMemo(() => {
     const map = {};
-    (priorityQueue || []).forEach((item, idx) => {
-      const key = String(item.ward_code || item.ward_number || "").toUpperCase().trim();
-      map[key] = { rank: idx + 1, item };
-    });
+    if (priorityQueue && priorityQueue.length > 0) {
+      priorityQueue.forEach((item, idx) => {
+        const key = String(item.ward_code || item.ward_number || "").toUpperCase().trim();
+        if (key) map[key] = { rank: idx + 1, item };
+      });
+    } else {
+      const sorted = [...effectiveWards].sort((a, b) => {
+        const scoreA = (a.water_deficit_pct || 0) * 0.6 + (a.vulnerability_index || 0) * 40;
+        const scoreB = (b.water_deficit_pct || 0) * 0.6 + (b.vulnerability_index || 0) * 40;
+        return scoreB - scoreA;
+      });
+      sorted.forEach((item, idx) => {
+        const key = String(item.ward_code || item.ward_number || "").toUpperCase().trim();
+        if (key) map[key] = { rank: idx + 1, item };
+      });
+    }
     return map;
-  }, [priorityQueue]);
+  }, [priorityQueue, effectiveWards]);
+
+  // Dynamic legend specifications matching each layer
+  const getLegendItems = (layer) => {
+    switch (layer) {
+      case "vulnerability":
+        return [
+          { color: "#D32F2F", label: "Critical (≥0.80)" },
+          { color: "#C27A29", label: "Warning (0.60-0.79)" },
+          { color: "#0056B3", label: "Moderate (0.40-0.59)" },
+          { color: "#6B8E23", label: "Stable (<0.40)" },
+        ];
+      case "dry_pipe":
+        return [
+          { color: "#D32F2F", label: "Critical (≥40h)" },
+          { color: "#C27A29", label: "Warning (25-39h)" },
+          { color: "#0056B3", label: "Moderate (15-24h)" },
+          { color: "#6B8E23", label: "Stable (<15h)" },
+        ];
+      case "priority":
+        return [
+          { color: "#D32F2F", label: "Tier 1 (Rank 1-4)" },
+          { color: "#C27A29", label: "Tier 2 (Rank 5-9)" },
+          { color: "#0056B3", label: "Tier 3 (Rank 10-16)" },
+          { color: "#6B8E23", label: "Tier 4 (Rank 17+)" },
+        ];
+      case "deficit":
+      default:
+        return [
+          { color: "#D32F2F", label: "Critical (>70%)" },
+          { color: "#C27A29", label: "Warning (50-70%)" },
+          { color: "#0056B3", label: "Moderate (30-50%)" },
+          { color: "#6B8E23", label: "Stable (<30%)" },
+        ];
+    }
+  };
 
   // Styling helper based on active metric layer
-  const getFeatureColor = (feature) => {
-    const code = String(feature?.properties?.name || "").toUpperCase().trim();
-    const ward = wardMap[code];
-    if (!ward) return "#94A3B8";
+  const getFeatureColor = useCallback(
+    (feature) => {
+      const code = String(
+        feature?.properties?.name ||
+        feature?.properties?.ward_code ||
+        feature?.properties?.Ward ||
+        ""
+      ).toUpperCase().trim();
+      const ward = wardMap[code];
+      if (!ward) return "#0056B3";
 
-    if (activeLayer === "deficit") {
-      const deficit = ward.water_deficit_pct || Math.round((1 - (ward.coverage_pct || 50) / 100) * 100);
-      if (deficit >= 70) return "#D32F2F"; // Critical Red
-      if (deficit >= 50) return "#C27A29"; // Warning Amber
-      if (deficit >= 30) return "#0056B3"; // Municipal Blue
-      return "#6B8E23"; // Safe Olive Green
-    }
+      if (activeLayer === "deficit") {
+        const deficit = ward.water_deficit_pct != null
+          ? ward.water_deficit_pct
+          : Math.round((1 - (ward.coverage_pct || 50) / 100) * 100);
+        if (deficit >= 70) return "#D32F2F"; // Critical Red
+        if (deficit >= 50) return "#C27A29"; // Warning Amber
+        if (deficit >= 30) return "#0056B3"; // Municipal Blue
+        return "#6B8E23"; // Safe Olive Green
+      }
 
-    if (activeLayer === "vulnerability") {
-      const v = ward.vulnerability_index || 0;
-      if (v >= 0.85) return "#D32F2F";
-      if (v >= 0.65) return "#C27A29";
-      if (v >= 0.45) return "#0056B3";
-      return "#6B8E23";
-    }
+      if (activeLayer === "vulnerability") {
+        const v = ward.vulnerability_index || 0;
+        if (v >= 0.80) return "#D32F2F";
+        if (v >= 0.60) return "#C27A29";
+        if (v >= 0.40) return "#0056B3";
+        return "#6B8E23";
+      }
 
-    if (activeLayer === "dry_pipe") {
-      const d = ward.dry_pipe_hours || 0;
-      if (d >= 48) return "#D32F2F";
-      if (d >= 30) return "#C27A29";
-      if (d >= 15) return "#0056B3";
-      return "#6B8E23";
-    }
+      if (activeLayer === "dry_pipe") {
+        const d = ward.dry_pipe_hours || 0;
+        if (d >= 40) return "#D32F2F";
+        if (d >= 25) return "#C27A29";
+        if (d >= 15) return "#0056B3";
+        return "#6B8E23";
+      }
 
-    if (activeLayer === "priority") {
-      const rank = rankMap[code]?.rank || 99;
-      if (rank <= 3) return "#D32F2F";
-      if (rank <= 8) return "#C27A29";
-      if (rank <= 16) return "#0056B3";
-      return "#6B8E23";
-    }
+      if (activeLayer === "priority") {
+        const rank = rankMap[code]?.rank || 99;
+        if (rank <= 4) return "#D32F2F";
+        if (rank <= 9) return "#C27A29";
+        if (rank <= 16) return "#0056B3";
+        return "#6B8E23";
+      }
 
-    return "#0056B3";
-  };
+      return "#0056B3";
+    },
+    [activeLayer, wardMap, rankMap]
+  );
 
   // Leaflet Polygon Style Function
-  const styleFeature = (feature) => {
-    const code = String(feature?.properties?.name || "").toUpperCase().trim();
-    const isSelected = selectedWard && String(selectedWard.ward_code || selectedWard.ward_number).toUpperCase() === code;
+  const styleFeature = useCallback(
+    (feature) => {
+      const code = String(
+        feature?.properties?.name ||
+        feature?.properties?.ward_code ||
+        feature?.properties?.Ward ||
+        ""
+      ).toUpperCase().trim();
+      const isSelected =
+        selectedWard &&
+        String(selectedWard.ward_code || selectedWard.ward_number || "").toUpperCase().trim() === code;
 
-    const baseColor = getFeatureColor(feature);
+      const baseColor = getFeatureColor(feature);
 
-    return {
-      fillColor: baseColor,
-      weight: isSelected ? 3.5 : 1.5,
-      opacity: 1,
-      color: isSelected ? "#0F172A" : "#FFFFFF",
-      dashArray: isSelected ? "" : "2",
-      fillOpacity: isSelected ? 0.65 : 0.38,
-      className: "transition-all duration-200 cursor-pointer",
-    };
-  };
+      if (showColors) {
+        return {
+          fillColor: baseColor,
+          weight: isSelected ? 3.5 : 1.5,
+          opacity: 1,
+          color: isSelected ? "#0F172A" : "#FFFFFF",
+          dashArray: isSelected ? "" : "2",
+          fillOpacity: isSelected ? 0.75 : 0.50,
+          className: "transition-all duration-200 cursor-pointer",
+        };
+      }
+
+      // Toggle OFF: Clean outline mode (colors hidden)
+      return {
+        fillColor: isSelected ? baseColor : "#64748B",
+        weight: isSelected ? 3.5 : 1.5,
+        opacity: 1,
+        color: isSelected ? "#0F172A" : "#475569",
+        dashArray: isSelected ? "" : "3",
+        fillOpacity: isSelected ? 0.65 : 0.05,
+        className: "transition-all duration-200 cursor-pointer",
+      };
+    },
+    [showColors, selectedWard, getFeatureColor]
+  );
+
+  // Synchronize GeoJSON layers when color toggle or layer changes
+  useEffect(() => {
+    if (geoJsonRef.current) {
+      geoJsonRef.current.eachLayer((layer) => {
+        if (layer.feature) {
+          layer.setStyle(styleFeature(layer.feature));
+        }
+      });
+    }
+  }, [styleFeature]);
 
   // On Each Feature event binder
   const onEachFeature = (feature, layer) => {
-    const code = String(feature?.properties?.name || "").toUpperCase().trim();
+    const code = String(
+      feature?.properties?.name ||
+      feature?.properties?.ward_code ||
+      feature?.properties?.Ward ||
+      ""
+    ).toUpperCase().trim();
     const ward = wardMap[code];
     const rankInfo = rankMap[code];
     const rank = rankInfo?.rank;
 
     const wardName = ward?.name || `Ward ${code}`;
-    const deficit = ward?.water_deficit_pct || (ward?.coverage_pct ? 100 - ward.coverage_pct : 50);
+    const deficit = ward?.water_deficit_pct != null
+      ? ward.water_deficit_pct
+      : (ward?.coverage_pct ? 100 - ward.coverage_pct : 50);
     const dryHours = ward?.dry_pipe_hours || 0;
     const pop = ward?.population ? ward.population.toLocaleString() : "—";
     const demand = ward?.demand_liters ? ward.demand_liters.toLocaleString() : "—";
+    const featureColor = getFeatureColor(feature);
 
     // Tooltip on Hover
     layer.bindTooltip(
@@ -276,6 +390,7 @@ export default function MumbaiLeafletMap({
         <div style="font-size: 11px; font-weight: 800; color: #FFFFFF; display: flex; align-items: center; gap: 4px;">
           <span>WARD ${code}</span>
           ${rank ? `<span style="background: #C27A29; font-size: 9px; padding: 1px 4px; border-radius: 3px;">RANK #${rank}</span>` : ""}
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${featureColor}; border: 1px solid white; margin-left: 2px;"></span>
         </div>
         <div style="font-size: 10px; color: #94A3B8; margin-top: 1px;">${wardName}</div>
         <div style="margin-top: 4px; font-size: 10px; display: flex; gap: 8px; font-family: 'JetBrains Mono', monospace;">
@@ -287,7 +402,7 @@ export default function MumbaiLeafletMap({
       { sticky: true, direction: "top", opacity: 0.95 }
     );
 
-    // Click handler
+    // Click handler & Hover feature
     layer.on({
       click: () => {
         if (ward) {
@@ -296,11 +411,19 @@ export default function MumbaiLeafletMap({
       },
       mouseover: (e) => {
         const l = e.target;
+        // On hover, ALWAYS highlight with feature metric color:
+        // When showColors is ON: boosts opacity to 0.85
+        // When showColors is OFF: dynamically reveals metric color at 0.70 opacity!
         l.setStyle({
-          fillOpacity: 0.7,
-          weight: 2.5,
-          color: "#0056B3",
+          fillColor: featureColor,
+          fillOpacity: showColors ? 0.85 : 0.70,
+          weight: 3,
+          color: "#0F172A",
+          dashArray: "",
         });
+        if (l.bringToFront) {
+          l.bringToFront();
+        }
       },
       mouseout: (e) => {
         const l = e.target;
@@ -458,6 +581,23 @@ export default function MumbaiLeafletMap({
           >
             Priority Tiers
           </button>
+
+          <span className="h-4 w-px bg-slate-200 mx-1 hidden sm:inline" />
+
+          {/* Choropleth Colors Toggle Button */}
+          <button
+            id="toggle-map-colors"
+            className={`px-2.5 py-0.5 rounded text-[11px] font-bold flex items-center space-x-1.5 transition-all shadow-xs cursor-pointer ${
+              showColors
+                ? "bg-deep-blue text-white ring-1 ring-blue-300"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-300"
+            }`}
+            onClick={() => setShowColors(!showColors)}
+            title={showColors ? "Click to hide polygon colors (clean outline mode)" : "Click to show choropleth colors"}
+          >
+            <Palette className={`w-3.5 h-3.5 ${showColors ? "text-blue-200" : "text-slate-500"}`} />
+            <span>{showColors ? "Colors: ON" : "Colors: OFF"}</span>
+          </button>
         </div>
 
         {/* Right Quick Controls */}
@@ -478,6 +618,14 @@ export default function MumbaiLeafletMap({
               onClick={() => setShowDepots(!showDepots)}
             >
               💧 Depots
+            </button>
+            <button
+              className={`px-1.5 py-0.5 rounded font-semibold text-[10px] cursor-pointer ${
+                showRoutes ? "bg-blue-100 text-deep-blue" : "text-slate-400"
+              }`}
+              onClick={() => setShowRoutes(!showRoutes)}
+            >
+              📍 Routes
             </button>
           </div>
 
@@ -524,7 +672,8 @@ export default function MumbaiLeafletMap({
           {/* Mumbai BMC Ward GeoJSON Choropleth */}
           {geoJsonData && (
             <GeoJSON
-              key={`geojson-${activeLayer}-${geoJsonData?.features?.length}-${selectedWard?.ward_code || ""}`}
+              ref={geoJsonRef}
+              key={`geojson-${showColors ? "colored" : "plain"}-${activeLayer}-${selectedWard?.ward_code || ""}-${Object.keys(wardMap).length}`}
               data={geoJsonData}
               style={styleFeature}
               onEachFeature={onEachFeature}
@@ -620,34 +769,60 @@ export default function MumbaiLeafletMap({
 
       {/* Floating Bottom HUD */}
       <div className="z-20 absolute bottom-2 left-2 right-2 flex items-center justify-between pointer-events-none">
-        {/* Choropleth Legend */}
-        <div className="pointer-events-auto bg-white/95 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-card-border shadow-sm text-[10px] flex items-center space-x-3">
-          <div className="font-bold text-head-text">
-            {activeLayer === "deficit"
-              ? "Deficit Severity"
-              : activeLayer === "vulnerability"
-              ? "Vulnerability Index"
-              : activeLayer === "dry_pipe"
-              ? "Dry-Pipe Hours"
-              : "Priority Level"}
-          </div>
+        {/* Choropleth Legend with Interactive Color Toggle */}
+        <div className="pointer-events-auto bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-lg border border-card-border shadow-sm text-[10px] flex flex-wrap items-center gap-x-3 gap-y-1.5">
           <div className="flex items-center space-x-2">
-            <span className="flex items-center space-x-1">
-              <span className="w-2.5 h-2.5 rounded-xs bg-[#D32F2F]" />
-              <span className="text-sec-text font-medium">Critical (&gt;70%)</span>
+            <span className="font-bold text-head-text">
+              {activeLayer === "deficit"
+                ? "Deficit Severity"
+                : activeLayer === "vulnerability"
+                ? "Vulnerability Index"
+                : activeLayer === "dry_pipe"
+                ? "Dry-Pipe Hours"
+                : "Priority Level"}
             </span>
-            <span className="flex items-center space-x-1">
-              <span className="w-2.5 h-2.5 rounded-xs bg-[#C27A29]" />
-              <span className="text-sec-text font-medium">Warning (50-70%)</span>
-            </span>
-            <span className="flex items-center space-x-1">
-              <span className="w-2.5 h-2.5 rounded-xs bg-[#0056B3]" />
-              <span className="text-sec-text font-medium">Moderate (30-50%)</span>
-            </span>
-            <span className="flex items-center space-x-1">
-              <span className="w-2.5 h-2.5 rounded-xs bg-[#6B8E23]" />
-              <span className="text-sec-text font-medium">Stable (&lt;30%)</span>
-            </span>
+
+            {/* Quick Toggle pill in legend */}
+            <button
+              id="legend-toggle-colors"
+              onClick={() => setShowColors(!showColors)}
+              className={`px-2 py-0.5 rounded text-[10px] font-bold flex items-center space-x-1 transition-all border cursor-pointer ${
+                showColors
+                  ? "bg-blue-50 border-blue-200 text-deep-blue hover:bg-blue-100"
+                  : "bg-amber-50 border-amber-300 text-amber-800 hover:bg-amber-100"
+              }`}
+              title={showColors ? "Click to hide polygon colors" : "Click to show polygon colors"}
+            >
+              {showColors ? (
+                <>
+                  <Eye className="w-3 h-3 text-deep-blue" />
+                  <span>Showing Colors</span>
+                </>
+              ) : (
+                <>
+                  <EyeOff className="w-3 h-3 text-amber-700" />
+                  <span>Colors Hidden</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Color Legend Swatches */}
+          <div className={`flex items-center space-x-2.5 transition-opacity ${showColors ? "opacity-100" : "opacity-60"}`}>
+            {getLegendItems(activeLayer).map((item, idx) => (
+              <span key={idx} className="flex items-center space-x-1">
+                <span
+                  className="w-2.5 h-2.5 rounded-xs shrink-0 shadow-2xs"
+                  style={{ backgroundColor: item.color }}
+                />
+                <span className="text-sec-text font-medium">{item.label}</span>
+              </span>
+            ))}
+            {!showColors && (
+              <span className="text-[9px] text-amber-700 font-semibold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+                Hover any ward to preview color
+              </span>
+            )}
           </div>
         </div>
 
