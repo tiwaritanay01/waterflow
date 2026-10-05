@@ -26,6 +26,9 @@ import {
   RefreshCw,
 } from "lucide-react";
 
+import { runLocalSandboxSimulation } from "../utils/sandboxSimulator";
+import { DEFAULT_MUMBAI_WARDS } from "../utils/mumbaiWardsData";
+
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 // Policy Preset metadata
@@ -170,6 +173,8 @@ export default function PolicySandbox({ onNavigateToGovernance }) {
     setError(null);
     setResult(null);
 
+    let simData = null;
+
     try {
       const res = await fetch(`${API_URL}/api/sandbox/simulate`, {
         method: "POST",
@@ -181,16 +186,31 @@ export default function PolicySandbox({ onNavigateToGovernance }) {
         }),
       });
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || err.detail || `Server returned ${res.status}`);
+      if (res.ok) {
+        simData = await res.json();
+      } else {
+        console.warn(`Backend sandbox API returned status ${res.status}, executing client-side simulation`);
       }
-
-      const data = await res.json();
-      setResult(data);
-    } catch (err) {
-      setError(err.message);
+    } catch (fetchErr) {
+      console.warn("Backend sandbox API unreachable, executing client-side simulation:", fetchErr.message);
     }
+
+    if (!simData || !simData.success) {
+      try {
+        simData = runLocalSandboxSimulation(
+          selectedPolicy,
+          selectedScenario,
+          {},
+          DEFAULT_MUMBAI_WARDS
+        );
+      } catch (localErr) {
+        setError(`Simulation error: ${localErr.message}`);
+        setIsRunning(false);
+        return;
+      }
+    }
+
+    setResult(simData);
     setIsRunning(false);
   };
 

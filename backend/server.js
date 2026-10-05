@@ -19,9 +19,9 @@ const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const AI_ENGINE_URL = process.env.AI_ENGINE_URL || process.env.FASTAPI_BASE_URL || (process.env.APP_MODE === "DEMO" ? "http://localhost:8000" : null);
+const AI_ENGINE_URL = process.env.AI_ENGINE_URL || process.env.FASTAPI_BASE_URL || (process.env.APP_MODE === "PRODUCTION" ? null : "http://localhost:8000");
 
-if (!AI_ENGINE_URL && process.env.APP_MODE !== "DEMO") {
+if (!AI_ENGINE_URL && process.env.APP_MODE === "PRODUCTION") {
   console.warn("⚠️ WARNING: AI_ENGINE_URL is not set in production. AI features will fail.");
 }
 
@@ -1712,11 +1712,62 @@ app.post("/api/sandbox/simulate", async (req, res) => {
       ...result,
     });
   } catch (err) {
-    console.error("Sandbox proxy error:", err.message);
-    return res.status(502).json({
-      success: false,
-      error: `Cannot reach AI Engine at ${AI_ENGINE_URL}: ${err.message}`,
-    });
+    console.warn("AI Engine unreachable, executing local deterministic sandbox simulation:", err.message);
+    try {
+      const { runLocalSandboxSimulation } = require("./sandbox_simulator");
+      const wards = await getWards();
+      const result = runLocalSandboxSimulation(policyPreset, crisisScenario, parameters || {}, wards);
+      SANDBOX_SIMULATIONS[result.simulation_id] = result;
+
+      const govTier = result.governance?.tier || 1;
+      let governanceDecisionId = null;
+
+      if (govTier >= 2) {
+        governanceDecisionId = `gov-sandbox-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+        const govDecision = {
+          decision_id: governanceDecisionId,
+          decision_type: govTier === 3 ? "emergency_rationing" : "quota_variance",
+          governance_tier: govTier,
+          status: govTier === 3 ? "pending" : "pending_review",
+          ward_code: "SYSTEM",
+          volume_liters: Math.round(result.scenario?.unmet_demand || 0),
+          tanker_id: null,
+          description: `🧪 POLICY SANDBOX: ${policyPreset} + ${crisisScenario} — ${result.scenario_description || "Simulation scenario"}. ` +
+            `Impact: Fulfillment ${((result.baseline?.fulfillment_ratio || 0) * 100).toFixed(1)}% → ${((result.scenario?.fulfillment_ratio || 0) * 100).toFixed(1)}%. ` +
+            `Unmet demand: ${(result.baseline?.unmet_demand || 0).toLocaleString()} L → ${(result.scenario?.unmet_demand || 0).toLocaleString()} L.`,
+          ai_recommendation: result.governance?.proposed_actions?.join(". ") || "Review simulation results.",
+          risk_level: result.governance?.risk_level || "medium",
+          timestamp: new Date().toISOString(),
+          authorized_by: null,
+          justification: null,
+          simulation_id: result.simulation_id,
+          policy_preset: policyPreset,
+          crisis_scenario: crisisScenario,
+          sandbox_source: true,
+        };
+        GOVERNANCE_DECISIONS.push(govDecision);
+      }
+
+      result.governance_decision_id = governanceDecisionId;
+      if (govTier === 3) {
+        result.execution_blocked = true;
+        result.block_reason = "🔐 AUTHORIZATION REQUIRED — Tier 3 decision hard-blocked until executive PIN sign-off via Governance Center.";
+      } else {
+        result.execution_blocked = false;
+        result.block_reason = null;
+      }
+
+      return res.json({
+        success: true,
+        ...result,
+      });
+    } catch (fallbackErr) {
+      console.error("Local sandbox simulation fallback failed:", fallbackErr.message);
+      return res.status(500).json({
+        success: false,
+        error: `Simulation failed: ${fallbackErr.message}`,
+      });
+    }
   }
 });
 

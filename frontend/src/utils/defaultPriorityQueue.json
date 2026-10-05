@@ -1,0 +1,5330 @@
+[
+  {
+    "ward_id": 1,
+    "ward_number": "M/E",
+    "ward_code": "M/E",
+    "name": "Govandi / Mankhurd / Shivaji Nagar",
+    "zone": "Eastern Suburbs",
+    "demand_liters": 32000,
+    "total_score": 79.2,
+    "tier": 1,
+    "lat": 19.055,
+    "lng": 72.918,
+    "coverage_pct": 38,
+    "water_deficit_pct": 82,
+    "dry_pipe_hours": 58,
+    "population": 807720,
+    "vulnerability_index": 0.96,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.96,
+        "normalized": 0.96,
+        "normalized_value": 0.96,
+        "weighted_score": 28.8,
+        "weighted_contribution": 28.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Extreme informal density"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 58,
+        "normalized": 0.806,
+        "normalized_value": 0.806,
+        "weighted_score": 20.1,
+        "weighted_contribution": 20.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "58h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 807720,
+        "normalized": 0.808,
+        "normalized_value": 0.808,
+        "weighted_score": 16.2,
+        "weighted_contribution": 16.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "808k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.78,
+        "normalized": 0.78,
+        "normalized_value": 0.78,
+        "weighted_score": 11.7,
+        "weighted_contribution": 11.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "78% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 4.8,
+        "normalized": 0.24,
+        "normalized_value": 0.24,
+        "weighted_score": 2.4,
+        "weighted_contribution": 2.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "4.8km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.96,
+        "normalized": 0.96,
+        "normalized_value": 0.96,
+        "weighted_score": 28.8,
+        "weighted_contribution": 28.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Extreme informal density"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 58,
+        "normalized": 0.806,
+        "normalized_value": 0.806,
+        "weighted_score": 20.1,
+        "weighted_contribution": 20.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "58h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 807720,
+        "normalized": 0.808,
+        "normalized_value": 0.808,
+        "weighted_score": 16.2,
+        "weighted_contribution": 16.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "808k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.78,
+        "normalized": 0.78,
+        "normalized_value": 0.78,
+        "weighted_score": 11.7,
+        "weighted_contribution": 11.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "78% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 4.8,
+        "normalized": 0.24,
+        "normalized_value": 0.24,
+        "weighted_score": 2.4,
+        "weighted_contribution": 2.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "4.8km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.96) → +28.8 pts",
+      "+ Dry pipe outage (58h) → +20.1 pts",
+      "+ Population served (808k residents) → +16.2 pts",
+      "+ Historical service deficit (78%) → +11.7 pts",
+      "+ Depot transit distance (4.8 km) → +2.4 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.96) → +28.8 pts | + Dry pipe outage (58h) → +20.1 pts | + Population served (808k residents) → +16.2 pts | + Historical service deficit (78%) → +11.7 pts | + Depot transit distance (4.8 km) → +2.4 pts",
+    "recommended_action": "Prioritize immediate tanker intervention (Tier 3 emergency protocol).",
+    "recommended_volume": 32000,
+    "description": "Highest informal population density in Mumbai; critical low pressure along Shivaji Nagar trunk lines."
+  },
+  {
+    "ward_id": 3,
+    "ward_number": "L",
+    "ward_code": "L",
+    "name": "Kurla / Asalpha / Sakinaka",
+    "zone": "Eastern Suburbs",
+    "demand_liters": 24000,
+    "total_score": 72.8,
+    "tier": 2,
+    "lat": 19.072,
+    "lng": 72.882,
+    "coverage_pct": 48,
+    "water_deficit_pct": 71,
+    "dry_pipe_hours": 46,
+    "population": 902226,
+    "vulnerability_index": 0.88,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.88,
+        "normalized": 0.88,
+        "normalized_value": 0.88,
+        "weighted_score": 26.4,
+        "weighted_contribution": 26.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Extreme informal density"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 46,
+        "normalized": 0.639,
+        "normalized_value": 0.639,
+        "weighted_score": 16,
+        "weighted_contribution": 16,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "46h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 902226,
+        "normalized": 0.902,
+        "normalized_value": 0.902,
+        "weighted_score": 18,
+        "weighted_contribution": 18,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "902k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.62,
+        "normalized": 0.62,
+        "normalized_value": 0.62,
+        "weighted_score": 9.3,
+        "weighted_contribution": 9.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "62% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 6.2,
+        "normalized": 0.31,
+        "normalized_value": 0.31,
+        "weighted_score": 3.1,
+        "weighted_contribution": 3.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "6.2km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.88,
+        "normalized": 0.88,
+        "normalized_value": 0.88,
+        "weighted_score": 26.4,
+        "weighted_contribution": 26.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Extreme informal density"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 46,
+        "normalized": 0.639,
+        "normalized_value": 0.639,
+        "weighted_score": 16,
+        "weighted_contribution": 16,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "46h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 902226,
+        "normalized": 0.902,
+        "normalized_value": 0.902,
+        "weighted_score": 18,
+        "weighted_contribution": 18,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "902k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.62,
+        "normalized": 0.62,
+        "normalized_value": 0.62,
+        "weighted_score": 9.3,
+        "weighted_contribution": 9.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "62% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 6.2,
+        "normalized": 0.31,
+        "normalized_value": 0.31,
+        "weighted_score": 3.1,
+        "weighted_contribution": 3.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "6.2km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.88) → +26.4 pts",
+      "+ Dry pipe outage (46h) → +16.0 pts",
+      "+ Population served (902k residents) → +18.0 pts",
+      "+ Historical service deficit (62%) → +9.3 pts",
+      "+ Depot transit distance (6.2 km) → +3.1 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.88) → +26.4 pts | + Dry pipe outage (46h) → +16.0 pts | + Population served (902k residents) → +18.0 pts | + Historical service deficit (62%) → +9.3 pts | + Depot transit distance (6.2 km) → +3.1 pts",
+    "recommended_action": "Prioritize scheduled tanker delivery (Tier 2 review protocol).",
+    "recommended_volume": 24000,
+    "description": "Extensive hillside informal settlements; gravity feed booster pump trip on Asalpha line."
+  },
+  {
+    "ward_id": 4,
+    "ward_number": "P/N",
+    "ward_code": "P/N",
+    "name": "Malad / Marve / Malvani",
+    "zone": "Western Suburbs",
+    "demand_liters": 22000,
+    "total_score": 71.8,
+    "tier": 2,
+    "lat": 19.186,
+    "lng": 72.848,
+    "coverage_pct": 51,
+    "water_deficit_pct": 66,
+    "dry_pipe_hours": 44,
+    "population": 946457,
+    "vulnerability_index": 0.79,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.79,
+        "normalized": 0.79,
+        "normalized_value": 0.79,
+        "weighted_score": 23.7,
+        "weighted_contribution": 23.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "High vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 44,
+        "normalized": 0.611,
+        "normalized_value": 0.611,
+        "weighted_score": 15.3,
+        "weighted_contribution": 15.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "44h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 946457,
+        "normalized": 0.946,
+        "normalized_value": 0.946,
+        "weighted_score": 18.9,
+        "weighted_contribution": 18.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "946k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.55,
+        "normalized": 0.55,
+        "normalized_value": 0.55,
+        "weighted_score": 8.3,
+        "weighted_contribution": 8.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "55% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 11.2,
+        "normalized": 0.56,
+        "normalized_value": 0.56,
+        "weighted_score": 5.6,
+        "weighted_contribution": 5.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "11.2km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.79,
+        "normalized": 0.79,
+        "normalized_value": 0.79,
+        "weighted_score": 23.7,
+        "weighted_contribution": 23.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "High vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 44,
+        "normalized": 0.611,
+        "normalized_value": 0.611,
+        "weighted_score": 15.3,
+        "weighted_contribution": 15.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "44h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 946457,
+        "normalized": 0.946,
+        "normalized_value": 0.946,
+        "weighted_score": 18.9,
+        "weighted_contribution": 18.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "946k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.55,
+        "normalized": 0.55,
+        "normalized_value": 0.55,
+        "weighted_score": 8.3,
+        "weighted_contribution": 8.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "55% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 11.2,
+        "normalized": 0.56,
+        "normalized_value": 0.56,
+        "weighted_score": 5.6,
+        "weighted_contribution": 5.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "11.2km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.79) → +23.7 pts",
+      "+ Dry pipe outage (44h) → +15.3 pts",
+      "+ Population served (946k residents) → +18.9 pts",
+      "+ Historical service deficit (55%) → +8.3 pts",
+      "+ Depot transit distance (11.2 km) → +5.6 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.79) → +23.7 pts | + Dry pipe outage (44h) → +15.3 pts | + Population served (946k residents) → +18.9 pts | + Historical service deficit (55%) → +8.3 pts | + Depot transit distance (11.2 km) → +5.6 pts",
+    "recommended_action": "Prioritize scheduled tanker delivery (Tier 2 review protocol).",
+    "recommended_volume": 22000,
+    "description": "Malvani sector experiencing prolonged ration deficits; high reliance on tanker logistics."
+  },
+  {
+    "ward_id": 2,
+    "ward_number": "G/N",
+    "ward_code": "G/N",
+    "name": "Dharavi / Mahim / Dadar West",
+    "zone": "City",
+    "demand_liters": 28000,
+    "total_score": 70.3,
+    "tier": 2,
+    "lat": 19.043,
+    "lng": 72.846,
+    "coverage_pct": 42,
+    "water_deficit_pct": 78,
+    "dry_pipe_hours": 52,
+    "population": 599039,
+    "vulnerability_index": 0.93,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.93,
+        "normalized": 0.93,
+        "normalized_value": 0.93,
+        "weighted_score": 27.9,
+        "weighted_contribution": 27.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Extreme informal density"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 52,
+        "normalized": 0.722,
+        "normalized_value": 0.722,
+        "weighted_score": 18.1,
+        "weighted_contribution": 18.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "52h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 599039,
+        "normalized": 0.599,
+        "normalized_value": 0.599,
+        "weighted_score": 12,
+        "weighted_contribution": 12,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "599k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.7,
+        "normalized": 0.7,
+        "normalized_value": 0.7,
+        "weighted_score": 10.5,
+        "weighted_contribution": 10.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "70% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 3.6,
+        "normalized": 0.18,
+        "normalized_value": 0.18,
+        "weighted_score": 1.8,
+        "weighted_contribution": 1.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "3.6km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.93,
+        "normalized": 0.93,
+        "normalized_value": 0.93,
+        "weighted_score": 27.9,
+        "weighted_contribution": 27.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Extreme informal density"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 52,
+        "normalized": 0.722,
+        "normalized_value": 0.722,
+        "weighted_score": 18.1,
+        "weighted_contribution": 18.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "52h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 599039,
+        "normalized": 0.599,
+        "normalized_value": 0.599,
+        "weighted_score": 12,
+        "weighted_contribution": 12,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "599k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.7,
+        "normalized": 0.7,
+        "normalized_value": 0.7,
+        "weighted_score": 10.5,
+        "weighted_contribution": 10.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "70% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 3.6,
+        "normalized": 0.18,
+        "normalized_value": 0.18,
+        "weighted_score": 1.8,
+        "weighted_contribution": 1.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "3.6km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.93) → +27.9 pts",
+      "+ Dry pipe outage (52h) → +18.1 pts",
+      "+ Population served (599k residents) → +12.0 pts",
+      "+ Historical service deficit (70%) → +10.5 pts",
+      "+ Depot transit distance (3.6 km) → +1.8 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.93) → +27.9 pts | + Dry pipe outage (52h) → +18.1 pts | + Population served (599k residents) → +12.0 pts | + Historical service deficit (70%) → +10.5 pts | + Depot transit distance (3.6 km) → +1.8 pts",
+    "recommended_action": "Prioritize scheduled tanker delivery (Tier 2 review protocol).",
+    "recommended_volume": 28000,
+    "description": "Dharavi informal industrial & leather clusters facing acute 52h supply interruption."
+  },
+  {
+    "ward_id": 5,
+    "ward_number": "K/E",
+    "ward_code": "K/E",
+    "name": "Andheri East / Jogeshwari East",
+    "zone": "Western Suburbs",
+    "demand_liters": 18000,
+    "total_score": 60.1,
+    "tier": 2,
+    "lat": 19.117,
+    "lng": 72.863,
+    "coverage_pct": 58,
+    "water_deficit_pct": 59,
+    "dry_pipe_hours": 38,
+    "population": 824401,
+    "vulnerability_index": 0.72,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.72,
+        "normalized": 0.72,
+        "normalized_value": 0.72,
+        "weighted_score": 21.6,
+        "weighted_contribution": 21.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "High vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 38,
+        "normalized": 0.528,
+        "normalized_value": 0.528,
+        "weighted_score": 13.2,
+        "weighted_contribution": 13.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "38h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 824401,
+        "normalized": 0.824,
+        "normalized_value": 0.824,
+        "weighted_score": 16.5,
+        "weighted_contribution": 16.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "824k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.48,
+        "normalized": 0.48,
+        "normalized_value": 0.48,
+        "weighted_score": 7.2,
+        "weighted_contribution": 7.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "48% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 3.2,
+        "normalized": 0.16,
+        "normalized_value": 0.16,
+        "weighted_score": 1.6,
+        "weighted_contribution": 1.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "3.2km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.72,
+        "normalized": 0.72,
+        "normalized_value": 0.72,
+        "weighted_score": 21.6,
+        "weighted_contribution": 21.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "High vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 38,
+        "normalized": 0.528,
+        "normalized_value": 0.528,
+        "weighted_score": 13.2,
+        "weighted_contribution": 13.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "38h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 824401,
+        "normalized": 0.824,
+        "normalized_value": 0.824,
+        "weighted_score": 16.5,
+        "weighted_contribution": 16.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "824k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.48,
+        "normalized": 0.48,
+        "normalized_value": 0.48,
+        "weighted_score": 7.2,
+        "weighted_contribution": 7.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "48% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 3.2,
+        "normalized": 0.16,
+        "normalized_value": 0.16,
+        "weighted_score": 1.6,
+        "weighted_contribution": 1.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "3.2km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.72) → +21.6 pts",
+      "+ Dry pipe outage (38h) → +13.2 pts",
+      "+ Population served (824k residents) → +16.5 pts",
+      "+ Historical service deficit (48%) → +7.2 pts",
+      "+ Depot transit distance (3.2 km) → +1.6 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.72) → +21.6 pts | + Dry pipe outage (38h) → +13.2 pts | + Population served (824k residents) → +16.5 pts | + Historical service deficit (48%) → +7.2 pts | + Depot transit distance (3.2 km) → +1.6 pts",
+    "recommended_action": "Prioritize scheduled tanker delivery (Tier 2 review protocol).",
+    "recommended_volume": 18000,
+    "description": "MIDC industrial belt and informal worker chawls; intermittent distribution schedule."
+  },
+  {
+    "ward_id": 6,
+    "ward_number": "H/E",
+    "ward_code": "H/E",
+    "name": "Bandra East / Khar East / Santacruz East",
+    "zone": "Western Suburbs",
+    "demand_liters": 15000,
+    "total_score": 52.9,
+    "tier": 3,
+    "lat": 19.068,
+    "lng": 72.852,
+    "coverage_pct": 62,
+    "water_deficit_pct": 54,
+    "dry_pipe_hours": 34,
+    "population": 557239,
+    "vulnerability_index": 0.68,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.68,
+        "normalized": 0.68,
+        "normalized_value": 0.68,
+        "weighted_score": 20.4,
+        "weighted_contribution": 20.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "High vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 34,
+        "normalized": 0.472,
+        "normalized_value": 0.472,
+        "weighted_score": 11.8,
+        "weighted_contribution": 11.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "34h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 557239,
+        "normalized": 0.557,
+        "normalized_value": 0.557,
+        "weighted_score": 11.1,
+        "weighted_contribution": 11.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "557k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.42,
+        "normalized": 0.42,
+        "normalized_value": 0.42,
+        "weighted_score": 6.3,
+        "weighted_contribution": 6.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "42% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 6.5,
+        "normalized": 0.325,
+        "normalized_value": 0.325,
+        "weighted_score": 3.3,
+        "weighted_contribution": 3.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "6.5km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.68,
+        "normalized": 0.68,
+        "normalized_value": 0.68,
+        "weighted_score": 20.4,
+        "weighted_contribution": 20.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "High vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 34,
+        "normalized": 0.472,
+        "normalized_value": 0.472,
+        "weighted_score": 11.8,
+        "weighted_contribution": 11.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "34h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 557239,
+        "normalized": 0.557,
+        "normalized_value": 0.557,
+        "weighted_score": 11.1,
+        "weighted_contribution": 11.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "557k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.42,
+        "normalized": 0.42,
+        "normalized_value": 0.42,
+        "weighted_score": 6.3,
+        "weighted_contribution": 6.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "42% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 6.5,
+        "normalized": 0.325,
+        "normalized_value": 0.325,
+        "weighted_score": 3.3,
+        "weighted_contribution": 3.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "6.5km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.68) → +20.4 pts",
+      "+ Dry pipe outage (34h) → +11.8 pts",
+      "+ Population served (557k residents) → +11.1 pts",
+      "+ Historical service deficit (42%) → +6.3 pts",
+      "+ Depot transit distance (6.5 km) → +3.3 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.68) → +20.4 pts | + Dry pipe outage (34h) → +11.8 pts | + Population served (557k residents) → +11.1 pts | + Historical service deficit (42%) → +6.3 pts | + Depot transit distance (6.5 km) → +3.3 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 15000,
+    "description": "Behrampada and Golibar settlements adjacent to BKC financial hub."
+  },
+  {
+    "ward_id": 8,
+    "ward_number": "R/S",
+    "ward_code": "R/S",
+    "name": "Kandivali / Charkop / Akurli",
+    "zone": "Western Suburbs",
+    "demand_liters": 12000,
+    "total_score": 52.9,
+    "tier": 3,
+    "lat": 19.206,
+    "lng": 72.852,
+    "coverage_pct": 67,
+    "water_deficit_pct": 46,
+    "dry_pipe_hours": 28,
+    "population": 691229,
+    "vulnerability_index": 0.6,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.6,
+        "normalized": 0.6,
+        "normalized_value": 0.6,
+        "weighted_score": 18,
+        "weighted_contribution": 18,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Moderate vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 28,
+        "normalized": 0.389,
+        "normalized_value": 0.389,
+        "weighted_score": 9.7,
+        "weighted_contribution": 9.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "28h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 691229,
+        "normalized": 0.691,
+        "normalized_value": 0.691,
+        "weighted_score": 13.8,
+        "weighted_contribution": 13.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "691k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.34,
+        "normalized": 0.34,
+        "normalized_value": 0.34,
+        "weighted_score": 5.1,
+        "weighted_contribution": 5.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "34% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 12.5,
+        "normalized": 0.625,
+        "normalized_value": 0.625,
+        "weighted_score": 6.3,
+        "weighted_contribution": 6.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "12.5km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.6,
+        "normalized": 0.6,
+        "normalized_value": 0.6,
+        "weighted_score": 18,
+        "weighted_contribution": 18,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Moderate vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 28,
+        "normalized": 0.389,
+        "normalized_value": 0.389,
+        "weighted_score": 9.7,
+        "weighted_contribution": 9.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "28h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 691229,
+        "normalized": 0.691,
+        "normalized_value": 0.691,
+        "weighted_score": 13.8,
+        "weighted_contribution": 13.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "691k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.34,
+        "normalized": 0.34,
+        "normalized_value": 0.34,
+        "weighted_score": 5.1,
+        "weighted_contribution": 5.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "34% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 12.5,
+        "normalized": 0.625,
+        "normalized_value": 0.625,
+        "weighted_score": 6.3,
+        "weighted_contribution": 6.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "12.5km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.60) → +18.0 pts",
+      "+ Dry pipe outage (28h) → +9.7 pts",
+      "+ Population served (691k residents) → +13.8 pts",
+      "+ Historical service deficit (34%) → +5.1 pts",
+      "+ Depot transit distance (12.5 km) → +6.3 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.60) → +18.0 pts | + Dry pipe outage (28h) → +9.7 pts | + Population served (691k residents) → +13.8 pts | + Historical service deficit (34%) → +5.1 pts | + Depot transit distance (12.5 km) → +6.3 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 12000,
+    "description": "High residential density; tail-end distribution from Veravali reservoir trunk line."
+  },
+  {
+    "ward_id": 7,
+    "ward_number": "N",
+    "ward_code": "N",
+    "name": "Ghatkopar / Vidyavihar / Pant Nagar",
+    "zone": "Eastern Suburbs",
+    "demand_liters": 14000,
+    "total_score": 51.4,
+    "tier": 3,
+    "lat": 19.088,
+    "lng": 72.912,
+    "coverage_pct": 64,
+    "water_deficit_pct": 51,
+    "dry_pipe_hours": 32,
+    "population": 622853,
+    "vulnerability_index": 0.65,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.65,
+        "normalized": 0.65,
+        "normalized_value": 0.65,
+        "weighted_score": 19.5,
+        "weighted_contribution": 19.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "High vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 32,
+        "normalized": 0.444,
+        "normalized_value": 0.444,
+        "weighted_score": 11.1,
+        "weighted_contribution": 11.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "32h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 622853,
+        "normalized": 0.623,
+        "normalized_value": 0.623,
+        "weighted_score": 12.5,
+        "weighted_contribution": 12.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "623k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.38,
+        "normalized": 0.38,
+        "normalized_value": 0.38,
+        "weighted_score": 5.7,
+        "weighted_contribution": 5.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "38% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 5.1,
+        "normalized": 0.255,
+        "normalized_value": 0.255,
+        "weighted_score": 2.6,
+        "weighted_contribution": 2.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "5.1km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.65,
+        "normalized": 0.65,
+        "normalized_value": 0.65,
+        "weighted_score": 19.5,
+        "weighted_contribution": 19.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "High vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 32,
+        "normalized": 0.444,
+        "normalized_value": 0.444,
+        "weighted_score": 11.1,
+        "weighted_contribution": 11.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "32h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 622853,
+        "normalized": 0.623,
+        "normalized_value": 0.623,
+        "weighted_score": 12.5,
+        "weighted_contribution": 12.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "623k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.38,
+        "normalized": 0.38,
+        "normalized_value": 0.38,
+        "weighted_score": 5.7,
+        "weighted_contribution": 5.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "38% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 5.1,
+        "normalized": 0.255,
+        "normalized_value": 0.255,
+        "weighted_score": 2.6,
+        "weighted_contribution": 2.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "5.1km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.65) → +19.5 pts",
+      "+ Dry pipe outage (32h) → +11.1 pts",
+      "+ Population served (623k residents) → +12.5 pts",
+      "+ Historical service deficit (38%) → +5.7 pts",
+      "+ Depot transit distance (5.1 km) → +2.6 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.65) → +19.5 pts | + Dry pipe outage (32h) → +11.1 pts | + Population served (623k residents) → +12.5 pts | + Historical service deficit (38%) → +5.7 pts | + Depot transit distance (5.1 km) → +2.6 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 14000,
+    "description": "Hilly elevation gradient causing drop in end-of-line feeder pressure."
+  },
+  {
+    "ward_id": 12,
+    "ward_number": "R/C",
+    "ward_code": "R/C",
+    "name": "Borivali / Gorai / Shimpoli",
+    "zone": "Western Suburbs",
+    "demand_liters": 8000,
+    "total_score": 41.7,
+    "tier": 3,
+    "lat": 19.228,
+    "lng": 72.856,
+    "coverage_pct": 79,
+    "water_deficit_pct": 32,
+    "dry_pipe_hours": 18,
+    "population": 562162,
+    "vulnerability_index": 0.46,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.46,
+        "normalized": 0.46,
+        "normalized_value": 0.46,
+        "weighted_score": 13.8,
+        "weighted_contribution": 13.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Moderate vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 18,
+        "normalized": 0.25,
+        "normalized_value": 0.25,
+        "weighted_score": 6.3,
+        "weighted_contribution": 6.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "18h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 562162,
+        "normalized": 0.562,
+        "normalized_value": 0.562,
+        "weighted_score": 11.2,
+        "weighted_contribution": 11.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "562k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.2,
+        "normalized": 0.2,
+        "normalized_value": 0.2,
+        "weighted_score": 3,
+        "weighted_contribution": 3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "20% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 14.8,
+        "normalized": 0.74,
+        "normalized_value": 0.74,
+        "weighted_score": 7.4,
+        "weighted_contribution": 7.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "14.8km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.46,
+        "normalized": 0.46,
+        "normalized_value": 0.46,
+        "weighted_score": 13.8,
+        "weighted_contribution": 13.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Moderate vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 18,
+        "normalized": 0.25,
+        "normalized_value": 0.25,
+        "weighted_score": 6.3,
+        "weighted_contribution": 6.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "18h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 562162,
+        "normalized": 0.562,
+        "normalized_value": 0.562,
+        "weighted_score": 11.2,
+        "weighted_contribution": 11.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "562k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.2,
+        "normalized": 0.2,
+        "normalized_value": 0.2,
+        "weighted_score": 3,
+        "weighted_contribution": 3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "20% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 14.8,
+        "normalized": 0.74,
+        "normalized_value": 0.74,
+        "weighted_score": 7.4,
+        "weighted_contribution": 7.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "14.8km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.46) → +13.8 pts",
+      "+ Dry pipe outage (18h) → +6.3 pts",
+      "+ Population served (562k residents) → +11.2 pts",
+      "+ Historical service deficit (20%) → +3.0 pts",
+      "+ Depot transit distance (14.8 km) → +7.4 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.46) → +13.8 pts | + Dry pipe outage (18h) → +6.3 pts | + Population served (562k residents) → +11.2 pts | + Historical service deficit (20%) → +3.0 pts | + Depot transit distance (14.8 km) → +7.4 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 8000,
+    "description": "Northern suburban residential belt; regular 4-hour morning municipal cycle."
+  },
+  {
+    "ward_id": 10,
+    "ward_number": "F/N",
+    "ward_code": "F/N",
+    "name": "Matunga / Sion / Wadala",
+    "zone": "City",
+    "demand_liters": 10000,
+    "total_score": 41.3,
+    "tier": 3,
+    "lat": 19.032,
+    "lng": 72.862,
+    "coverage_pct": 72,
+    "water_deficit_pct": 40,
+    "dry_pipe_hours": 24,
+    "population": 529003,
+    "vulnerability_index": 0.55,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.55,
+        "normalized": 0.55,
+        "normalized_value": 0.55,
+        "weighted_score": 16.5,
+        "weighted_contribution": 16.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Moderate vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 24,
+        "normalized": 0.333,
+        "normalized_value": 0.333,
+        "weighted_score": 8.3,
+        "weighted_contribution": 8.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "24h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 529003,
+        "normalized": 0.529,
+        "normalized_value": 0.529,
+        "weighted_score": 10.6,
+        "weighted_contribution": 10.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "529k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.28,
+        "normalized": 0.28,
+        "normalized_value": 0.28,
+        "weighted_score": 4.2,
+        "weighted_contribution": 4.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "28% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 3.4,
+        "normalized": 0.17,
+        "normalized_value": 0.17,
+        "weighted_score": 1.7,
+        "weighted_contribution": 1.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "3.4km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.55,
+        "normalized": 0.55,
+        "normalized_value": 0.55,
+        "weighted_score": 16.5,
+        "weighted_contribution": 16.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Moderate vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 24,
+        "normalized": 0.333,
+        "normalized_value": 0.333,
+        "weighted_score": 8.3,
+        "weighted_contribution": 8.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "24h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 529003,
+        "normalized": 0.529,
+        "normalized_value": 0.529,
+        "weighted_score": 10.6,
+        "weighted_contribution": 10.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "529k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.28,
+        "normalized": 0.28,
+        "normalized_value": 0.28,
+        "weighted_score": 4.2,
+        "weighted_contribution": 4.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "28% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 3.4,
+        "normalized": 0.17,
+        "normalized_value": 0.17,
+        "weighted_score": 1.7,
+        "weighted_contribution": 1.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "3.4km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.55) → +16.5 pts",
+      "+ Dry pipe outage (24h) → +8.3 pts",
+      "+ Population served (529k residents) → +10.6 pts",
+      "+ Historical service deficit (28%) → +4.2 pts",
+      "+ Depot transit distance (3.4 km) → +1.7 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.55) → +16.5 pts | + Dry pipe outage (24h) → +8.3 pts | + Population served (529k residents) → +10.6 pts | + Historical service deficit (28%) → +4.2 pts | + Depot transit distance (3.4 km) → +1.7 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 10000,
+    "description": "Wadala salt pan boundary; scheduled rationing cycle in Transit Camp Sector 4."
+  },
+  {
+    "ward_id": 9,
+    "ward_number": "M/W",
+    "ward_code": "M/W",
+    "name": "Chembur West / Tilak Nagar / Mahul",
+    "zone": "Eastern Suburbs",
+    "demand_liters": 11000,
+    "total_score": 41.1,
+    "tier": 3,
+    "lat": 19.062,
+    "lng": 72.898,
+    "coverage_pct": 70,
+    "water_deficit_pct": 43,
+    "dry_pipe_hours": 26,
+    "population": 411363,
+    "vulnerability_index": 0.58,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.58,
+        "normalized": 0.58,
+        "normalized_value": 0.58,
+        "weighted_score": 17.4,
+        "weighted_contribution": 17.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Moderate vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 26,
+        "normalized": 0.361,
+        "normalized_value": 0.361,
+        "weighted_score": 9,
+        "weighted_contribution": 9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "26h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 411363,
+        "normalized": 0.411,
+        "normalized_value": 0.411,
+        "weighted_score": 8.2,
+        "weighted_contribution": 8.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "411k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.3,
+        "normalized": 0.3,
+        "normalized_value": 0.3,
+        "weighted_score": 4.5,
+        "weighted_contribution": 4.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "30% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 3.9,
+        "normalized": 0.195,
+        "normalized_value": 0.195,
+        "weighted_score": 2,
+        "weighted_contribution": 2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "3.9km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.58,
+        "normalized": 0.58,
+        "normalized_value": 0.58,
+        "weighted_score": 17.4,
+        "weighted_contribution": 17.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Moderate vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 26,
+        "normalized": 0.361,
+        "normalized_value": 0.361,
+        "weighted_score": 9,
+        "weighted_contribution": 9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "26h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 411363,
+        "normalized": 0.411,
+        "normalized_value": 0.411,
+        "weighted_score": 8.2,
+        "weighted_contribution": 8.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "411k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.3,
+        "normalized": 0.3,
+        "normalized_value": 0.3,
+        "weighted_score": 4.5,
+        "weighted_contribution": 4.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "30% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 3.9,
+        "normalized": 0.195,
+        "normalized_value": 0.195,
+        "weighted_score": 2,
+        "weighted_contribution": 2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "3.9km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.58) → +17.4 pts",
+      "+ Dry pipe outage (26h) → +9.0 pts",
+      "+ Population served (411k residents) → +8.2 pts",
+      "+ Historical service deficit (30%) → +4.5 pts",
+      "+ Depot transit distance (3.9 km) → +2.0 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.58) → +17.4 pts | + Dry pipe outage (26h) → +9.0 pts | + Population served (411k residents) → +8.2 pts | + Historical service deficit (30%) → +4.5 pts | + Depot transit distance (3.9 km) → +2.0 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 11000,
+    "description": "Industrial refinery corridor; Mahul transit camp pipeline repair scheduled."
+  },
+  {
+    "ward_id": 11,
+    "ward_number": "S",
+    "ward_code": "S",
+    "name": "Bhandup / Powai / Kanjurmarg",
+    "zone": "Eastern Suburbs",
+    "demand_liters": 9000,
+    "total_score": 40.8,
+    "tier": 3,
+    "lat": 19.141,
+    "lng": 72.93,
+    "coverage_pct": 77,
+    "water_deficit_pct": 35,
+    "dry_pipe_hours": 20,
+    "population": 743783,
+    "vulnerability_index": 0.5,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.5,
+        "normalized": 0.5,
+        "normalized_value": 0.5,
+        "weighted_score": 15,
+        "weighted_contribution": 15,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Moderate vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 20,
+        "normalized": 0.278,
+        "normalized_value": 0.278,
+        "weighted_score": 6.9,
+        "weighted_contribution": 6.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "20h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 743783,
+        "normalized": 0.744,
+        "normalized_value": 0.744,
+        "weighted_score": 14.9,
+        "weighted_contribution": 14.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "744k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.22,
+        "normalized": 0.22,
+        "normalized_value": 0.22,
+        "weighted_score": 3.3,
+        "weighted_contribution": 3.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "22% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 1.4,
+        "normalized": 0.07,
+        "normalized_value": 0.07,
+        "weighted_score": 0.7,
+        "weighted_contribution": 0.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "1.4km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.5,
+        "normalized": 0.5,
+        "normalized_value": 0.5,
+        "weighted_score": 15,
+        "weighted_contribution": 15,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Moderate vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 20,
+        "normalized": 0.278,
+        "normalized_value": 0.278,
+        "weighted_score": 6.9,
+        "weighted_contribution": 6.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "20h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 743783,
+        "normalized": 0.744,
+        "normalized_value": 0.744,
+        "weighted_score": 14.9,
+        "weighted_contribution": 14.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "744k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.22,
+        "normalized": 0.22,
+        "normalized_value": 0.22,
+        "weighted_score": 3.3,
+        "weighted_contribution": 3.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "22% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 1.4,
+        "normalized": 0.07,
+        "normalized_value": 0.07,
+        "weighted_score": 0.7,
+        "weighted_contribution": 0.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "1.4km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.50) → +15.0 pts",
+      "+ Dry pipe outage (20h) → +6.9 pts",
+      "+ Population served (744k residents) → +14.9 pts",
+      "+ Historical service deficit (22%) → +3.3 pts",
+      "+ Depot transit distance (1.4 km) → +0.7 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.50) → +15.0 pts | + Dry pipe outage (20h) → +6.9 pts | + Population served (744k residents) → +14.9 pts | + Historical service deficit (22%) → +3.3 pts | + Depot transit distance (1.4 km) → +0.7 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 9000,
+    "description": "Immediate proximity to Bhandup Master Treatment Plant; reliable bulk supply."
+  },
+  {
+    "ward_id": 16,
+    "ward_number": "R/N",
+    "ward_code": "R/N",
+    "name": "Dahisar / Mandapeshwar",
+    "zone": "Western Suburbs",
+    "demand_liters": 6000,
+    "total_score": 37.6,
+    "tier": 3,
+    "lat": 19.254,
+    "lng": 72.859,
+    "coverage_pct": 83,
+    "water_deficit_pct": 25,
+    "dry_pipe_hours": 15,
+    "population": 431368,
+    "vulnerability_index": 0.42,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.42,
+        "normalized": 0.42,
+        "normalized_value": 0.42,
+        "weighted_score": 12.6,
+        "weighted_contribution": 12.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 15,
+        "normalized": 0.208,
+        "normalized_value": 0.208,
+        "weighted_score": 5.2,
+        "weighted_contribution": 5.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "15h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 431368,
+        "normalized": 0.431,
+        "normalized_value": 0.431,
+        "weighted_score": 8.6,
+        "weighted_contribution": 8.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "431k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.16,
+        "normalized": 0.16,
+        "normalized_value": 0.16,
+        "weighted_score": 2.4,
+        "weighted_contribution": 2.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "16% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 17.5,
+        "normalized": 0.875,
+        "normalized_value": 0.875,
+        "weighted_score": 8.8,
+        "weighted_contribution": 8.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "17.5km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.42,
+        "normalized": 0.42,
+        "normalized_value": 0.42,
+        "weighted_score": 12.6,
+        "weighted_contribution": 12.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 15,
+        "normalized": 0.208,
+        "normalized_value": 0.208,
+        "weighted_score": 5.2,
+        "weighted_contribution": 5.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "15h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 431368,
+        "normalized": 0.431,
+        "normalized_value": 0.431,
+        "weighted_score": 8.6,
+        "weighted_contribution": 8.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "431k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.16,
+        "normalized": 0.16,
+        "normalized_value": 0.16,
+        "weighted_score": 2.4,
+        "weighted_contribution": 2.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "16% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 17.5,
+        "normalized": 0.875,
+        "normalized_value": 0.875,
+        "weighted_score": 8.8,
+        "weighted_contribution": 8.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "17.5km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.42) → +12.6 pts",
+      "+ Dry pipe outage (15h) → +5.2 pts",
+      "+ Population served (431k residents) → +8.6 pts",
+      "+ Historical service deficit (16%) → +2.4 pts",
+      "+ Depot transit distance (17.5 km) → +8.8 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.42) → +12.6 pts | + Dry pipe outage (15h) → +5.2 pts | + Population served (431k residents) → +8.6 pts | + Historical service deficit (16%) → +2.4 pts | + Depot transit distance (17.5 km) → +8.8 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 6000,
+    "description": "Northernmost municipal ward; terminal distribution points monitored via SCADA."
+  },
+  {
+    "ward_id": 15,
+    "ward_number": "K/W",
+    "ward_code": "K/W",
+    "name": "Andheri West / Versova / Juhu",
+    "zone": "Western Suburbs",
+    "demand_liters": 6000,
+    "total_score": 36,
+    "tier": 3,
+    "lat": 19.128,
+    "lng": 72.83,
+    "coverage_pct": 86,
+    "water_deficit_pct": 22,
+    "dry_pipe_hours": 12,
+    "population": 749426,
+    "vulnerability_index": 0.38,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.38,
+        "normalized": 0.38,
+        "normalized_value": 0.38,
+        "weighted_score": 11.4,
+        "weighted_contribution": 11.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 12,
+        "normalized": 0.167,
+        "normalized_value": 0.167,
+        "weighted_score": 4.2,
+        "weighted_contribution": 4.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "12h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 749426,
+        "normalized": 0.749,
+        "normalized_value": 0.749,
+        "weighted_score": 15,
+        "weighted_contribution": 15,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "749k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.14,
+        "normalized": 0.14,
+        "normalized_value": 0.14,
+        "weighted_score": 2.1,
+        "weighted_contribution": 2.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "14% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 6.6,
+        "normalized": 0.33,
+        "normalized_value": 0.33,
+        "weighted_score": 3.3,
+        "weighted_contribution": 3.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "6.6km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.38,
+        "normalized": 0.38,
+        "normalized_value": 0.38,
+        "weighted_score": 11.4,
+        "weighted_contribution": 11.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 12,
+        "normalized": 0.167,
+        "normalized_value": 0.167,
+        "weighted_score": 4.2,
+        "weighted_contribution": 4.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "12h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 749426,
+        "normalized": 0.749,
+        "normalized_value": 0.749,
+        "weighted_score": 15,
+        "weighted_contribution": 15,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "749k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.14,
+        "normalized": 0.14,
+        "normalized_value": 0.14,
+        "weighted_score": 2.1,
+        "weighted_contribution": 2.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "14% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 6.6,
+        "normalized": 0.33,
+        "normalized_value": 0.33,
+        "weighted_score": 3.3,
+        "weighted_contribution": 3.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "6.6km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.38) → +11.4 pts",
+      "+ Dry pipe outage (12h) → +4.2 pts",
+      "+ Population served (749k residents) → +15.0 pts",
+      "+ Historical service deficit (14%) → +2.1 pts",
+      "+ Depot transit distance (6.6 km) → +3.3 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.38) → +11.4 pts | + Dry pipe outage (12h) → +4.2 pts | + Population served (749k residents) → +15.0 pts | + Historical service deficit (14%) → +2.1 pts | + Depot transit distance (6.6 km) → +3.3 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 6000,
+    "description": "Coastal residential belt; localized tanker supplementary supply in Versova Koliwada."
+  },
+  {
+    "ward_id": 13,
+    "ward_number": "P/S",
+    "ward_code": "P/S",
+    "name": "Goregaon East & West / Pahadi",
+    "zone": "Western Suburbs",
+    "demand_liters": 7500,
+    "total_score": 34.7,
+    "tier": 4,
+    "lat": 19.162,
+    "lng": 72.845,
+    "coverage_pct": 81,
+    "water_deficit_pct": 28,
+    "dry_pipe_hours": 16,
+    "population": 460175,
+    "vulnerability_index": 0.44,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.44,
+        "normalized": 0.44,
+        "normalized_value": 0.44,
+        "weighted_score": 13.2,
+        "weighted_contribution": 13.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 16,
+        "normalized": 0.222,
+        "normalized_value": 0.222,
+        "weighted_score": 5.6,
+        "weighted_contribution": 5.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "16h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 460175,
+        "normalized": 0.46,
+        "normalized_value": 0.46,
+        "weighted_score": 9.2,
+        "weighted_contribution": 9.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "460k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.18,
+        "normalized": 0.18,
+        "normalized_value": 0.18,
+        "weighted_score": 2.7,
+        "weighted_contribution": 2.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "18% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 8,
+        "normalized": 0.4,
+        "normalized_value": 0.4,
+        "weighted_score": 4,
+        "weighted_contribution": 4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "8.0km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.44,
+        "normalized": 0.44,
+        "normalized_value": 0.44,
+        "weighted_score": 13.2,
+        "weighted_contribution": 13.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 16,
+        "normalized": 0.222,
+        "normalized_value": 0.222,
+        "weighted_score": 5.6,
+        "weighted_contribution": 5.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "16h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 460175,
+        "normalized": 0.46,
+        "normalized_value": 0.46,
+        "weighted_score": 9.2,
+        "weighted_contribution": 9.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "460k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.18,
+        "normalized": 0.18,
+        "normalized_value": 0.18,
+        "weighted_score": 2.7,
+        "weighted_contribution": 2.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "18% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 8,
+        "normalized": 0.4,
+        "normalized_value": 0.4,
+        "weighted_score": 4,
+        "weighted_contribution": 4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "8.0km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.44) → +13.2 pts",
+      "+ Dry pipe outage (16h) → +5.6 pts",
+      "+ Population served (460k residents) → +9.2 pts",
+      "+ Historical service deficit (18%) → +2.7 pts",
+      "+ Depot transit distance (8.0 km) → +4.0 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.44) → +13.2 pts | + Dry pipe outage (16h) → +5.6 pts | + Population served (460k residents) → +9.2 pts | + Historical service deficit (18%) → +2.7 pts | + Depot transit distance (8.0 km) → +4.0 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 7500,
+    "description": "Stable dual feeder supply with minor drops during peak morning hours."
+  },
+  {
+    "ward_id": 17,
+    "ward_number": "E",
+    "ward_code": "E",
+    "name": "Byculla / Mazgaon / Nagpada",
+    "zone": "City",
+    "demand_liters": 5500,
+    "total_score": 31.9,
+    "tier": 4,
+    "lat": 18.972,
+    "lng": 72.832,
+    "coverage_pct": 82,
+    "water_deficit_pct": 23,
+    "dry_pipe_hours": 14,
+    "population": 393286,
+    "vulnerability_index": 0.48,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.48,
+        "normalized": 0.48,
+        "normalized_value": 0.48,
+        "weighted_score": 14.4,
+        "weighted_contribution": 14.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Moderate vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 14,
+        "normalized": 0.194,
+        "normalized_value": 0.194,
+        "weighted_score": 4.9,
+        "weighted_contribution": 4.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "14h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 393286,
+        "normalized": 0.393,
+        "normalized_value": 0.393,
+        "weighted_score": 7.9,
+        "weighted_contribution": 7.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "393k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.16,
+        "normalized": 0.16,
+        "normalized_value": 0.16,
+        "weighted_score": 2.4,
+        "weighted_contribution": 2.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "16% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 4.6,
+        "normalized": 0.23,
+        "normalized_value": 0.23,
+        "weighted_score": 2.3,
+        "weighted_contribution": 2.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "4.6km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.48,
+        "normalized": 0.48,
+        "normalized_value": 0.48,
+        "weighted_score": 14.4,
+        "weighted_contribution": 14.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Moderate vulnerability"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 14,
+        "normalized": 0.194,
+        "normalized_value": 0.194,
+        "weighted_score": 4.9,
+        "weighted_contribution": 4.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "14h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 393286,
+        "normalized": 0.393,
+        "normalized_value": 0.393,
+        "weighted_score": 7.9,
+        "weighted_contribution": 7.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "393k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.16,
+        "normalized": 0.16,
+        "normalized_value": 0.16,
+        "weighted_score": 2.4,
+        "weighted_contribution": 2.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "16% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 4.6,
+        "normalized": 0.23,
+        "normalized_value": 0.23,
+        "weighted_score": 2.3,
+        "weighted_contribution": 2.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "4.6km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.48) → +14.4 pts",
+      "+ Dry pipe outage (14h) → +4.9 pts",
+      "+ Population served (393k residents) → +7.9 pts",
+      "+ Historical service deficit (16%) → +2.4 pts",
+      "+ Depot transit distance (4.6 km) → +2.3 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.48) → +14.4 pts | + Dry pipe outage (14h) → +4.9 pts | + Population served (393k residents) → +7.9 pts | + Historical service deficit (16%) → +2.4 pts | + Depot transit distance (4.6 km) → +2.3 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 5500,
+    "description": "Historic mill & chawl infrastructure; replacement of cast-iron pipes underway."
+  },
+  {
+    "ward_id": 14,
+    "ward_number": "T",
+    "ward_code": "T",
+    "name": "Mulund / Nahur",
+    "zone": "Eastern Suburbs",
+    "demand_liters": 6500,
+    "total_score": 28.3,
+    "tier": 4,
+    "lat": 19.172,
+    "lng": 72.952,
+    "coverage_pct": 84,
+    "water_deficit_pct": 24,
+    "dry_pipe_hours": 14,
+    "population": 341463,
+    "vulnerability_index": 0.4,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.4,
+        "normalized": 0.4,
+        "normalized_value": 0.4,
+        "weighted_score": 12,
+        "weighted_contribution": 12,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 14,
+        "normalized": 0.194,
+        "normalized_value": 0.194,
+        "weighted_score": 4.9,
+        "weighted_contribution": 4.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "14h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 341463,
+        "normalized": 0.341,
+        "normalized_value": 0.341,
+        "weighted_score": 6.8,
+        "weighted_contribution": 6.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "341k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.15,
+        "normalized": 0.15,
+        "normalized_value": 0.15,
+        "weighted_score": 2.3,
+        "weighted_contribution": 2.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "15% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 4.5,
+        "normalized": 0.225,
+        "normalized_value": 0.225,
+        "weighted_score": 2.3,
+        "weighted_contribution": 2.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "4.5km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.4,
+        "normalized": 0.4,
+        "normalized_value": 0.4,
+        "weighted_score": 12,
+        "weighted_contribution": 12,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 14,
+        "normalized": 0.194,
+        "normalized_value": 0.194,
+        "weighted_score": 4.9,
+        "weighted_contribution": 4.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "14h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 341463,
+        "normalized": 0.341,
+        "normalized_value": 0.341,
+        "weighted_score": 6.8,
+        "weighted_contribution": 6.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "341k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.15,
+        "normalized": 0.15,
+        "normalized_value": 0.15,
+        "weighted_score": 2.3,
+        "weighted_contribution": 2.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "15% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 4.5,
+        "normalized": 0.225,
+        "normalized_value": 0.225,
+        "weighted_score": 2.3,
+        "weighted_contribution": 2.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "4.5km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.40) → +12.0 pts",
+      "+ Dry pipe outage (14h) → +4.9 pts",
+      "+ Population served (341k residents) → +6.8 pts",
+      "+ Historical service deficit (15%) → +2.3 pts",
+      "+ Depot transit distance (4.5 km) → +2.3 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.40) → +12.0 pts | + Dry pipe outage (14h) → +4.9 pts | + Population served (341k residents) → +6.8 pts | + Historical service deficit (15%) → +2.3 pts | + Depot transit distance (4.5 km) → +2.3 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 6500,
+    "description": "Mulund residential sector near Tansa duct mains; high baseline coverage."
+  },
+  {
+    "ward_id": 18,
+    "ward_number": "F/S",
+    "ward_code": "F/S",
+    "name": "Parel / Sewri / Lalbaug",
+    "zone": "City",
+    "demand_liters": 5000,
+    "total_score": 26.9,
+    "tier": 4,
+    "lat": 18.998,
+    "lng": 72.844,
+    "coverage_pct": 87,
+    "water_deficit_pct": 18,
+    "dry_pipe_hours": 10,
+    "population": 360972,
+    "vulnerability_index": 0.42,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.42,
+        "normalized": 0.42,
+        "normalized_value": 0.42,
+        "weighted_score": 12.6,
+        "weighted_contribution": 12.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 10,
+        "normalized": 0.139,
+        "normalized_value": 0.139,
+        "weighted_score": 3.5,
+        "weighted_contribution": 3.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "10h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 360972,
+        "normalized": 0.361,
+        "normalized_value": 0.361,
+        "weighted_score": 7.2,
+        "weighted_contribution": 7.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "361k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.12,
+        "normalized": 0.12,
+        "normalized_value": 0.12,
+        "weighted_score": 1.8,
+        "weighted_contribution": 1.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "12% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 3.6,
+        "normalized": 0.18,
+        "normalized_value": 0.18,
+        "weighted_score": 1.8,
+        "weighted_contribution": 1.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "3.6km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.42,
+        "normalized": 0.42,
+        "normalized_value": 0.42,
+        "weighted_score": 12.6,
+        "weighted_contribution": 12.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 10,
+        "normalized": 0.139,
+        "normalized_value": 0.139,
+        "weighted_score": 3.5,
+        "weighted_contribution": 3.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "10h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 360972,
+        "normalized": 0.361,
+        "normalized_value": 0.361,
+        "weighted_score": 7.2,
+        "weighted_contribution": 7.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "361k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.12,
+        "normalized": 0.12,
+        "normalized_value": 0.12,
+        "weighted_score": 1.8,
+        "weighted_contribution": 1.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "12% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 3.6,
+        "normalized": 0.18,
+        "normalized_value": 0.18,
+        "weighted_score": 1.8,
+        "weighted_contribution": 1.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "3.6km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.42) → +12.6 pts",
+      "+ Dry pipe outage (10h) → +3.5 pts",
+      "+ Population served (361k residents) → +7.2 pts",
+      "+ Historical service deficit (12%) → +1.8 pts",
+      "+ Depot transit distance (3.6 km) → +1.8 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.42) → +12.6 pts | + Dry pipe outage (10h) → +3.5 pts | + Population served (361k residents) → +7.2 pts | + Historical service deficit (12%) → +1.8 pts | + Depot transit distance (3.6 km) → +1.8 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 5000,
+    "description": "Major medical hub (KEM, Tata Memorial Hospital); continuous priority pressure maintained."
+  },
+  {
+    "ward_id": 19,
+    "ward_number": "G/S",
+    "ward_code": "G/S",
+    "name": "Worli / Prabhadevi / Lower Parel",
+    "zone": "City",
+    "demand_liters": 4500,
+    "total_score": 25.2,
+    "tier": 4,
+    "lat": 19.006,
+    "lng": 72.821,
+    "coverage_pct": 89,
+    "water_deficit_pct": 16,
+    "dry_pipe_hours": 8,
+    "population": 379927,
+    "vulnerability_index": 0.36,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.36,
+        "normalized": 0.36,
+        "normalized_value": 0.36,
+        "weighted_score": 10.8,
+        "weighted_contribution": 10.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 8,
+        "normalized": 0.111,
+        "normalized_value": 0.111,
+        "weighted_score": 2.8,
+        "weighted_contribution": 2.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "8h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 379927,
+        "normalized": 0.38,
+        "normalized_value": 0.38,
+        "weighted_score": 7.6,
+        "weighted_contribution": 7.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "380k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.1,
+        "normalized": 0.1,
+        "normalized_value": 0.1,
+        "weighted_score": 1.5,
+        "weighted_contribution": 1.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "10% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 5,
+        "normalized": 0.25,
+        "normalized_value": 0.25,
+        "weighted_score": 2.5,
+        "weighted_contribution": 2.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "5.0km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.36,
+        "normalized": 0.36,
+        "normalized_value": 0.36,
+        "weighted_score": 10.8,
+        "weighted_contribution": 10.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 8,
+        "normalized": 0.111,
+        "normalized_value": 0.111,
+        "weighted_score": 2.8,
+        "weighted_contribution": 2.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "8h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 379927,
+        "normalized": 0.38,
+        "normalized_value": 0.38,
+        "weighted_score": 7.6,
+        "weighted_contribution": 7.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "380k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.1,
+        "normalized": 0.1,
+        "normalized_value": 0.1,
+        "weighted_score": 1.5,
+        "weighted_contribution": 1.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "10% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 5,
+        "normalized": 0.25,
+        "normalized_value": 0.25,
+        "weighted_score": 2.5,
+        "weighted_contribution": 2.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "5.0km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.36) → +10.8 pts",
+      "+ Dry pipe outage (8h) → +2.8 pts",
+      "+ Population served (380k residents) → +7.6 pts",
+      "+ Historical service deficit (10%) → +1.5 pts",
+      "+ Depot transit distance (5.0 km) → +2.5 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.36) → +10.8 pts | + Dry pipe outage (8h) → +2.8 pts | + Population served (380k residents) → +7.6 pts | + Historical service deficit (10%) → +1.5 pts | + Depot transit distance (5.0 km) → +2.5 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 4500,
+    "description": "Commercial high-rise sector; dedicated 24x7 pumped water connections."
+  },
+  {
+    "ward_id": 20,
+    "ward_number": "B",
+    "ward_code": "B",
+    "name": "Sandhurst Road / Dongri / Masjid Bunder",
+    "zone": "City",
+    "demand_liters": 3500,
+    "total_score": 22.1,
+    "tier": 4,
+    "lat": 18.9515,
+    "lng": 72.8375,
+    "coverage_pct": 88,
+    "water_deficit_pct": 15,
+    "dry_pipe_hours": 9,
+    "population": 127290,
+    "vulnerability_index": 0.4,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.4,
+        "normalized": 0.4,
+        "normalized_value": 0.4,
+        "weighted_score": 12,
+        "weighted_contribution": 12,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 9,
+        "normalized": 0.125,
+        "normalized_value": 0.125,
+        "weighted_score": 3.1,
+        "weighted_contribution": 3.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "9h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 127290,
+        "normalized": 0.127,
+        "normalized_value": 0.127,
+        "weighted_score": 2.5,
+        "weighted_contribution": 2.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "127k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.11,
+        "normalized": 0.11,
+        "normalized_value": 0.11,
+        "weighted_score": 1.7,
+        "weighted_contribution": 1.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "11% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 5.6,
+        "normalized": 0.28,
+        "normalized_value": 0.28,
+        "weighted_score": 2.8,
+        "weighted_contribution": 2.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "5.6km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.4,
+        "normalized": 0.4,
+        "normalized_value": 0.4,
+        "weighted_score": 12,
+        "weighted_contribution": 12,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 9,
+        "normalized": 0.125,
+        "normalized_value": 0.125,
+        "weighted_score": 3.1,
+        "weighted_contribution": 3.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "9h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 127290,
+        "normalized": 0.127,
+        "normalized_value": 0.127,
+        "weighted_score": 2.5,
+        "weighted_contribution": 2.5,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "127k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.11,
+        "normalized": 0.11,
+        "normalized_value": 0.11,
+        "weighted_score": 1.7,
+        "weighted_contribution": 1.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "11% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 5.6,
+        "normalized": 0.28,
+        "normalized_value": 0.28,
+        "weighted_score": 2.8,
+        "weighted_contribution": 2.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "5.6km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.40) → +12.0 pts",
+      "+ Dry pipe outage (9h) → +3.1 pts",
+      "+ Population served (127k residents) → +2.5 pts",
+      "+ Historical service deficit (11%) → +1.7 pts",
+      "+ Depot transit distance (5.6 km) → +2.8 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.40) → +12.0 pts | + Dry pipe outage (9h) → +3.1 pts | + Population served (127k residents) → +2.5 pts | + Historical service deficit (11%) → +1.7 pts | + Depot transit distance (5.6 km) → +2.8 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 3500,
+    "description": "Port-adjacent wholesale market zone; dense historic tenements with scheduled supply."
+  },
+  {
+    "ward_id": 21,
+    "ward_number": "H/W",
+    "ward_code": "H/W",
+    "name": "Bandra West / Khar West",
+    "zone": "Western Suburbs",
+    "demand_liters": 3000,
+    "total_score": 22,
+    "tier": 4,
+    "lat": 19.06,
+    "lng": 72.835,
+    "coverage_pct": 93,
+    "water_deficit_pct": 11,
+    "dry_pipe_hours": 6,
+    "population": 307581,
+    "vulnerability_index": 0.28,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.28,
+        "normalized": 0.28,
+        "normalized_value": 0.28,
+        "weighted_score": 8.4,
+        "weighted_contribution": 8.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 6,
+        "normalized": 0.083,
+        "normalized_value": 0.083,
+        "weighted_score": 2.1,
+        "weighted_contribution": 2.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "6h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 307581,
+        "normalized": 0.308,
+        "normalized_value": 0.308,
+        "weighted_score": 6.2,
+        "weighted_contribution": 6.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "308k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.08,
+        "normalized": 0.08,
+        "normalized_value": 0.08,
+        "weighted_score": 1.2,
+        "weighted_contribution": 1.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "8% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 8.2,
+        "normalized": 0.41,
+        "normalized_value": 0.41,
+        "weighted_score": 4.1,
+        "weighted_contribution": 4.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "8.2km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.28,
+        "normalized": 0.28,
+        "normalized_value": 0.28,
+        "weighted_score": 8.4,
+        "weighted_contribution": 8.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 6,
+        "normalized": 0.083,
+        "normalized_value": 0.083,
+        "weighted_score": 2.1,
+        "weighted_contribution": 2.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "6h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 307581,
+        "normalized": 0.308,
+        "normalized_value": 0.308,
+        "weighted_score": 6.2,
+        "weighted_contribution": 6.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "308k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.08,
+        "normalized": 0.08,
+        "normalized_value": 0.08,
+        "weighted_score": 1.2,
+        "weighted_contribution": 1.2,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "8% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 8.2,
+        "normalized": 0.41,
+        "normalized_value": 0.41,
+        "weighted_score": 4.1,
+        "weighted_contribution": 4.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "8.2km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.28) → +8.4 pts",
+      "+ Dry pipe outage (6h) → +2.1 pts",
+      "+ Population served (308k residents) → +6.2 pts",
+      "+ Historical service deficit (8%) → +1.2 pts",
+      "+ Depot transit distance (8.2 km) → +4.1 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.28) → +8.4 pts | + Dry pipe outage (6h) → +2.1 pts | + Population served (308k residents) → +6.2 pts | + Historical service deficit (8%) → +1.2 pts | + Depot transit distance (8.2 km) → +4.1 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 3000,
+    "description": "Affluent residential quarter; uninterrupted pressurized municipal supply."
+  },
+  {
+    "ward_id": 22,
+    "ward_number": "C",
+    "ward_code": "C",
+    "name": "Marine Lines / Kalbadevi / Bhuleshwar",
+    "zone": "City",
+    "demand_liters": 2500,
+    "total_score": 19.1,
+    "tier": 4,
+    "lat": 18.948,
+    "lng": 72.825,
+    "coverage_pct": 92,
+    "water_deficit_pct": 9,
+    "dry_pipe_hours": 6,
+    "population": 166161,
+    "vulnerability_index": 0.32,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.32,
+        "normalized": 0.32,
+        "normalized_value": 0.32,
+        "weighted_score": 9.6,
+        "weighted_contribution": 9.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 6,
+        "normalized": 0.083,
+        "normalized_value": 0.083,
+        "weighted_score": 2.1,
+        "weighted_contribution": 2.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "6h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 166161,
+        "normalized": 0.166,
+        "normalized_value": 0.166,
+        "weighted_score": 3.3,
+        "weighted_contribution": 3.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "166k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.07,
+        "normalized": 0.07,
+        "normalized_value": 0.07,
+        "weighted_score": 1.1,
+        "weighted_contribution": 1.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "7% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 6,
+        "normalized": 0.3,
+        "normalized_value": 0.3,
+        "weighted_score": 3,
+        "weighted_contribution": 3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "6.0km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.32,
+        "normalized": 0.32,
+        "normalized_value": 0.32,
+        "weighted_score": 9.6,
+        "weighted_contribution": 9.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 6,
+        "normalized": 0.083,
+        "normalized_value": 0.083,
+        "weighted_score": 2.1,
+        "weighted_contribution": 2.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "6h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 166161,
+        "normalized": 0.166,
+        "normalized_value": 0.166,
+        "weighted_score": 3.3,
+        "weighted_contribution": 3.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "166k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.07,
+        "normalized": 0.07,
+        "normalized_value": 0.07,
+        "weighted_score": 1.1,
+        "weighted_contribution": 1.1,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "7% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 6,
+        "normalized": 0.3,
+        "normalized_value": 0.3,
+        "weighted_score": 3,
+        "weighted_contribution": 3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "6.0km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.32) → +9.6 pts",
+      "+ Dry pipe outage (6h) → +2.1 pts",
+      "+ Population served (166k residents) → +3.3 pts",
+      "+ Historical service deficit (7%) → +1.1 pts",
+      "+ Depot transit distance (6.0 km) → +3.0 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.32) → +9.6 pts | + Dry pipe outage (6h) → +2.1 pts | + Population served (166k residents) → +3.3 pts | + Historical service deficit (7%) → +1.1 pts | + Depot transit distance (6.0 km) → +3.0 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 2500,
+    "description": "Commercial gold & textile trade district; reliable dual main supply."
+  },
+  {
+    "ward_id": 23,
+    "ward_number": "A",
+    "ward_code": "A",
+    "name": "Colaba / Fort / Nariman Point",
+    "zone": "City",
+    "demand_liters": 2000,
+    "total_score": 16.3,
+    "tier": 4,
+    "lat": 18.922,
+    "lng": 72.834,
+    "coverage_pct": 96,
+    "water_deficit_pct": 5,
+    "dry_pipe_hours": 4,
+    "population": 185014,
+    "vulnerability_index": 0.22,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.22,
+        "normalized": 0.22,
+        "normalized_value": 0.22,
+        "weighted_score": 6.6,
+        "weighted_contribution": 6.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 4,
+        "normalized": 0.056,
+        "normalized_value": 0.056,
+        "weighted_score": 1.4,
+        "weighted_contribution": 1.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "4h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 185014,
+        "normalized": 0.185,
+        "normalized_value": 0.185,
+        "weighted_score": 3.7,
+        "weighted_contribution": 3.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "185k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.04,
+        "normalized": 0.04,
+        "normalized_value": 0.04,
+        "weighted_score": 0.6,
+        "weighted_contribution": 0.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "4% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 7.9,
+        "normalized": 0.395,
+        "normalized_value": 0.395,
+        "weighted_score": 4,
+        "weighted_contribution": 4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "7.9km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.22,
+        "normalized": 0.22,
+        "normalized_value": 0.22,
+        "weighted_score": 6.6,
+        "weighted_contribution": 6.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 4,
+        "normalized": 0.056,
+        "normalized_value": 0.056,
+        "weighted_score": 1.4,
+        "weighted_contribution": 1.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "4h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 185014,
+        "normalized": 0.185,
+        "normalized_value": 0.185,
+        "weighted_score": 3.7,
+        "weighted_contribution": 3.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "185k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.04,
+        "normalized": 0.04,
+        "normalized_value": 0.04,
+        "weighted_score": 0.6,
+        "weighted_contribution": 0.6,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "4% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 7.9,
+        "normalized": 0.395,
+        "normalized_value": 0.395,
+        "weighted_score": 4,
+        "weighted_contribution": 4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "7.9km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.22) → +6.6 pts",
+      "+ Dry pipe outage (4h) → +1.4 pts",
+      "+ Population served (185k residents) → +3.7 pts",
+      "+ Historical service deficit (4%) → +0.6 pts",
+      "+ Depot transit distance (7.9 km) → +4.0 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.22) → +6.6 pts | + Dry pipe outage (4h) → +1.4 pts | + Population served (185k residents) → +3.7 pts | + Historical service deficit (4%) → +0.6 pts | + Depot transit distance (7.9 km) → +4.0 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 2000,
+    "description": "State capital administrative district, Naval command, and financial headquarters."
+  },
+  {
+    "ward_id": 24,
+    "ward_number": "D",
+    "ward_code": "D",
+    "name": "Malabar Hill / Walkeshwar / Breach Candy",
+    "zone": "City",
+    "demand_liters": 1500,
+    "total_score": 16.1,
+    "tier": 4,
+    "lat": 18.961,
+    "lng": 72.812,
+    "coverage_pct": 98,
+    "water_deficit_pct": 3,
+    "dry_pipe_hours": 2,
+    "population": 346866,
+    "vulnerability_index": 0.16,
+    "breakdown": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.16,
+        "normalized": 0.16,
+        "normalized_value": 0.16,
+        "weighted_score": 4.8,
+        "weighted_contribution": 4.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 2,
+        "normalized": 0.028,
+        "normalized_value": 0.028,
+        "weighted_score": 0.7,
+        "weighted_contribution": 0.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "2h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 346866,
+        "normalized": 0.347,
+        "normalized_value": 0.347,
+        "weighted_score": 6.9,
+        "weighted_contribution": 6.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "347k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.02,
+        "normalized": 0.02,
+        "normalized_value": 0.02,
+        "weighted_score": 0.3,
+        "weighted_contribution": 0.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "2% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 6.8,
+        "normalized": 0.34,
+        "normalized_value": 0.34,
+        "weighted_score": 3.4,
+        "weighted_contribution": 3.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "6.8km to depot (peripheral transit distance)"
+      }
+    ],
+    "priority_factors": [
+      {
+        "factor": "Vulnerability",
+        "factor_name": "Vulnerability Exposure",
+        "weight": 0.3,
+        "raw_value": 0.16,
+        "normalized": 0.16,
+        "normalized_value": 0.16,
+        "weighted_score": 4.8,
+        "weighted_contribution": 4.8,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SOCIOECONOMIC_SLUM_INDEX",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SOCIOECONOMIC_SLUM_INDEX"
+        },
+        "description": "Stable residential"
+      },
+      {
+        "factor": "Dry Pipe Time",
+        "factor_name": "Dry Pipe Duration",
+        "weight": 0.25,
+        "raw_value": 2,
+        "normalized": 0.028,
+        "normalized_value": 0.028,
+        "weighted_score": 0.7,
+        "weighted_contribution": 0.7,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "SYNTHETIC_SEEDED",
+        "provenance_class": "SYNTHETIC_SEEDED",
+        "provenance_subtype": "SCADA_TELEMETRY",
+        "provenance_metadata": {
+          "class": "SYNTHETIC_SEEDED",
+          "subtype": "SCADA_TELEMETRY"
+        },
+        "description": "2h pipe dry"
+      },
+      {
+        "factor": "Population",
+        "factor_name": "Population Density",
+        "weight": 0.2,
+        "raw_value": 346866,
+        "normalized": 0.347,
+        "normalized_value": 0.347,
+        "weighted_score": 6.9,
+        "weighted_contribution": 6.9,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "REFERENCE_DATA",
+        "provenance_class": "REFERENCE_DATA",
+        "provenance_subtype": "CENSUS_2011_PROJECTED",
+        "provenance_metadata": {
+          "class": "REFERENCE_DATA",
+          "subtype": "CENSUS_2011_PROJECTED"
+        },
+        "description": "347k residents"
+      },
+      {
+        "factor": "Historical Deficit",
+        "factor_name": "Historical Service Deficit",
+        "weight": 0.15,
+        "raw_value": 0.02,
+        "normalized": 0.02,
+        "normalized_value": 0.02,
+        "weighted_score": 0.3,
+        "weighted_contribution": 0.3,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "HISTORICAL_QUOTA_LOGS",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "HISTORICAL_QUOTA_LOGS"
+        },
+        "description": "2% last deficit"
+      },
+      {
+        "factor": "Depot Distance",
+        "factor_name": "Depot Distance",
+        "weight": 0.1,
+        "raw_value": 6.8,
+        "normalized": 0.34,
+        "normalized_value": 0.34,
+        "weighted_score": 3.4,
+        "weighted_contribution": 3.4,
+        "direction": "INCREASES_PRIORITY",
+        "provenance": "DERIVED",
+        "provenance_class": "DERIVED",
+        "provenance_subtype": "GIS_TRANSIT_NETWORK",
+        "provenance_metadata": {
+          "class": "DERIVED",
+          "subtype": "GIS_TRANSIT_NETWORK"
+        },
+        "description": "6.8km to depot (peripheral transit distance)"
+      }
+    ],
+    "why_factors": [
+      "+ Vulnerability exposure (0.16) → +4.8 pts",
+      "+ Dry pipe outage (2h) → +0.7 pts",
+      "+ Population served (347k residents) → +6.9 pts",
+      "+ Historical service deficit (2%) → +0.3 pts",
+      "+ Depot transit distance (6.8 km) → +3.4 pts"
+    ],
+    "why_summary": "+ Vulnerability exposure (0.16) → +4.8 pts | + Dry pipe outage (2h) → +0.7 pts | + Population served (347k residents) → +6.9 pts | + Historical service deficit (2%) → +0.3 pts | + Depot transit distance (6.8 km) → +3.4 pts",
+    "recommended_action": "Monitor pipeline distribution; nominal supply sufficient.",
+    "recommended_volume": 1500,
+    "description": "Malabar Hill reservoir feeding directly into local gravity mains; optimal pressure."
+  }
+]

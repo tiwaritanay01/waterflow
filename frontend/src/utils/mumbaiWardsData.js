@@ -4,8 +4,10 @@
  */
 
 import allMumbaiWards from "./allMumbaiWards.json";
+import defaultPriorityQueue from "./defaultPriorityQueue.json";
 
 export const DEFAULT_MUMBAI_WARDS = allMumbaiWards;
+export const DEFAULT_MUMBAI_PRIORITY_QUEUE = defaultPriorityQueue;
 
 export const MUMBAI_WARDS_DATABASE = [
   {
@@ -258,31 +260,48 @@ export const DEFAULT_MUMBAI_DEPOTS = [
 ];
 
 export const DEFAULT_MUMBAI_TANKERS = [
-  { tanker_id: 1,  transponder_id: "T-01", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0  },
-  { tanker_id: 2,  transponder_id: "T-02", capacity: 12000, current_load: 4500,  status: "dispensing",  assigned_ward: "G/N", eta_minutes: null, lat: 19.0435, lng: 72.8480, speed_kmh: 0  },
-  { tanker_id: 3,  transponder_id: "T-03", capacity: 8000,  current_load: 8000,  status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1290, lng: 72.8680, speed_kmh: 0  },
-  { tanker_id: 4,  transponder_id: "T-04", capacity: 10000, current_load: 10000, status: "loading",     assigned_ward: null,  eta_minutes: null, lat: 19.0180, lng: 72.8420, speed_kmh: 0  },
-  { tanker_id: 5,  transponder_id: "T-05", capacity: 8000,  current_load: 8000,  status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.0350, lng: 72.9150, speed_kmh: 0  },
-  { tanker_id: 6,  transponder_id: "T-06", capacity: 12000, current_load: 12000, status: "loading",     assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0  },
-  { tanker_id: 7,  transponder_id: "T-07", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1290, lng: 72.8680, speed_kmh: 0  },
-  { tanker_id: 8,  transponder_id: "T-08", capacity: 10000, current_load: 10000, status: "en_route",    assigned_ward: "M/E", eta_minutes: 14,   lat: 19.0480, lng: 72.9120, speed_kmh: 34 },
-  { tanker_id: 9,  transponder_id: "T-09", capacity: 8000,  current_load: 8000,  status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.0350, lng: 72.9150, speed_kmh: 0  },
-  { tanker_id: 10, transponder_id: "T-10", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0  },
-  { tanker_id: 11, transponder_id: "T-11", capacity: 12000, current_load: 12000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.0180, lng: 72.8420, speed_kmh: 0  },
-  { tanker_id: 12, transponder_id: "T-12", capacity: 8000,  current_load: 8000,  status: "loading",     assigned_ward: null,  eta_minutes: null, lat: 19.1290, lng: 72.8680, speed_kmh: 0  },
-  { tanker_id: 13, transponder_id: "T-13", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0  },
-  { tanker_id: 14, transponder_id: "T-14", capacity: 8000,  current_load: 8000,  status: "en_route",    assigned_ward: "L",   eta_minutes: 22,   lat: 19.0700, lng: 72.8750, speed_kmh: 28 },
-  { tanker_id: 15, transponder_id: "T-15", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.0350, lng: 72.9150, speed_kmh: 0  },
-  { tanker_id: 16, transponder_id: "T-16", capacity: 12000, current_load: 12000, status: "en_route",    assigned_ward: "P/N", eta_minutes: 36,   lat: 19.1550, lng: 72.8520, speed_kmh: 42 },
-  { tanker_id: 17, transponder_id: "T-17", capacity: 8000,  current_load: 8000,  status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0  },
-  { tanker_id: 18, transponder_id: "T-18", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.0180, lng: 72.8420, speed_kmh: 0  },
-  { tanker_id: 19, transponder_id: "T-19", capacity: 8000,  current_load: 0,     status: "returning",   assigned_ward: null,  eta_minutes: null, lat: 19.0820, lng: 72.8950, speed_kmh: 38 },
-  { tanker_id: 20, transponder_id: "T-20", capacity: 10000, current_load: 10000, status: "loading",     assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0  },
-  { tanker_id: 21, transponder_id: "T-21", capacity: 12000, current_load: 12000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1290, lng: 72.8680, speed_kmh: 0  },
-  { tanker_id: 22, transponder_id: "T-22", capacity: 8000,  current_load: 8000,  status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.0350, lng: 72.9150, speed_kmh: 0  },
-  { tanker_id: 23, transponder_id: "T-23", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.0180, lng: 72.8420, speed_kmh: 0  },
-  { tanker_id: 24, transponder_id: "T-24", capacity: 8000,  current_load: 8000,  status: "maintenance", assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0  },
-  { tanker_id: 25, transponder_id: "T-25", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0  },
+  { tanker_id: 1,  transponder_id: "T-01", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0,  driver: "Sunil Shinde",     plate: "MH-03-CB-1102", depot: "Bhandup Master Plant" },
+  { tanker_id: 2,  transponder_id: "T-02", capacity: 12000, current_load: 4500,  status: "dispensing",  assigned_ward: "G/N", eta_minutes: null, lat: 19.0435, lng: 72.8480, speed_kmh: 0,  driver: "Mahesh Gaikwad",   plate: "MH-02-AL-4491", depot: "Dadar Pumping Station" },
+  { tanker_id: 3,  transponder_id: "T-03", capacity: 8000,  current_load: 8000,  status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1290, lng: 72.8680, speed_kmh: 0,  driver: "Anand Kamble",     plate: "MH-01-BK-9021", depot: "Veravali Reservoir" },
+  { tanker_id: 4,  transponder_id: "T-04", capacity: 10000, current_load: 10000, status: "loading",     assigned_ward: null,  eta_minutes: null, lat: 19.0180, lng: 72.8420, speed_kmh: 0,  driver: "Ramesh Deshmukh",  plate: "MH-04-ED-3381", depot: "Dadar Pumping Station" },
+  { tanker_id: 5,  transponder_id: "T-05", capacity: 8000,  current_load: 8000,  status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.0350, lng: 72.9150, speed_kmh: 0,  driver: "Vijay Mane",       plate: "MH-03-FA-5509", depot: "Trombay Reservoir" },
+  { tanker_id: 6,  transponder_id: "T-06", capacity: 12000, current_load: 12000, status: "loading",     assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0,  driver: "Santosh Kadam",    plate: "MH-02-GH-8201", depot: "Bhandup Master Plant" },
+  { tanker_id: 7,  transponder_id: "T-07", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1290, lng: 72.8680, speed_kmh: 0,  driver: "Deepak Sawant",    plate: "MH-03-BW-1928", depot: "Veravali Reservoir" },
+  { tanker_id: 8,  transponder_id: "T-08", capacity: 10000, current_load: 10000, status: "en_route",    assigned_ward: "M/E", eta_minutes: 14,   lat: 19.0480, lng: 72.9120, speed_kmh: 34, driver: "Rajesh Patil",     plate: "MH-03-BW-7821", depot: "Trombay Reservoir" },
+  { tanker_id: 9,  transponder_id: "T-09", capacity: 8000,  current_load: 8000,  status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.0350, lng: 72.9150, speed_kmh: 0,  driver: "Ganesh Jadhav",    plate: "MH-01-DA-3042", depot: "Trombay Reservoir" },
+  { tanker_id: 10, transponder_id: "T-10", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0,  driver: "Prakash More",     plate: "MH-02-KM-4920", depot: "Bhandup Master Plant" },
+  { tanker_id: 11, transponder_id: "T-11", capacity: 12000, current_load: 12000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.0180, lng: 72.8420, speed_kmh: 0,  driver: "Nitin Chavan",     plate: "MH-04-NP-6712", depot: "Dadar Pumping Station" },
+  { tanker_id: 12, transponder_id: "T-12", capacity: 8000,  current_load: 8000,  status: "loading",     assigned_ward: null,  eta_minutes: null, lat: 19.1290, lng: 72.8680, speed_kmh: 0,  driver: "Hemant Bhoir",     plate: "MH-03-QR-8910", depot: "Veravali Reservoir" },
+  { tanker_id: 13, transponder_id: "T-13", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0,  driver: "Sachin Salve",     plate: "MH-02-ST-1290", depot: "Bhandup Master Plant" },
+  { tanker_id: 14, transponder_id: "T-14", capacity: 8000,  current_load: 8000,  status: "en_route",    assigned_ward: "L",   eta_minutes: 22,   lat: 19.0700, lng: 72.8750, speed_kmh: 28, driver: "Dilip Wagh",       plate: "MH-01-UV-4519", depot: "Dadar Pumping Station" },
+  { tanker_id: 15, transponder_id: "T-15", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.0350, lng: 72.9150, speed_kmh: 0,  driver: "Arun Ghuge",       plate: "MH-03-WX-7721", depot: "Trombay Reservoir" },
+  { tanker_id: 16, transponder_id: "T-16", capacity: 12000, current_load: 12000, status: "en_route",    assigned_ward: "P/N", eta_minutes: 36,   lat: 19.1550, lng: 72.8520, speed_kmh: 42, driver: "Kiran Rane",       plate: "MH-02-YZ-9102", depot: "Veravali Reservoir" },
+  { tanker_id: 17, transponder_id: "T-17", capacity: 8000,  current_load: 8000,  status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0,  driver: "Sanjay Tawde",     plate: "MH-04-AB-3310", depot: "Bhandup Master Plant" },
+  { tanker_id: 18, transponder_id: "T-18", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.0180, lng: 72.8420, speed_kmh: 0,  driver: "Pradeep Joshi",    plate: "MH-01-CD-8841", depot: "Dadar Pumping Station" },
+  { tanker_id: 19, transponder_id: "T-19", capacity: 8000,  current_load: 0,     status: "returning",   assigned_ward: null,  eta_minutes: null, lat: 19.0820, lng: 72.8950, speed_kmh: 38, driver: "Kishore Jagtap",   plate: "MH-03-EF-1193", depot: "Trombay Reservoir" },
+  { tanker_id: 20, transponder_id: "T-20", capacity: 10000, current_load: 10000, status: "loading",     assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0,  driver: "Manoj Mhatre",     plate: "MH-02-GH-4091", depot: "Bhandup Master Plant" },
+  { tanker_id: 21, transponder_id: "T-21", capacity: 12000, current_load: 12000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1290, lng: 72.8680, speed_kmh: 0,  driver: "Girish Mohite",    plate: "MH-03-IJ-6623", depot: "Veravali Reservoir" },
+  { tanker_id: 22, transponder_id: "T-22", capacity: 8000,  current_load: 8000,  status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.0350, lng: 72.9150, speed_kmh: 0,  driver: "Amol Thombare",    plate: "MH-01-KL-9214", depot: "Trombay Reservoir" },
+  { tanker_id: 23, transponder_id: "T-23", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.0180, lng: 72.8420, speed_kmh: 0,  driver: "Ravindra Tambe",   plate: "MH-04-MN-3810", depot: "Dadar Pumping Station" },
+  { tanker_id: 24, transponder_id: "T-24", capacity: 8000,  current_load: 8000,  status: "maintenance", assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0,  driver: "Siddhesh Gurav",   plate: "MH-02-OP-5012", depot: "Bhandup Fleet Workshop" },
+  { tanker_id: 25, transponder_id: "T-25", capacity: 10000, current_load: 10000, status: "available",   assigned_ward: null,  eta_minutes: null, lat: 19.1480, lng: 72.9350, speed_kmh: 0,  driver: "Baban Shinde",     plate: "MH-03-QR-7740", depot: "Bhandup Master Plant" },
+];
+
+export const DEFAULT_MUMBAI_KPIS = {
+  active_requests: 24,
+  fleet_available: 18,
+  fleet_total: 25,
+  water_available: 810000,
+  water_total_capacity: 1000000,
+  demand_fulfillment_pct: 78,
+  equity_index: 0.88,
+  critical_alerts: 3,
+};
+
+export const DEFAULT_MUMBAI_ALERTS = [
+  { id: 1, title: "Ward M/East · Severe Deficit Surge", description: "Shivaji Nagar informal cluster pipe dry for 58h; priority tanker route queued from Trombay Depot.", severity: "critical", ward_number: "M/E", badge_text: "58h Dry" },
+  { id: 2, title: "Ward G/North · Dharavi Transit Bottleneck", description: "Sion-Bandra Link congestion detected; Tanker T-08 rerouted via 90-Feet Road corridor.", severity: "warning", ward_number: "G/N", badge_text: "+14m Transit" },
+  { id: 3, title: "Ward L · Kurla Asalpha Gravity Trip", description: "Booster failure in hillside pressure zone; 24,000L emergency allocation scheduled.", severity: "critical", ward_number: "L", badge_text: "46h Dry" },
 ];
 
 

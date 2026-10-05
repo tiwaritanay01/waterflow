@@ -4,7 +4,7 @@ const { pool, getDbAvailable } = require("./db.js");
 // If db is not available, they will rely on the caller updating the in-memory array.
 
 function enforceDbForProduction() {
-  if (!getDbAvailable() && process.env.APP_MODE !== "DEMO") {
+  if (!getDbAvailable() && process.env.APP_MODE === "PRODUCTION") {
     const err = new Error("503 DATABASE_UNAVAILABLE");
     err.statusCode = 503;
     throw err;
