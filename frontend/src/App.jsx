@@ -66,11 +66,15 @@ const NAV_ITEMS = [
   { id: "equity", label: "Equity & Impact", icon: Scale },
 ];
 
+import ErrorBoundary from "./components/ErrorBoundary";
+
 export default function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

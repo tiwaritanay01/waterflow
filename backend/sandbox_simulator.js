@@ -231,87 +231,115 @@ function executeAllocation(wards, totalSupply, policyWeights, demandMultiplier, 
 }
 
 function computeImpactDeltas(baseline, scenario) {
-  const unmetDelta = scenario.unmet_demand - baseline.unmet_demand;
-  const unmetDeltaPct = baseline.unmet_demand > 0 ? (unmetDelta / baseline.unmet_demand) * 100 : (unmetDelta > 0 ? 100 : 0);
+  const comparisons = [
+    ["Total Supply (L)", baseline.total_supply, scenario.total_supply],
+    ["Total Demand (L)", baseline.total_demand, scenario.total_demand],
+    ["Allocated Volume (L)", baseline.allocated_volume, scenario.allocated_volume],
+    ["Unmet Demand (L)", baseline.unmet_demand, scenario.unmet_demand],
+    ["Reserve Held (L)", baseline.reserve_held, scenario.reserve_held],
+    ["Fulfillment Ratio", baseline.fulfillment_ratio, scenario.fulfillment_ratio],
+    ["Vulnerable Pop Fulfillment", baseline.high_vuln_fulfillment_ratio, scenario.high_vuln_fulfillment_ratio],
+    ["Wards with Unmet Demand", baseline.affected_wards, scenario.affected_wards],
+    ["Critical Wards", baseline.critical_wards || 0, scenario.critical_wards || 0],
+  ];
 
-  const fulfillmentDelta = (scenario.fulfillment_ratio - baseline.fulfillment_ratio) * 100;
-  const vulFulfillmentDelta = (scenario.high_vuln_fulfillment_ratio - baseline.high_vuln_fulfillment_ratio) * 100;
-  const affectedDelta = scenario.affected_wards - baseline.affected_wards;
-
-  const wardDeltas = [];
-  for (const sAlloc of scenario.allocations) {
-    const bAlloc = baseline.allocations.find(b => b.ward_code === sAlloc.ward_code);
-    const bVol = bAlloc ? bAlloc.allocated_liters : 0;
-    const diff = sAlloc.allocated_liters - bVol;
-    const pctDiff = bVol > 0 ? (diff / bVol) * 100 : 0;
-
-    wardDeltas.push({
-      ward_code: sAlloc.ward_code,
-      name: sAlloc.name,
-      baseline_liters: bVol,
-      scenario_liters: sAlloc.allocated_liters,
-      volume_delta: diff,
-      pct_delta: Math.round(pctDiff * 10) / 10,
-      vulnerability_index: sAlloc.vulnerability_index,
-    });
-  }
-
-  wardDeltas.sort((a, b) => Math.abs(b.volume_delta) - Math.abs(a.volume_delta));
-
-  return {
-    unmet_demand_delta: unmetDelta,
-    unmet_demand_delta_pct: Math.round(unmetDeltaPct * 10) / 10,
-    fulfillment_ratio_delta_pp: Math.round(fulfillmentDelta * 10) / 10,
-    high_vuln_fulfillment_delta_pp: Math.round(vulFulfillmentDelta * 10) / 10,
-    affected_wards_delta: affectedDelta,
-    top_divergent_wards: wardDeltas.slice(0, 8),
-  };
+  return comparisons.map(([label, bval, sval]) => {
+    const delta = Math.round((sval - bval) * 100) / 100;
+    const deltaPct = bval !== 0 ? Math.round(((sval - bval) / Math.abs(bval)) * 1000) / 10 : (sval === 0 ? 0.0 : 100.0);
+    const direction = delta > 0.001 ? "↑" : delta < -0.001 ? "↓" : "—";
+    return {
+      metric: label,
+      baseline_value: bval,
+      scenario_value: sval,
+      delta,
+      delta_pct: deltaPct,
+      direction,
+    };
+  });
 }
 
 function generateWhyExplanations(baseline, scenario, scenarioObj, policyPreset) {
   const explanations = [];
 
-  if (scenarioObj.supply_reduction_pct > 0) {
+  if (baseline.total_supply !== scenario.total_supply) {
+    const deltaPct = Math.round(((scenario.total_supply - baseline.total_supply) / baseline.total_supply) * 1000) / 10;
     explanations.push({
-      type: "SUPPLY_CONTRACTION",
-      severity: "high",
-      text: `Available supply was reduced by ${scenarioObj.supply_reduction_pct}% due to scenario constraints, leaving total supply at ${scenario.total_supply.toLocaleString()} L.`,
-      driver: "Upstream supply cut / treatment constraint",
+      category: "Supply Changed",
+      explanation: `Available supply: ${baseline.total_supply.toLocaleString()} L → ${scenario.total_supply.toLocaleString()} L (${deltaPct > 0 ? "+" : ""}${deltaPct}%). Cause: ${scenarioObj.description}`,
+      metric_key: "total_supply",
+      baseline_value: baseline.total_supply,
+      scenario_value: scenario.total_supply,
+      delta_pct: deltaPct,
     });
   }
 
-  if (scenarioObj.demand_multiplier > 1.0) {
-    const pctInc = Math.round((scenarioObj.demand_multiplier - 1.0) * 100);
+  if (baseline.total_demand !== scenario.total_demand) {
+    const deltaPct = Math.round(((scenario.total_demand - baseline.total_demand) / baseline.total_demand) * 1000) / 10;
     explanations.push({
-      type: "DEMAND_SURGE",
-      severity: "medium",
-      text: `Municipal aggregate demand surged by ${pctInc}% across all sectors, widening the supply-demand deficit to ${scenario.unmet_demand.toLocaleString()} L.`,
-      driver: "Temperature anomaly / climatic surge",
+      category: "Demand Changed",
+      explanation: `Total demand: ${baseline.total_demand.toLocaleString()} L → ${scenario.total_demand.toLocaleString()} L (${deltaPct > 0 ? "+" : ""}${deltaPct}%). Multiplier: ${scenarioObj.demand_multiplier}x applied.`,
+      metric_key: "total_demand",
+      baseline_value: baseline.total_demand,
+      scenario_value: scenario.total_demand,
+      delta_pct: deltaPct,
     });
   }
 
-  if (policyPreset === "PRO_POOR") {
+  if (baseline.allocated_volume !== scenario.allocated_volume) {
+    const deltaPct = Math.round(((scenario.allocated_volume - baseline.allocated_volume) / Math.max(baseline.allocated_volume, 1)) * 1000) / 10;
     explanations.push({
-      type: "EQUITY_REBALANCING",
-      severity: "info",
-      text: `Pro-Poor policy weight (50% vulnerability) prioritized informal settlements (Govandi M/E, Dharavi G/N), maintaining vulnerable fulfillment at ${(scenario.high_vuln_fulfillment_ratio * 100).toFixed(1)}%.`,
-      driver: "Vulnerability-weighted LP optimization",
-    });
-  } else if (policyPreset === "OUTAGE_FIRST") {
-    explanations.push({
-      type: "ACUTE_RESPONSE",
-      severity: "info",
-      text: `Outage-First policy weight (50% dry pipeline duration) directed emergency loads to wards with dry pipe duration exceeding 40 hours.`,
-      driver: "Duration-weighted triage",
+      category: "Optimization Response",
+      explanation: `LP solver re-allocated: ${baseline.allocated_volume.toLocaleString()} L → ${scenario.allocated_volume.toLocaleString()} L (${deltaPct > 0 ? "+" : ""}${deltaPct}%). Policy '${policyPreset}' weights applied to priority scoring.`,
+      metric_key: "allocated_volume",
+      baseline_value: baseline.allocated_volume,
+      scenario_value: scenario.allocated_volume,
+      delta_pct: deltaPct,
     });
   }
 
-  if (scenario.high_vuln_fulfillment_ratio >= scenario.fulfillment_ratio) {
+  if (scenario.unmet_demand > baseline.unmet_demand) {
+    const deltaPct = Math.round(((scenario.unmet_demand - baseline.unmet_demand) / Math.max(baseline.unmet_demand, 1)) * 1000) / 10;
     explanations.push({
-      type: "VULNERABILITY_PROTECTED",
-      severity: "positive",
-      text: `High-vulnerability clusters achieved ${(scenario.high_vuln_fulfillment_ratio * 100).toFixed(1)}% fulfillment, outperforming the municipal average of ${(scenario.fulfillment_ratio * 100).toFixed(1)}%.`,
-      driver: "Constitutional minimum allocation enforcement",
+      category: "Service Deficit Impact",
+      explanation: `Unmet demand increased: ${baseline.unmet_demand.toLocaleString()} L → ${scenario.unmet_demand.toLocaleString()} L (${deltaPct > 0 ? "+" : ""}${deltaPct}%). Affected wards: ${baseline.affected_wards} → ${scenario.affected_wards}.`,
+      metric_key: "unmet_demand",
+      baseline_value: baseline.unmet_demand,
+      scenario_value: scenario.unmet_demand,
+      delta_pct: deltaPct,
+    });
+  }
+
+  if (baseline.fulfillment_ratio !== scenario.fulfillment_ratio) {
+    const deltaPct = Math.round((scenario.fulfillment_ratio - baseline.fulfillment_ratio) * 1000) / 10;
+    explanations.push({
+      category: "Equity Impact",
+      explanation: `Overall fulfillment: ${(baseline.fulfillment_ratio * 100).toFixed(1)}% → ${(scenario.fulfillment_ratio * 100).toFixed(1)}% (${deltaPct > 0 ? "+" : ""}${deltaPct}pp). Vulnerable population fulfillment: ${(baseline.high_vuln_fulfillment_ratio * 100).toFixed(1)}% → ${(scenario.high_vuln_fulfillment_ratio * 100).toFixed(1)}%.`,
+      metric_key: "fulfillment_ratio",
+      baseline_value: baseline.fulfillment_ratio,
+      scenario_value: scenario.fulfillment_ratio,
+      delta_pct: deltaPct,
+    });
+  }
+
+  if (scenarioObj.strategic_reserve_release) {
+    explanations.push({
+      category: "Governance Consequence",
+      explanation: `Strategic reserve release proposed due to infrastructure disruption. This triggers Tier 3 executive authorization requirement. Reserve held: ${baseline.reserve_held.toLocaleString()} L → ${scenario.reserve_held.toLocaleString()} L.`,
+      metric_key: "reserve_held",
+      baseline_value: baseline.reserve_held,
+      scenario_value: scenario.reserve_held,
+      delta_pct: 0,
+    });
+  }
+
+  if (explanations.length === 0) {
+    explanations.push({
+      category: "Nominal Baseline",
+      explanation: "Baseline and scenario produced identical nominal allocations. No service variance detected.",
+      metric_key: "none",
+      baseline_value: 0,
+      scenario_value: 0,
+      delta_pct: 0,
     });
   }
 

@@ -355,112 +355,133 @@ export default function PolicySandbox({ onNavigateToGovernance }) {
             )}
 
             {/* BASELINE vs SCENARIO Side-by-Side */}
-            <div className="grid grid-cols-2 gap-3">
-              {/* Baseline Column */}
-              <div>
-                <div className="text-[10px] font-bold text-sec-text uppercase tracking-wider mb-1.5 flex items-center space-x-1">
-                  <BarChart3 className="w-3 h-3" />
-                  <span>Baseline</span>
-                </div>
-                <div className="space-y-1.5">
-                  <MetricCard label="Supply" value={result.baseline?.total_supply} unit="L" small />
-                  <MetricCard label="Demand" value={result.baseline?.total_demand} unit="L" small />
-                  <MetricCard label="Allocated" value={result.baseline?.allocated_volume} unit="L" small />
-                  <MetricCard label="Unmet" value={result.baseline?.unmet_demand} unit="L" small />
-                  <MetricCard label="Reserve" value={result.baseline?.reserve_held} unit="L" small />
-                  <MetricCard label="Fulfillment" value={(result.baseline?.fulfillment_ratio || 0) * 100} unit="%" small />
-                  <MetricCard label="Vuln. Fulfillment" value={(result.baseline?.high_vuln_fulfillment_ratio || 0) * 100} unit="%" small />
-                  <MetricCard label="Affected Wards" value={result.baseline?.affected_wards} small />
-                </div>
-              </div>
+            {(() => {
+              const impactDeltasArray = Array.isArray(result?.impact_deltas)
+                ? result.impact_deltas
+                : result?.impact_deltas && typeof result.impact_deltas === "object"
+                ? Object.entries(result.impact_deltas)
+                    .filter(([k]) => k !== "top_divergent_wards")
+                    .map(([k, v]) => ({
+                      metric: k.replace(/_/g, " "),
+                      delta_pct: typeof v === "number" ? v : 0,
+                      direction: v > 0 ? "↑" : v < 0 ? "↓" : "—",
+                    }))
+                : [];
 
-              {/* Scenario Column */}
-              <div>
-                <div className="text-[10px] font-bold text-sec-text uppercase tracking-wider mb-1.5 flex items-center space-x-1">
-                  <Beaker className="w-3 h-3" />
-                  <span>Scenario ({CRISIS_META[result.crisis_scenario]?.icon} {CRISIS_META[result.crisis_scenario]?.label})</span>
-                </div>
-                <div className="space-y-1.5">
-                  {[
-                    { label: "Supply", key: "total_supply", unit: "L" },
-                    { label: "Demand", key: "total_demand", unit: "L" },
-                    { label: "Allocated", key: "allocated_volume", unit: "L" },
-                    { label: "Unmet", key: "unmet_demand", unit: "L" },
-                    { label: "Reserve", key: "reserve_held", unit: "L" },
-                    { label: "Fulfillment", key: "fulfillment_ratio", unit: "%", ratio: true },
-                    { label: "Vuln. Fulfillment", key: "high_vuln_fulfillment_ratio", unit: "%", ratio: true },
-                    { label: "Affected Wards", key: "affected_wards" },
-                  ].map(({ label, key, unit, ratio }) => {
-                    const scenVal = ratio ? (result.scenario?.[key] || 0) * 100 : result.scenario?.[key];
-                    const baseVal = ratio ? (result.baseline?.[key] || 0) * 100 : result.baseline?.[key];
-                    const delta = result.impact_deltas?.find(d =>
-                      d.metric.toLowerCase().includes(label.toLowerCase().split(".")[0].trim())
-                    );
-                    return (
-                      <MetricCard
-                        key={key}
-                        label={label}
-                        value={scenVal}
-                        unit={unit}
-                        deltaPct={delta?.delta_pct}
-                        direction={delta?.direction}
-                        small
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+              const whyExplanationsArray = Array.isArray(result?.why_explanations)
+                ? result.why_explanations
+                : [];
 
-            {/* IMPACT DELTA Strip */}
-            <div className="p-3 bg-slate-50 rounded-xl border border-card-border">
-              <h4 className="text-[10px] font-bold text-sec-text uppercase tracking-wider mb-2 flex items-center space-x-1">
-                <TrendingUp className="w-3 h-3" />
-                <span>Impact Delta</span>
-              </h4>
-              <div className="grid grid-cols-3 gap-2">
-                {(result.impact_deltas || [])
-                  .filter(d => d.delta_pct !== 0)
-                  .slice(0, 6)
-                  .map((d, i) => (
-                    <div key={i} className="flex items-center justify-between text-[10px] px-2 py-1.5 bg-white rounded-lg border border-card-border">
-                      <span className="font-semibold text-head-text truncate mr-1">{d.metric.replace(" (L)", "")}</span>
-                      <span className={`font-black font-mono whitespace-nowrap ${
-                        d.direction === "↑"
-                          ? d.metric.includes("Unmet") || d.metric.includes("Critical") ? "text-crit-red" : "text-emerald-600"
-                          : d.direction === "↓"
-                            ? d.metric.includes("Fulfi") || d.metric.includes("Allocated") ? "text-crit-red" : "text-emerald-600"
-                            : "text-sec-text"
-                      }`}>
-                        {d.direction} {d.delta_pct > 0 ? "+" : ""}{d.delta_pct.toFixed(1)}%
-                      </span>
-                    </div>
-                  ))}
-              </div>
-            </div>
-
-            {/* WHY DID THIS CHANGE? */}
-            <div className="p-3 bg-indigo-50/50 rounded-xl border border-indigo-200">
-              <h4 className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                <span>Why Did This Change?</span>
-              </h4>
-              <div className="space-y-2">
-                {(result.why_explanations || []).map((w, i) => (
-                  <div key={i} className="p-2 bg-white rounded-lg border border-indigo-100">
-                    <div className="text-[9px] font-bold text-indigo-600 uppercase mb-0.5">
-                      {i + 1}. {w.category}
-                    </div>
-                    <p className="text-[11px] text-head-text leading-relaxed">{w.explanation}</p>
-                    {w.delta_pct !== 0 && (
-                      <div className="text-[9px] font-mono text-sec-text mt-0.5">
-                        {w.metric_key}: {w.baseline_value?.toLocaleString()} → {w.scenario_value?.toLocaleString()} ({w.delta_pct > 0 ? "+" : ""}{w.delta_pct?.toFixed(1)}%)
+              return (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Baseline Column */}
+                    <div>
+                      <div className="text-[10px] font-bold text-sec-text uppercase tracking-wider mb-1.5 flex items-center space-x-1">
+                        <BarChart3 className="w-3 h-3" />
+                        <span>Baseline</span>
                       </div>
-                    )}
+                      <div className="space-y-1.5">
+                        <MetricCard label="Supply" value={result.baseline?.total_supply} unit="L" small />
+                        <MetricCard label="Demand" value={result.baseline?.total_demand} unit="L" small />
+                        <MetricCard label="Allocated" value={result.baseline?.allocated_volume} unit="L" small />
+                        <MetricCard label="Unmet" value={result.baseline?.unmet_demand} unit="L" small />
+                        <MetricCard label="Reserve" value={result.baseline?.reserve_held} unit="L" small />
+                        <MetricCard label="Fulfillment" value={(result.baseline?.fulfillment_ratio || 0) * 100} unit="%" small />
+                        <MetricCard label="Vuln. Fulfillment" value={(result.baseline?.high_vuln_fulfillment_ratio || 0) * 100} unit="%" small />
+                        <MetricCard label="Affected Wards" value={result.baseline?.affected_wards} small />
+                      </div>
+                    </div>
+
+                    {/* Scenario Column */}
+                    <div>
+                      <div className="text-[10px] font-bold text-sec-text uppercase tracking-wider mb-1.5 flex items-center space-x-1">
+                        <Beaker className="w-3 h-3" />
+                        <span>Scenario ({CRISIS_META[result.crisis_scenario]?.icon} {CRISIS_META[result.crisis_scenario]?.label})</span>
+                      </div>
+                      <div className="space-y-1.5">
+                        {[
+                          { label: "Supply", key: "total_supply", unit: "L" },
+                          { label: "Demand", key: "total_demand", unit: "L" },
+                          { label: "Allocated", key: "allocated_volume", unit: "L" },
+                          { label: "Unmet", key: "unmet_demand", unit: "L" },
+                          { label: "Reserve", key: "reserve_held", unit: "L" },
+                          { label: "Fulfillment", key: "fulfillment_ratio", unit: "%", ratio: true },
+                          { label: "Vuln. Fulfillment", key: "high_vuln_fulfillment_ratio", unit: "%", ratio: true },
+                          { label: "Affected Wards", key: "affected_wards" },
+                        ].map(({ label, key, unit, ratio }) => {
+                          const scenVal = ratio ? (result.scenario?.[key] || 0) * 100 : result.scenario?.[key];
+                          const delta = impactDeltasArray.find(d =>
+                            d?.metric && d.metric.toLowerCase().includes(label.toLowerCase().split(".")[0].trim())
+                          );
+                          return (
+                            <MetricCard
+                              key={key}
+                              label={label}
+                              value={scenVal}
+                              unit={unit}
+                              deltaPct={delta?.delta_pct}
+                              direction={delta?.direction}
+                              small
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
+
+                  {/* IMPACT DELTA Strip */}
+                  <div className="p-3 bg-slate-50 rounded-xl border border-card-border">
+                    <h4 className="text-[10px] font-bold text-sec-text uppercase tracking-wider mb-2 flex items-center space-x-1">
+                      <TrendingUp className="w-3 h-3" />
+                      <span>Impact Delta</span>
+                    </h4>
+                    <div className="grid grid-cols-3 gap-2">
+                      {impactDeltasArray
+                        .filter(d => d?.delta_pct !== 0 && d?.metric)
+                        .slice(0, 6)
+                        .map((d, i) => (
+                          <div key={i} className="flex items-center justify-between text-[10px] px-2 py-1.5 bg-white rounded-lg border border-card-border">
+                            <span className="font-semibold text-head-text truncate mr-1">{(d.metric || "").replace(" (L)", "")}</span>
+                            <span className={`font-black font-mono whitespace-nowrap ${
+                              d.direction === "↑"
+                                ? (d.metric || "").includes("Unmet") || (d.metric || "").includes("Critical") ? "text-crit-red" : "text-emerald-600"
+                                : d.direction === "↓"
+                                  ? (d.metric || "").includes("Fulfi") || (d.metric || "").includes("Allocated") ? "text-crit-red" : "text-emerald-600"
+                                  : "text-sec-text"
+                            }`}>
+                              {d.direction || "—"} {d.delta_pct > 0 ? "+" : ""}{(d.delta_pct || 0).toFixed(1)}%
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+
+                  {/* WHY DID THIS CHANGE? */}
+                  <div className="p-3 bg-indigo-50/50 rounded-xl border border-indigo-200">
+                    <h4 className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5" />
+                      <span>Why Did This Change?</span>
+                    </h4>
+                    <div className="space-y-2">
+                      {whyExplanationsArray.map((w, i) => (
+                        <div key={i} className="p-2 bg-white rounded-lg border border-indigo-100">
+                          <div className="text-[9px] font-bold text-indigo-600 uppercase mb-0.5">
+                            {i + 1}. {w.category || w.type || "Operational Variance"}
+                          </div>
+                          <p className="text-[11px] text-head-text leading-relaxed">{w.explanation || w.text || "Scenario modifier applied."}</p>
+                          {w.delta_pct !== 0 && w.delta_pct != null && (
+                            <div className="text-[9px] font-mono text-sec-text mt-0.5">
+                              {w.metric_key || ""}: {w.baseline_value?.toLocaleString()} → {w.scenario_value?.toLocaleString()} ({w.delta_pct > 0 ? "+" : ""}{w.delta_pct?.toFixed(1)}%)
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
 
             {/* GOVERNANCE CLASSIFICATION */}
             <div className={`p-3 rounded-xl border ${tierStyle.border} ${tierStyle.bg}`}>
