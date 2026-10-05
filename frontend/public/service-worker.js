@@ -3,7 +3,7 @@
 // Offline Resilience & Background Sync for Field Worker Deliveries
 // ============================================================
 
-const CACHE_NAME = 'waterflow-worker-cache-v2';
+const CACHE_NAME = 'waterflow-worker-cache-v5';
 const STATIC_ASSETS = [
   '/',
   '/worker',
@@ -22,13 +22,15 @@ const STORE_NAME = 'pending_deliveries';
 // 1. Lifecycle: Install & Activate
 // ---------------------------------------------------------------------------
 self.addEventListener('install', (event) => {
+  // Activate immediately without waiting for other tabs to close
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[ServiceWorker] Pre-caching offline application shell...');
+      console.log('[ServiceWorker] Pre-caching offline application shell v5...');
       return cache.addAll(STATIC_ASSETS).catch((err) => {
         console.warn('[ServiceWorker] Non-critical pre-cache warning:', err);
       });
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
@@ -38,14 +40,17 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames
           .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+          .map((name) => {
+            console.log('[ServiceWorker] Purging stale cache:', name);
+            return caches.delete(name);
+          })
       );
     }).then(() => self.clients.claim())
   );
 });
 
 // ---------------------------------------------------------------------------
-// 2. Network Interception (Stale-While-Revalidate for Static Assets)
+// 2. Network Interception (Network-First for HTML & Code Assets, Cache fallback for offline)
 // ---------------------------------------------------------------------------
 self.addEventListener('fetch', (event) => {
   const { request } = event;
@@ -56,10 +61,35 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Network-First for Navigation (HTML) and Application JavaScript/CSS chunks
+  const isHtml = request.mode === 'navigate' || request.destination === 'document' || request.headers.get('accept')?.includes('text/html');
+  const isCodeAsset = request.destination === 'script' || request.destination === 'style' || url.pathname.startsWith('/assets/');
+
+  if (isHtml || isCodeAsset) {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(request).then((cached) => {
+            if (cached) return cached;
+            if (isHtml) return caches.match('/worker') || caches.match('/');
+            return new Response('Network offline', { status: 503, statusText: 'Offline' });
+          });
+        })
+    );
+    return;
+  }
+
+  // Stale-While-Revalidate for images, geojson, and static icons
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Fetch background update for cache freshness
         fetch(request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse));
@@ -68,11 +98,12 @@ self.addEventListener('fetch', (event) => {
         return cachedResponse;
       }
 
-      return fetch(request).catch(() => {
-        // Return offline fallback if navigating to HTML pages
-        if (request.headers.get('accept')?.includes('text/html')) {
-          return caches.match('/worker') || caches.match('/');
+      return fetch(request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
         }
+        return networkResponse;
       });
     })
   );
