@@ -127,9 +127,100 @@ async function runTests() {
     assert(chatMrData.success === true, "Chat response success is true");
     assert(typeof chatMrData.reply === "string" && chatMrData.reply.length > 20, `Chatbot generated Marathi reply: ${chatMrData.reply.slice(0, 70)}...`);
 
-    console.log(`\n============================================================`);
-    console.log(`RESULTS: ${passed}/${total} assertions passed successfully!`);
-    console.log(`============================================================\n`);
+    // 6. IVR Call Inbound & Bot Intake Test (+91 8369978764)
+    console.log("\n[Test 6] POST /api/call/ivr-connect (Helpline +91 8369978764 Call Intake)");
+    const ivrRes = await fetch(`${baseUrl}/api/call/ivr-connect`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone_number: "+91 8369978764",
+        ward_code: "M/E",
+        lang: "hi",
+      }),
+    });
+    const ivrData = await ivrRes.json();
+
+    assert(ivrRes.status === 200, `IVR connect returns 200 OK (got ${ivrRes.status})`);
+    assert(ivrData.success === true, "IVR connect response success is true");
+    assert(typeof ivrData.ticket_id === "string" && ivrData.ticket_id.startsWith("WF-CALL-"), `Ticket ID generated: ${ivrData.ticket_id}`);
+    assert(typeof ivrData.script === "string" && ivrData.script.includes("M/E"), `Bot spoke area script: ${ivrData.script.slice(0, 60)}...`);
+    assert(ivrData.helpline_number === "+91 8369978764", "Official helpline confirmed as +91 8369978764");
+
+    // 7. Caller Satisfaction Handling
+    console.log("\n[Test 7] POST /api/call/satisfaction");
+    const satRes = await fetch(`${baseUrl}/api/call/satisfaction`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        session_id: ivrData.session_id,
+        ticket_id: ivrData.ticket_id,
+        satisfied: true,
+      }),
+    });
+    const satData = await satRes.json();
+    assert(satRes.status === 200, `Satisfaction returns 200 OK (got ${satRes.status})`);
+    assert(satData.status.includes("RESOLVED"), "Ticket marked as RESOLVED upon satisfaction");
+
+    // 8. Escalation to Water Allocation Priority Call Queue
+    console.log("\n[Test 8] POST /api/call/escalate (Algorithmic Priority Queue)");
+    // First simulate lower-urgency caller from Ward A (Colaba)
+    await fetch(`${baseUrl}/api/call/escalate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        session_id: "SESSION-COLA-01",
+        ticket_id: "WF-CALL-COLA01",
+        phone_number: "+91 9811122233",
+        ward_code: "A",
+        issue_type: "Low Pressure",
+        lang: "en",
+      }),
+    });
+
+    // Then simulate high-urgency caller from Ward M/E (Govandi)
+    const escRes = await fetch(`${baseUrl}/api/call/escalate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        session_id: ivrData.session_id,
+        ticket_id: ivrData.ticket_id,
+        phone_number: "+91 8369978764",
+        ward_code: "M/E",
+        issue_type: "Dry Pipeline (>72h)",
+        lang: "hi",
+      }),
+    });
+    const escData = await escRes.json();
+
+    assert(escRes.status === 200, `Escalation returns 200 OK (got ${escRes.status})`);
+    assert(escData.success === true, "Escalation response success is true");
+    assert(escData.queue_position === 1, `Ward M/E jumped ahead to Queue Position #1 (got #${escData.queue_position})`);
+    assert(escData.priority_score > 75, `Ward M/E equity priority score is high: ${escData.priority_score}/100`);
+    assert(Array.isArray(escData.factors) && escData.factors.length === 5, "Includes 5-factor mathematical audit breakdown");
+
+    // 9. Live Prioritized Call Queue Inspection
+    console.log("\n[Test 9] GET /api/call/queue");
+    const queueRes = await fetch(`${baseUrl}/api/call/queue`);
+    const queueData = await queueRes.json();
+    assert(queueRes.status === 200, `Queue fetch returns 200 OK (got ${queueRes.status})`);
+    assert(queueData.queue_length >= 2, `Queue contains multiple callers (${queueData.queue_length})`);
+    assert(queueData.queue[0].priority_score >= queueData.queue[1].priority_score, "Queue is sorted strictly descending by equity priority score");
+
+    // 10. Bridge Call to Municipal Engineer
+    console.log("\n[Test 10] POST /api/call/connect-officer");
+    const officerRes = await fetch(`${baseUrl}/api/call/connect-officer`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ticket_id: ivrData.ticket_id,
+        ward_code: "M/E",
+      }),
+    });
+    const officerData = await officerRes.json();
+    assert(officerRes.status === 200, `Connect officer returns 200 OK (got ${officerRes.status})`);
+    assert(officerData.success === true, "Officer bridge returns success: true");
+    assert(officerData.officer.officer_name === "Er. Nilesh Shinde", `Connected to officer: ${officerData.officer.officer_name}`);
+    assert(officerData.officer.badge_number === "BMC-EE-4182", "Officer badge number is BMC-EE-4182");
   } finally {
     server.close();
   }

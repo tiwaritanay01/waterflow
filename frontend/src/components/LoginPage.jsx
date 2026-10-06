@@ -595,7 +595,7 @@ export default function LoginPage({ onNavigateToLanding, onLoginSuccess }) {
             </div>
             <div className="flex flex-col">
               <span className="text-[11px] font-bold text-slate-900 uppercase">24x7 MCGM Helpline</span>
-              <span className="text-[10px] text-slate-500">Dial 1916 / Grievance Cell</span>
+              <a href="tel:+918369978764" className="text-[10px] text-sky-700 font-semibold hover:underline">Dial +91 8369978764 / Grievance Cell</a>
             </div>
           </div>
 

@@ -39,6 +39,13 @@ import {
   Send,
   MessageSquare,
   FileText,
+  Volume2,
+  VolumeX,
+  PhoneCall,
+  PhoneOff,
+  Users,
+  ThumbsUp,
+  ThumbsDown,
 } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -52,7 +59,7 @@ const I18N = {
   en: {
     scadaLive: "SCADA LIVE",
     telemetryVer: "BMC Telemetry v4.12",
-    helpline: "MCGM 1916",
+    helpline: "MCGM +91 8369978764",
     appTitle: "WaterFlow Citizen",
     subTitle: "Brihanmumbai Municipal Corporation (BMC)",
     emergencySupport: "Emergency Rationing Support",
@@ -105,7 +112,7 @@ const I18N = {
   hi: {
     scadaLive: "स्काडा लाइव",
     telemetryVer: "मनपा टेलीमेट्री v4.12",
-    helpline: "मनपा 1916",
+    helpline: "मनपा +91 8369978764",
     appTitle: "वॉटरफ्लो नागरिक",
     subTitle: "बृहन्मुंबई महानगरपालिका (BMC)",
     emergencySupport: "आपातकालीन राशनिंग सहायता",
@@ -158,7 +165,7 @@ const I18N = {
   mr: {
     scadaLive: "स्काडा थेट",
     telemetryVer: "मनपा टेलीमेट्री आवृत्ती ४.१२",
-    helpline: "मनपा १९१६",
+    helpline: "मनपा +91 8369978764",
     appTitle: "वॉटरफ्लो नागरिक",
     subTitle: "बृहन्मुंबई महानगरपालिका (BMC)",
     emergencySupport: "तातडीचे पाणी वाटप साहाय्य",
@@ -265,6 +272,16 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
   const [emergencyWebhookResult, setEmergencyWebhookResult] = useState(null);
   const [emergencySubmitting, setEmergencySubmitting] = useState(false);
+
+  // Interactive Helpline Voice Bot & Priority Queue State (+91 8369978764)
+  const [showCallModal, setShowCallModal] = useState(false);
+  const [callSession, setCallSession] = useState(null);
+  const [callStage, setCallStage] = useState("calling"); // 'calling' | 'bot_speaking' | 'bot_satisfied_check' | 'resolved' | 'queued' | 'officer_connected'
+  const [callDuration, setCallDuration] = useState(0);
+  const [callQueueData, setCallQueueData] = useState(null);
+  const [isBotSpeaking, setIsBotSpeaking] = useState(false);
+  const [officerData, setOfficerData] = useState(null);
+  const [callMuted, setCallMuted] = useState(false);
 
   // Auto-Detection State
   const [detectedWard, setDetectedWard] = useState(MUMBAI_WARDS_DATABASE[0]);
@@ -470,12 +487,12 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
             dest_number: "+91 " + phoneNumber,
             status: "QUEUED_IMMEDIATE_RING",
             expected_callback_seconds: 10,
-            voice_script: `नमस्कार. तुमची तातडीची तक्रार #${fallbackTicket} नोंदवली आहे. तातडीचा टँकर T-08 रवाना झाला आहे.`,
+            voice_script: `नमस्कार. तुमची तातडीची तक्रार #${fallbackTicket} नोंदवली आहे. तातडीचा टँकर T-08 रवाना झाला आहे. हेल्पलाइन: +91 8369978764.`,
           },
           sms_notification: {
             dispatched: true,
-            gateway: "1916 / 56161",
-            sms_text: `MCGM WATERFLOW: Emergency SOS Ticket #${fallbackTicket} logged for Ward ${detectedWard.ward_code}. Relief Tanker T-08 en route. OTP: 7419. Toll-Free: 1916.`,
+            gateway: "+91 8369978764 / 56161",
+            sms_text: `MCGM WATERFLOW: Emergency SOS Ticket #${fallbackTicket} logged for Ward ${detectedWard.ward_code}. Relief Tanker T-08 en route. OTP: 7419. Helpline: +91 8369978764.`,
           },
         },
       };
@@ -496,6 +513,226 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
       setEmergencySubmitting(false);
     }
   };
+
+  // Open Pre-composed Offline SMS Grievance Composer
+  const handleOpenSmsComposer = () => {
+    const smsTicketId = `WF-SMS-${Math.floor(100000 + Math.random() * 900000)}`;
+    const cleanPhone = (phoneNumber || "9820012345").replace(/\s+/g, "");
+    const smsPayload = `MCGM WATERFLOW: TKT #${smsTicketId} | WARD ${detectedWard.ward_code} | LOC: ${landmark} | ISSUE: ${issueType} | TEL: +91${cleanPhone}`;
+    setActiveSmsTicket({
+      ticketId: smsTicketId,
+      smsText: smsPayload,
+      phoneNumber: phoneNumber,
+      wardCode: detectedWard.ward_code,
+      wardName: detectedWard.name,
+      issueType: issueType,
+      landmark: landmark,
+      tankerId: detectedWard.assigned_tanker?.tanker_id || "T-08",
+      otpCode: detectedWard.assigned_tanker?.otp_code || "7419",
+      isOffline: true,
+    });
+    setShowSmsModal(true);
+  };
+
+  // Play Bot Speech aloud via browser SpeechSynthesis
+  const playBotVoice = (text, language) => {
+    if ("speechSynthesis" in window) {
+      try {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = language === "hi" ? "hi-IN" : language === "mr" ? "mr-IN" : "en-IN";
+        utter.rate = 1.0;
+        utter.pitch = 1.0;
+        utter.onstart = () => setIsBotSpeaking(true);
+        utter.onend = () => setIsBotSpeaking(false);
+        utter.onerror = () => setIsBotSpeaking(false);
+        window.speechSynthesis.speak(utter);
+      } catch (_) {
+        setIsBotSpeaking(false);
+      }
+    }
+  };
+
+  // Start Helpline Call (+91 8369978764)
+  const handleStartHelplineCall = async () => {
+    setShowCallModal(true);
+    setCallStage("calling");
+    setCallDuration(0);
+    setOfficerData(null);
+    setCallQueueData(null);
+    setIsBotSpeaking(false);
+
+    try {
+      const res = await fetch(`${API_BASE}/api/call/ivr-connect`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone_number: "+91 " + phoneNumber,
+          ward_code: detectedWard.ward_code,
+          lang: lang,
+          source: "citizen_portal_helpline_modal",
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setCallSession(data);
+        setCallStage("bot_speaking");
+        playBotVoice(data.bot_voice_script, lang);
+
+        if (data.ticket_id) {
+          setRecentTicketsList((prev) => [
+            {
+              id: `#${data.ticket_id}`,
+              type: `📞 HELPLINE IVR INTAKE (Ward ${detectedWard.ward_code})`,
+              status: "IVR Bot Briefing",
+              tanker: `Tanker ${data.area_status?.relief_tanker?.tanker_id || "T-08"}`,
+              time: "Just now",
+              otp: data.area_status?.relief_tanker?.otp_code || "7419",
+              isCall: true,
+            },
+            ...prev,
+          ]);
+        }
+      }
+    } catch (err) {
+      console.warn("Call connect network fallback:", err);
+      const fallbackTicket = `WF-CALL-${Math.floor(100000 + Math.random() * 900000)}`;
+      const fallbackScripts = {
+        mr: `नमस्कार! मी बृहन्मुंबई महानगरपालिकेचा AI जलवाणी सहाय्यक बोलत आहे. आपली चौकशी तिकीट #${fallbackTicket} स्वयंचलितपणे नोंदवली गेली आहे. वॉर्ड ${detectedWard.ward_code} चे पाणी वेळापत्रक ${detectedWard.timetable || "06:00 - 09:30 AM"} आहे. तातडीचा टँकर ${detectedWard.assigned_tanker?.tanker_id || "T-08"} मार्गस्थ आहे (OTP: 7419). ही माहिती पुरेशी आहे का?`,
+        hi: `नमस्ते! मैं BMC AI जलवाणी सहायक बोल रहा हूँ। आपका पूछताछ टिकट #${fallbackTicket} स्वतः दर्ज कर लिया गया है। वार्ड ${detectedWard.ward_code} का जलापूर्ति समय ${detectedWard.timetable || "06:00 - 09:30 AM"} है। राहत टैंकर ${detectedWard.assigned_tanker?.tanker_id || "T-08"} रास्ते में है (OTP: 7419)। क्या आप संतुष्ट हैं?`,
+        en: `Hello! This is BMC AI JalVaani Voice Assistant. Your inquiry ticket #${fallbackTicket} has been logged. Current supply for Ward ${detectedWard.ward_code} is ${detectedWard.timetable || "06:00 - 09:30 AM"}. Relief Tanker ${detectedWard.assigned_tanker?.tanker_id || "T-08"} is dispatched (OTP: 7419). Are you satisfied?`,
+      };
+      setCallSession({
+        ticket_id: fallbackTicket,
+        session_id: `CALL-FALLBACK-${Date.now()}`,
+        bot_voice_script: fallbackScripts[lang] || fallbackScripts.en,
+        area_status: {
+          timetable: detectedWard.timetable || "06:00 - 09:30 AM",
+          deficit_pct: detectedWard.water_deficit_pct || 28,
+          relief_tanker: {
+            tanker_id: detectedWard.assigned_tanker?.tanker_id || "T-08",
+            driver_name: "Rajesh Patil",
+            driver_phone: "+91 98201 55432",
+            eta_mins: 12,
+            otp_code: "7419",
+          },
+        },
+      });
+      setCallStage("bot_speaking");
+      playBotVoice(fallbackScripts[lang] || fallbackScripts.en, lang);
+    }
+  };
+
+  // Caller satisfaction resolution
+  const handleCallSatisfaction = async (satisfied) => {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsBotSpeaking(false);
+
+    if (satisfied) {
+      setCallStage("resolved");
+      try {
+        await fetch(`${API_BASE}/api/call/satisfaction`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            session_id: callSession?.session_id,
+            ticket_id: callSession?.ticket_id,
+            satisfied: true,
+          }),
+        });
+      } catch (_) {}
+    } else {
+      // Unsatisfied -> Escalate to Priority Call Queue!
+      setCallStage("queued");
+      try {
+        const res = await fetch(`${API_BASE}/api/call/escalate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            session_id: callSession?.session_id,
+            ticket_id: callSession?.ticket_id,
+            phone_number: "+91 " + phoneNumber,
+            ward_code: detectedWard.ward_code,
+            issue_type: issueType,
+            lang: lang,
+          }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          setCallQueueData(data);
+        }
+      } catch (err) {
+        console.warn("Escalate call fallback:", err);
+        setCallQueueData({
+          ticket_id: callSession?.ticket_id,
+          queue_position: 1,
+          total_waiting: 3,
+          priority_score: 83.4,
+          tier: 1,
+          tier_name: "Tier-1 Critical Priority",
+          estimated_wait_seconds: 45,
+          factors: [
+            { factor: "Vulnerability", weighted_score: 28.8, normalized: 0.96 },
+            { factor: "Dry Pipe", weighted_score: 20.1, normalized: 0.81 },
+            { factor: "Population", weighted_score: 16.2, normalized: 0.81 },
+            { factor: "Historical Deficit", weighted_score: 11.7, normalized: 0.78 },
+            { factor: "Depot Distance", weighted_score: 6.6, normalized: 0.66 },
+          ],
+        });
+      }
+    }
+  };
+
+  // Connect caller to municipal officer
+  const handleConnectOfficer = async () => {
+    setCallStage("officer_connected");
+    try {
+      const res = await fetch(`${API_BASE}/api/call/connect-officer`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ticket_id: callSession?.ticket_id,
+          ward_code: detectedWard.ward_code,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.officer) {
+        setOfficerData(data.officer);
+      }
+    } catch (_) {
+      setOfficerData({
+        officer_name: "Er. Nilesh Shinde",
+        designation: `Executive Water Engineer (${detectedWard.name})`,
+        badge_number: "BMC-EE-4182",
+        control_room: "Eastern Suburbs Zonal Water SCADA Control Room, Chembur",
+      });
+    }
+  };
+
+  // Close Call and cancel any speech
+  const handleEndCall = () => {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsBotSpeaking(false);
+    setShowCallModal(false);
+    setCallStage("calling");
+    setCallSession(null);
+  };
+
+  // Call duration counter
+  useEffect(() => {
+    let timer;
+    if (showCallModal && callStage !== "resolved") {
+      timer = setInterval(() => {
+        setCallDuration((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [showCallModal, callStage]);
 
   // Submit Grievance with Offline Assisted SMS Fallback & Ticket Generation
   const handleSubmitGrievance = async (e) => {
@@ -888,6 +1125,36 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
         <span className="text-[10px] font-mono font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
           {t.formId}
         </span>
+      </div>
+
+      {/* Dedicated Offline / SMS Quick Ticket Card */}
+      <div className="mb-3.5 p-3 bg-gradient-to-r from-teal-50 to-emerald-50 rounded-xl border border-teal-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div className="flex items-start space-x-2.5">
+          <div className="w-8 h-8 rounded-lg bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <MessageSquare className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="text-xs font-bold text-teal-950 flex items-center space-x-1.5">
+              <span>{lang === "hi" ? "बिना इंटरनेट SMS द्वारा शिकायत दर्ज करें" : lang === "mr" ? "इंटरनेटशिवाय SMS द्वारे तक्रार नोंदवा" : "No Internet? Report via Cellular SMS"}</span>
+              <span className="text-[9.5px] bg-teal-200/80 text-teal-900 px-1.5 py-0.2 rounded font-mono font-bold">+91 8369978764</span>
+            </div>
+            <p className="text-[10.5px] text-teal-800 mt-0.5 leading-tight">
+              {lang === "hi"
+                ? "एक क्लिक में एन्क्रिप्टेड SMS तैयार करें। तुरंत टिकट संख्या व टैंकर OTP प्राप्त करें।"
+                : lang === "mr"
+                ? "एका क्लिकवर एन्क्रिप्टेड SMS तयार करा. तात्काळ तिकीट क्रमांक व टँकर OTP मिळवा."
+                : "Generates instant pre-encoded SMS payload. Receive immediate ticket ID & OTP without cellular data."}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={handleOpenSmsComposer}
+          className="py-1.5 px-3 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-xs shrink-0 active:scale-95"
+        >
+          <Send className="w-3.5 h-3.5" />
+          <span>{lang === "hi" ? "SMS टिकट बनाएं →" : lang === "mr" ? "SMS तिकीट तयार करा →" : "Generate SMS Ticket →"}</span>
+        </button>
       </div>
 
       <form onSubmit={handleSubmitGrievance} className="space-y-3.5">
@@ -1642,9 +1909,9 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
               <div className="p-2 rounded bg-sky-50/70 border border-sky-200 flex items-center justify-between">
                 <div>
                   <span className="font-bold text-slate-900 block">MCGM Disaster Helpline</span>
-                  <span className="text-[10px] text-slate-500 font-mono">24/7 Toll-Free Emergency</span>
+                  <span className="text-[10px] text-slate-500 font-mono">24/7 Automated IVR & Voice Bot</span>
                 </div>
-                <a href="tel:1916" className="font-mono font-black text-sm text-[#0056b3]">1916</a>
+                <a href="tel:+918369978764" className="font-mono font-black text-xs text-[#0056b3] bg-sky-100 hover:bg-sky-200 px-2 py-1 rounded transition">+91 8369978764</a>
               </div>
               <div className="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
                 <div>
@@ -1710,9 +1977,25 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
             </div>
 
             <div className="flex items-center space-x-1.5 font-mono flex-wrap gap-y-1">
-              <span className="text-[10px] bg-sky-900/50 px-1.5 py-0.5 rounded border border-sky-500/30 text-sky-200">
-                {t.helpline}
-              </span>
+              {/* Direct Helpline Call Button (+91 8369978764) */}
+              <button
+                onClick={handleStartHelplineCall}
+                className="text-[10px] bg-sky-900/70 hover:bg-sky-800 px-2 py-0.5 rounded-lg border border-sky-400/40 text-white font-bold flex items-center space-x-1 transition cursor-pointer shadow-xs active:scale-95"
+                title="Call BMC Helpline +91 8369978764 (Automated Ticket & Voice Bot)"
+              >
+                <PhoneCall className="w-3 h-3 text-emerald-400" />
+                <span>+91 8369978764</span>
+              </button>
+
+              {/* Offline SMS Composer Shortcut */}
+              <button
+                onClick={handleOpenSmsComposer}
+                className="text-[10px] bg-emerald-800/70 hover:bg-emerald-700 px-2 py-0.5 rounded-lg border border-emerald-400/40 text-emerald-100 font-bold flex items-center space-x-1 transition cursor-pointer shadow-xs active:scale-95"
+                title="Send Grievance via SMS to +91 8369978764"
+              >
+                <MessageSquare className="w-3 h-3 text-emerald-300" />
+                <span>📱 SMS</span>
+              </button>
 
               {/* Trilingual Language Selector (English / Hindi / Marathi) */}
               <div className="flex items-center bg-sky-900/70 p-0.5 rounded-lg border border-sky-400/40">
@@ -1867,7 +2150,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                   ? "📡 ऑफलाइन सहायता मोड सक्रिय: इंटरनेट के बिना भी शिकायतें सुरक्षित हैं एवं SMS द्वारा पंजीकृत होंगी।"
                   : lang === "mr"
                   ? "📡 ऑफलाइन साहाय्य पद्धत सक्रिय: इंटरनेट नसतानाही तक्रारी सुरक्षित राहतील व SMS द्वारे नोंदवल्या जातील."
-                  : "📡 Offline-Assisted Mode Active: Reports are stored locally and will be transmitted via encrypted SMS to MCGM 1916."}
+                  : "📡 Offline-Assisted Mode Active: Reports are stored locally and will be transmitted via encrypted SMS to MCGM +91 8369978764."}
               </span>
             </div>
             <div className="flex items-center space-x-2 shrink-0">
@@ -1924,7 +2207,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                         ? "गंभीर जल संकट, पाइपलाइन विस्फोट या संदूषण के लिए तुरंत लाल चेतावनी (Red Alert) वेबहुक प्रेषित करें।"
                         : lang === "mr"
                         ? "गंभीर पाणीटंचाई, पाईपलाईन फुटणे किंवा दूषित पाण्यासाठी थेट मनपा स्काडाला रेड अलर्ट वेबहुक पाठवा."
-                        : "Trigger instant red-alert webhook to municipal dispatch center with automated 1916 IVR callback."}
+                        : "Trigger instant red-alert webhook to municipal dispatch center with automated +91 8369978764 IVR callback."}
                     </p>
                   </div>
                   <div className="mt-3 flex items-center gap-2">
@@ -1932,16 +2215,17 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                       onClick={() => setShowEmergencyModal(true)}
                       className="flex-1 py-2 px-3 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-xs active:scale-95"
                     >
-                      <Phone className="w-3.5 h-3.5" />
+                      <AlertOctagon className="w-3.5 h-3.5" />
                       <span>{lang === "hi" ? "आपातकालीन वेबहुक ट्रिगर करें →" : lang === "mr" ? "तातडीचा वेबहुक पाठवा →" : "Trigger Emergency SOS →"}</span>
                     </button>
-                    <a
-                      href="tel:1916"
-                      className="py-2 px-3 rounded-lg bg-white border border-rose-300 text-rose-800 font-bold text-xs hover:bg-rose-50 transition cursor-pointer flex items-center justify-center shadow-2xs"
-                      title="Direct Call 1916"
+                    <button
+                      onClick={handleStartHelplineCall}
+                      className="py-2 px-3 rounded-lg bg-white border border-rose-300 text-rose-800 font-bold text-xs hover:bg-rose-50 transition cursor-pointer flex items-center justify-center space-x-1 shadow-2xs"
+                      title="Direct Helpline Voice Bot (+91 8369978764)"
                     >
-                      1916
-                    </a>
+                      <PhoneCall className="w-3.5 h-3.5 text-rose-600" />
+                      <span>+91 8369978764</span>
+                    </button>
                   </div>
                 </div>
 
@@ -2081,17 +2365,31 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                       </div>
                       <span className="text-[10px] font-mono bg-blue-100 text-deep-blue px-2 py-0.5 rounded font-bold">24x7 TOLL FREE</span>
                     </div>
-                    <div className="p-3 bg-sky-50/70 rounded-lg border border-sky-200 flex items-center justify-between">
+                    <div className="p-3 bg-sky-50/70 rounded-lg border border-sky-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                       <div>
-                        <div className="text-xl font-black text-[#0056b3] font-mono">1916</div>
-                        <div className="text-[10.5px] text-slate-600 mt-0.5">Municipal Control Room & Tanker Dispatch</div>
+                        <div className="text-lg font-black text-[#0056b3] font-mono flex items-center space-x-1.5">
+                          <PhoneCall className="w-4 h-4 text-emerald-600" />
+                          <span>+91 8369978764</span>
+                        </div>
+                        <div className="text-[10.5px] text-slate-600 mt-0.5">Automated IVR Voice Bot &amp; Municipal Escalation Queue</div>
                       </div>
-                      <a
-                        href="tel:1916"
-                        className="px-3 py-1.5 bg-[#0056b3] hover:bg-sky-700 text-white font-bold text-xs rounded-lg shadow-xs transition cursor-pointer"
-                      >
-                        Call Now
-                      </a>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={handleStartHelplineCall}
+                          className="px-3 py-1.5 bg-[#0056b3] hover:bg-sky-700 text-white font-bold text-xs rounded-lg shadow-xs transition cursor-pointer flex items-center space-x-1"
+                        >
+                          <Phone className="w-3.5 h-3.5" />
+                          <span>Call Bot</span>
+                        </button>
+                        <button
+                          onClick={handleOpenSmsComposer}
+                          className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-xs transition cursor-pointer flex items-center space-x-1"
+                          title="Draft Offline SMS"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          <span>SMS</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2420,7 +2718,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                         : "Emergency GPS & Ward Telemetry"}
                     </span>
                     <span className="text-[10px] font-mono bg-rose-200 text-rose-900 px-2 py-0.5 rounded font-bold">
-                      SCADA 1916
+                      SCADA +91 8369978764
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-[11px] font-mono text-slate-700 bg-white p-2 rounded-lg border border-rose-200">
@@ -2503,13 +2801,16 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                     )}
                   </button>
 
-                  <a
-                    href="tel:1916"
+                  <button
+                    onClick={() => {
+                      setShowEmergencyModal(false);
+                      handleStartHelplineCall();
+                    }}
                     className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center space-x-2 transition cursor-pointer border border-slate-300"
                   >
-                    <Phone className="w-4 h-4 text-rose-600" />
-                    <span>Dial BMC 1916 Toll-Free Helpline Now</span>
-                  </a>
+                    <PhoneCall className="w-4 h-4 text-[#0056b3]" />
+                    <span>Connect with Helpline Voice Bot &amp; Queue (+91 8369978764)</span>
+                  </button>
                 </div>
               </div>
 
@@ -2588,10 +2889,10 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                       <MessageSquare className="w-3.5 h-3.5 text-sky-700" />
                       <span>
                         {lang === "hi"
-                          ? "मनपा गेटवे (1916 / 56161) को भेजा गया एन्क्रिप्टेड SMS:"
+                          ? "मनपा गेटवे (+91 8369978764 / 56161) को भेजा गया एन्क्रिप्टेड SMS:"
                           : lang === "mr"
-                          ? "मनपा गेटवेवर (१९१६ / ५६१६१) पाठवलेला एसएमएस:"
-                          : "Encrypted SMS Transmitted to MCGM 1916 Gateway:"}
+                          ? "मनपा गेटवेवर (+91 8369978764 / ५६१६१) पाठवलेला एसएमएस:"
+                          : "Encrypted SMS Transmitted to MCGM +91 8369978764 Gateway:"}
                       </span>
                     </span>
                     <span className="text-[10px] font-mono text-emerald-700 font-bold">✓ SMS READY</span>
@@ -2616,10 +2917,10 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                   <p>
                     {activeSmsTicket.isOffline
                       ? (lang === "hi"
-                        ? "आपकी शिकायत स्थानीय स्टोरेज में सुरक्षित हो गई है। आप नीचे दिए गए बटन से इसे अपने मोबाइल के SMS ऐप से 1916 पर तुरंत भेज सकते हैं। इंटरनेट आते ही यह सीधे सर्वर से भी सिंक हो जाएगी।"
+                        ? "आपकी शिकायत स्थानीय स्टोरेज में सुरक्षित हो गई है। आप नीचे दिए गए बटन से इसे अपने मोबाइल के SMS ऐप से +91 8369978764 पर तुरंत भेज सकते हैं। इंटरनेट आते ही यह सीधे सर्वर से भी सिंक हो जाएगी।"
                         : lang === "mr"
-                        ? "तुमची तक्रार स्थानिक स्टोरेजमध्ये सुरक्षित झाली आहे. खालील बटनावरून तुम्ही तुमच्या फोनच्या SMS ॲपद्वारे १९१६ वर थेट पाठवू शकता. इंटरनेट पूर्ववत होताच ती स्वयंचलितपणे सिंक होईल."
-                        : "Your grievance ticket is securely queued locally in offline storage. You can send this pre-filled message right now via standard cellular SMS to 1916, or wait for background sync when internet restores.")
+                        ? "तुमची तक्रार स्थानिक स्टोरेजमध्ये सुरक्षित झाली आहे. खालील बटनावरून तुम्ही तुमच्या फोनच्या SMS ॲपद्वारे +91 8369978764 वर थेट पाठवू शकता. इंटरनेट पूर्ववत होताच ती स्वयंचलितपणे सिंक होईल."
+                        : "Your grievance ticket is securely queued locally in offline storage. You can send this pre-filled message right now via standard cellular SMS to +91 8369978764, or wait for background sync when internet restores.")
                       : (lang === "hi"
                         ? "आपकी शिकायत मनपा प्राथमिकता कतार में दर्ज हो गई है। राहत टैंकर T-08 आवंटित किया गया है। डिलीवरी के समय चालक को OTP 7419 प्रदान करें।"
                         : lang === "mr"
@@ -2630,19 +2931,34 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
 
                 {/* Action Buttons */}
                 <div className="space-y-2 pt-1">
-                  <a
-                    href={`sms:1916?body=${encodeURIComponent(activeSmsTicket.smsText)}`}
-                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs tracking-wide shadow-md transition active:scale-98 cursor-pointer flex items-center justify-center space-x-2 border border-emerald-400/30"
-                  >
-                    <Send className="w-4 h-4 text-white" />
-                    <span>
-                      {lang === "hi"
-                        ? "फोन के SMS ऐप में खोलें (Send via Native SMS)"
-                        : lang === "mr"
-                        ? "फोनच्या SMS ॲपमधून पाठवा (Send via Native SMS)"
-                        : "Open in Native SMS App (sms:1916)"}
-                    </span>
-                  </a>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <a
+                      href={`sms:+918369978764?body=${encodeURIComponent(activeSmsTicket.smsText)}`}
+                      className="py-3 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs tracking-wide shadow-md transition active:scale-98 cursor-pointer flex items-center justify-center space-x-1.5 border border-emerald-400/30 text-center"
+                    >
+                      <Send className="w-4 h-4 text-white shrink-0" />
+                      <span>
+                        {lang === "hi"
+                          ? "SMS ऐप में भेजें (+91 8369978764)"
+                          : lang === "mr"
+                          ? "SMS ॲपमधून पाठवा (+91 8369978764)"
+                          : "Send SMS (+91 8369978764)"}
+                      </span>
+                    </a>
+
+                    <button
+                      onClick={() => {
+                        if (navigator.clipboard) {
+                          navigator.clipboard.writeText(activeSmsTicket.smsText);
+                          alert(lang === "hi" ? "SMS टेक्स्ट कॉपी किया गया!" : lang === "mr" ? "SMS कॉपी केला!" : "SMS text copied to clipboard!");
+                        }
+                      }}
+                      className="py-3 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center space-x-1.5 transition active:scale-98 cursor-pointer border border-slate-600 text-center"
+                    >
+                      <MessageSquare className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>{lang === "hi" ? "SMS कॉपी करें" : lang === "mr" ? "SMS कॉपी करा" : "Copy SMS Text"}</span>
+                    </button>
+                  </div>
 
                   <button
                     onClick={() => setShowSmsModal(false)}
@@ -2652,6 +2968,345 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================
+            2.5. MCGM HELPLINE (+91 8369978764) · IVR VOICE BOT & CALL QUEUE
+            ============================================================ */}
+        {showCallModal && (
+          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[9999] flex items-center justify-center p-3 sm:p-4 animate-fade-in">
+            <div className="bg-slate-900 border border-slate-700 text-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden flex flex-col max-h-[92vh]">
+              {/* Phone Call Status Bar */}
+              <div className="p-4 bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 border-b border-slate-800 flex items-center justify-between">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400">
+                    <PhoneCall className="w-4 h-4 animate-pulse" />
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs font-mono font-bold tracking-wider text-emerald-400 uppercase">
+                        {callStage === "bot_speaking"
+                          ? "JalVaani AI (जलवाणी)"
+                          : callStage === "queued"
+                          ? "Algorithmic Priority Queue"
+                          : callStage === "officer_connected"
+                          ? "Live Officer Bridge"
+                          : callStage === "resolved"
+                          ? "Call Concluded"
+                          : "Dialing..."}
+                      </span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    </div>
+                    <div className="text-[11px] font-mono text-slate-400">
+                      Helpline: <strong className="text-white">+91 8369978764</strong> · {Math.floor(callDuration / 60).toString().padStart(2, "0")}:{(callDuration % 60).toString().padStart(2, "0")}
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleEndCall}
+                  className="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer"
+                  title="Disconnect Call"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Call Main Body */}
+              <div className="p-4 sm:p-5 overflow-y-auto space-y-4 custom-scroll text-xs">
+                
+                {/* STAGE 1: BOT SPEAKING & TICKET RAISING */}
+                {callStage === "bot_speaking" && callSession && (
+                  <div className="space-y-4 animate-fade-in">
+                    {/* Bot Avatar & Animated Audio Waveform */}
+                    <div className="p-4 rounded-2xl bg-gradient-to-b from-sky-950/60 to-slate-950 border border-sky-800/40 text-center space-y-3">
+                      <div className="relative inline-block">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#0056b3] to-sky-400 flex items-center justify-center mx-auto shadow-lg shadow-sky-500/20 border-2 border-sky-300">
+                          <Bot className="w-8 h-8 text-white" />
+                        </div>
+                        <span className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-emerald-500 border-2 border-slate-900"></span>
+                      </div>
+
+                      <div>
+                        <h4 className="text-sm font-bold text-white">JalVaani AI Intake Bot</h4>
+                        <p className="text-[10px] text-sky-300 font-mono">
+                          Automated Ward {detectedWard.ward_code} Telemetry Dispatcher
+                        </p>
+                      </div>
+
+                      {/* Animated Audio Waveform */}
+                      <div className="flex items-center justify-center space-x-1.5 py-1">
+                        {[40, 75, 55, 95, 60, 80, 45, 90, 70, 35, 85, 50].map((h, i) => (
+                          <span
+                            key={i}
+                            className={`w-1 rounded-full bg-sky-400 transition-all duration-300 ${isBotSpeaking ? "animate-pulse" : "opacity-40"}`}
+                            style={{ height: isBotSpeaking ? `${h}%` : "8px", minHeight: "6px", maxHeight: "28px" }}
+                          ></span>
+                        ))}
+                      </div>
+
+                      {/* Ticket Badge */}
+                      <div className="inline-flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full text-emerald-300 font-mono text-[11px]">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Ticket Raised: <strong>#{callSession.ticket_id}</strong></span>
+                      </div>
+                    </div>
+
+                    {/* Spoken Script / Area Briefing Box */}
+                    <div className="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700 space-y-2">
+                      <div className="flex items-center justify-between text-[11px] text-slate-400 border-b border-slate-700/60 pb-1.5">
+                        <span className="font-bold flex items-center space-x-1 text-slate-200">
+                          <Volume2 className="w-3.5 h-3.5 text-sky-400" />
+                          <span>Voice Script ({lang.toUpperCase()})</span>
+                        </span>
+                        <button
+                          onClick={() => playBotVoice(callSession.script, lang)}
+                          className="text-[10.5px] text-sky-400 hover:text-sky-300 underline font-mono cursor-pointer flex items-center space-x-1"
+                        >
+                          <span>{isBotSpeaking ? "Speaking..." : "Replay Audio"}</span>
+                        </button>
+                      </div>
+                      <p className="text-xs text-slate-200 leading-relaxed font-sans">
+                        "{callSession.script}"
+                      </p>
+                    </div>
+
+                    {/* Area Telemetry Snapshot Card */}
+                    <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
+                      <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                        <span className="text-slate-400 block text-[10px]">Supply Window</span>
+                        <span className="font-bold text-sky-300">{callSession.area_status?.timetable || "06:00 - 09:30 AM"}</span>
+                      </div>
+                      <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                        <span className="text-slate-400 block text-[10px]">Water Deficit</span>
+                        <span className="font-bold text-rose-400">{callSession.area_status?.deficit_pct || 28}% deficit</span>
+                      </div>
+                      <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                        <span className="text-slate-400 block text-[10px]">Relief Tanker</span>
+                        <span className="font-bold text-amber-300">{callSession.area_status?.relief_tanker?.tanker_id || "T-08"} (ETA {callSession.area_status?.relief_tanker?.eta_mins || 12}m)</span>
+                      </div>
+                      <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                        <span className="text-slate-400 block text-[10px]">Delivery OTP</span>
+                        <span className="font-bold text-emerald-300">{callSession.area_status?.relief_tanker?.otp_code || "7419"}</span>
+                      </div>
+                    </div>
+
+                    {/* Caller Satisfaction Prompt */}
+                    <div className="p-3.5 rounded-2xl bg-gradient-to-r from-sky-950/80 to-slate-900 border border-sky-500/40 space-y-2.5">
+                      <div className="text-center font-bold text-white text-xs">
+                        {lang === "hi"
+                          ? "क्या आप इस स्थिति और टैंकर जानकारी से संतुष्ट हैं?"
+                          : lang === "mr"
+                          ? "तुम्ही या माहिती आणि टँकर तपशीलाने समाधानी आहात का?"
+                          : "Are you satisfied with this update and relief tanker assignment?"}
+                      </div>
+                      <p className="text-[10px] text-center text-slate-400">
+                        {lang === "hi"
+                          ? "यदि नहीं, तो आपको जल आवंटन प्राथमिकता स्कोर के आधार पर अधिकारी कॉल कतार में स्थानांतरित किया जाएगा।"
+                          : lang === "mr"
+                          ? "नसल्यास, तुम्हाला पाणी वाटप प्राधान्य स्कोअरनुसार अधिकारी कॉल रांगेत ठेवले जाईल."
+                          : "If not satisfied, you will enter the municipal call queue ranked strictly by your ward's equity priority score."}
+                      </p>
+
+                      <div className="grid grid-cols-2 gap-2 pt-1">
+                        <button
+                          onClick={() => handleCallSatisfaction(true)}
+                          className="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center space-x-1.5 transition active:scale-95 cursor-pointer shadow-md"
+                        >
+                          <ThumbsUp className="w-3.5 h-3.5" />
+                          <span>{lang === "hi" ? "हाँ, संतुष्ट हूँ" : lang === "mr" ? "हो, समाधानी" : "Yes, Satisfied"}</span>
+                        </button>
+
+                        <button
+                          onClick={() => handleCallSatisfaction(false)}
+                          className="py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center space-x-1.5 transition active:scale-95 cursor-pointer shadow-md"
+                        >
+                          <ThumbsDown className="w-3.5 h-3.5" />
+                          <span>{lang === "hi" ? "नहीं, अधिकारी से बात कराएँ" : lang === "mr" ? "नाही, अधिकाऱ्याशी बोला" : "No, Speak to Officer"}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* STAGE 2: PRIORITY CALL QUEUE ESCALATION */}
+                {callStage === "queued" && (
+                  <div className="space-y-3.5 animate-fade-in">
+                    <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-center space-y-2">
+                      <div className="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/40">
+                        <Users className="w-6 h-6 animate-pulse" />
+                      </div>
+                      <h4 className="text-sm font-bold text-amber-300">
+                        Municipal Mobile Call Escalation Queue
+                      </h4>
+                      <p className="text-[11px] text-slate-300 leading-snug">
+                        Ranked using the <strong className="text-amber-200">Municipal Water Allocation Algorithm</strong> — critical deficit &amp; informal settlements jump ahead of commercial callers!
+                      </p>
+                    </div>
+
+                    {/* Queue Position and Priority Score */}
+                    <div className="p-4 rounded-xl bg-slate-800/90 border border-slate-700 space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-700/80 pb-2.5">
+                        <div>
+                          <span className="text-[10px] text-slate-400 block font-mono">YOUR QUEUE POSITION</span>
+                          <span className="text-2xl font-black font-mono text-emerald-400 flex items-center space-x-2">
+                            <span>#{callQueueData?.queue_position || 1}</span>
+                            <span className="text-[10.5px] font-sans font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                              NEXT IN LINE
+                            </span>
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-[10px] text-slate-400 block font-mono">EQUITY PRIORITY SCORE</span>
+                          <span className="text-xl font-black font-mono text-amber-300">
+                            {callQueueData?.priority_score || 83.4} / 100
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Factor Breakdown */}
+                      <div className="space-y-1.5">
+                        <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wide block">
+                          Weighted Urgency Breakdown (Ward {detectedWard.ward_code}):
+                        </span>
+                        <div className="grid grid-cols-3 gap-1.5 text-center font-mono text-[10px]">
+                          <div className="p-2 rounded bg-slate-900 border border-slate-700/60">
+                            <span className="text-slate-400 block text-[9px]">Slum Pop (30%)</span>
+                            <strong className="text-emerald-400">{detectedWard.slum_pop_pct || 65}%</strong>
+                          </div>
+                          <div className="p-2 rounded bg-slate-900 border border-slate-700/60">
+                            <span className="text-slate-400 block text-[9px]">Dry Pipe (25%)</span>
+                            <strong className="text-amber-400">{detectedWard.dry_pipe_hours || 48}h</strong>
+                          </div>
+                          <div className="p-2 rounded bg-slate-900 border border-slate-700/60">
+                            <span className="text-slate-400 block text-[9px]">Deficit (15%)</span>
+                            <strong className="text-rose-400">{detectedWard.water_deficit_pct || 38}%</strong>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-[10.5px] text-slate-400 flex items-center justify-between pt-1">
+                        <span>Total callers currently waiting in zone:</span>
+                        <strong className="text-white font-mono">{callQueueData?.total_waiting || 3} callers</strong>
+                      </div>
+                    </div>
+
+                    {/* Connect Officer Button */}
+                    <button
+                      onClick={handleConnectOfficer}
+                      className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs flex items-center justify-center space-x-2 transition shadow-lg active:scale-98 cursor-pointer border border-emerald-400/40"
+                    >
+                      <PhoneCall className="w-4 h-4 animate-bounce" />
+                      <span>Connect with Executive Engineer (You are #1)</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* STAGE 3: LIVE OFFICER BRIDGE */}
+                {callStage === "officer_connected" && (
+                  <div className="space-y-4 animate-fade-in">
+                    <div className="p-4 rounded-2xl bg-gradient-to-b from-emerald-950/40 to-slate-950 border border-emerald-500/40 text-center space-y-2">
+                      <div className="relative inline-block">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20 border-2 border-emerald-300">
+                          <Users className="w-8 h-8 text-white" />
+                        </div>
+                        <span className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-emerald-400 border-2 border-slate-900 animate-pulse"></span>
+                      </div>
+
+                      <div>
+                        <h4 className="text-sm font-bold text-white">{officerData?.officer_name || "Er. Nilesh Shinde"}</h4>
+                        <p className="text-[11px] text-emerald-300 font-medium">
+                          {officerData?.designation || `Executive Water Engineer (${detectedWard.name})`}
+                        </p>
+                        <span className="text-[10px] font-mono text-slate-400 block mt-0.5">
+                          ID: {officerData?.badge_number || "BMC-EE-4182"} · {officerData?.control_room || "Eastern Suburbs SCADA Control Room"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Live Call Conversation Notes */}
+                    <div className="p-3.5 rounded-xl bg-slate-800/90 border border-slate-700 space-y-2">
+                      <div className="flex items-center space-x-2 text-xs font-bold text-emerald-400">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span>Officer Line Active · Two-Way Audio Bridge</span>
+                      </div>
+                      <p className="text-xs text-slate-200 leading-relaxed">
+                        <em>"Namaskar, this is Er. Nilesh Shinde from MCGM Ward {detectedWard.ward_code} Operations. I have reviewed ticket #{callSession?.ticket_id}. Tanker {callSession?.area_status?.relief_tanker?.tanker_id || "T-08"} has been dispatched to {detectedWard.standpost_name} with priority override. Please provide OTP {callSession?.area_status?.relief_tanker?.otp_code || "7419"} upon arrival."</em>
+                      </p>
+                    </div>
+
+                    <div className="p-3 bg-sky-950/40 rounded-xl border border-sky-800/40 text-[11px] text-sky-200 flex items-center space-x-2">
+                      <ShieldCheck className="w-4 h-4 text-sky-400 shrink-0" />
+                      <span>This call is recorded for municipal transparency and equity compliance.</span>
+                    </div>
+
+                    <button
+                      onClick={() => handleCallSatisfaction(true)}
+                      className="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center space-x-1.5 transition cursor-pointer border border-slate-600"
+                    >
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <span>Complete Officer Inquiry &amp; Resolve Ticket</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* STAGE 4: RESOLVED */}
+                {callStage === "resolved" && (
+                  <div className="space-y-4 animate-fade-in text-center py-3">
+                    <div className="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border-2 border-emerald-400">
+                      <CheckCircle2 className="w-8 h-8" />
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-bold text-white">Inquiry Handled Successfully</h4>
+                      <p className="text-xs text-slate-300 mt-1 max-w-xs mx-auto">
+                        Your emergency ticket <strong className="text-emerald-400">#{callSession?.ticket_id}</strong> is logged. An SMS confirmation has been transmitted to <strong className="text-white">+91 {phoneNumber}</strong>.
+                      </p>
+                    </div>
+
+                    <div className="p-3 bg-slate-800/90 rounded-xl border border-slate-700 text-left font-mono text-[11px] text-slate-300 space-y-1">
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Status:</span>
+                        <span className="text-emerald-400 font-bold">DISPATCH QUEUED</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Relief OTP:</span>
+                        <span className="text-amber-300 font-bold">{callSession?.area_status?.relief_tanker?.otp_code || "7419"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">SMS Gateway:</span>
+                        <span className="text-sky-300 font-bold">+91 8369978764 / 56161</span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleEndCall}
+                      className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition cursor-pointer"
+                    >
+                      Close &amp; Return to Dashboard
+                    </button>
+                  </div>
+                )}
+
+              </div>
+
+              {/* Call End Footer */}
+              {callStage !== "resolved" && (
+                <div className="p-3 bg-slate-950 border-t border-slate-800 flex justify-between items-center">
+                  <div className="text-[10px] text-slate-400 font-mono">
+                    Session: {callSession?.session_id || "IVR-ACTIVE"}
+                  </div>
+                  <button
+                    onClick={handleEndCall}
+                    className="py-2 px-5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center space-x-1.5 transition active:scale-95 cursor-pointer shadow-md"
+                  >
+                    <PhoneOff className="w-4 h-4" />
+                    <span>End Call</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

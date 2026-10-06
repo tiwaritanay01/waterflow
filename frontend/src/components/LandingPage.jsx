@@ -126,12 +126,15 @@ export default function LandingPage({
               </span>
             </div>
 
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 text-rose-800 border border-rose-200 text-xs font-semibold shadow-2xs">
+            <a
+              href="tel:+918369978764"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 text-xs font-semibold shadow-2xs transition"
+            >
               <Phone className="w-3.5 h-3.5 text-rose-600" />
-              <span>Emergency Grievance: Dial 1916</span>
+              <span>Emergency Helpline: +91 8369978764</span>
               <span className="text-rose-300">•</span>
-              <span className="font-mono font-bold text-[11px]">24/7 BMC Water Helpline</span>
-            </div>
+              <span className="font-mono font-bold text-[11px]">24/7 AI Bot &amp; Call Queue</span>
+            </a>
           </div>
 
           {/* Hero Header & High Impact Copy */}
@@ -479,7 +482,7 @@ export default function LandingPage({
             <span>•</span>
             <span>STQC Cert #4491-MCGM</span>
             <span>•</span>
-            <span>24/7 Helpline: 1916</span>
+            <a href="tel:+918369978764" className="hover:text-sky-300 transition">24/7 Helpline: +91 8369978764</a>
           </div>
         </div>
       </footer>

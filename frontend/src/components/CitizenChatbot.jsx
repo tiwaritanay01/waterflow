@@ -42,7 +42,7 @@ const CHAT_I18N = {
     welcomeMessage:
       "Hello! I am **JalMitra**, your AI Water Assistant from MCGM / BMC. How can I help you today? You can ask about water supply timings, track your relief tanker, or report water deficits in English, Hindi, or Marathi.",
     raiseTicketAction: "Raise Grievance Ticket",
-    sosAction: "Call Emergency 1916",
+    sosAction: "Call Helpline +91 8369978764",
     speechError: "Speech recognition not supported in this browser.",
   },
   hi: {
@@ -62,7 +62,7 @@ const CHAT_I18N = {
     welcomeMessage:
       "नमस्ते! मैं **जलमित्र**, बृहन्मुंबई महानगरपालिका (BMC) का AI जल सहायक हूँ। मैं आपकी क्या मदद कर सकता हूँ? आप जलापूर्ति समय, टैंकर ट्रैकिंग या पानी की किल्लत के बारे में हिंदी, मराठी या अंग्रेजी में पूछ सकते हैं।",
     raiseTicketAction: "शिकायत दर्ज करें",
-    sosAction: "आपातकालीन 1916 कॉल करें",
+    sosAction: "हेल्पलाइन +91 8369978764 कॉल करें",
     speechError: "आपके ब्राउज़र में आवाज़ पहचान (Web Speech) उपलब्ध नहीं है।",
   },
   mr: {
@@ -82,7 +82,7 @@ const CHAT_I18N = {
     welcomeMessage:
       "नमस्कार! मी **जलमित्र**, बृहन्मुंबई महानगरपालिकेचा (BMC) AI जल साहाय्यक आहे. मी आपली काय मदत करू शकतो? आपण पाणी पुरवठा वेळापत्रक, टँकर ट्रॅकिंग किंवा टंचाई तक्रारीबाबत मराठी, हिंदी किंवा इंग्रजीत विचारू शकता.",
     raiseTicketAction: "तक्रार नोंदवा",
-    sosAction: "आपत्कालीन १९१६ डायल करा",
+    sosAction: "हेल्पलाइन +91 8369978764 डायल करा",
     speechError: "आपल्या ब्राउझरमध्ये व्हॉइस इनपुट उपलब्ध नाही.",
   },
 };
@@ -192,7 +192,7 @@ Current Context:
 - Water Timetable for this ward: ${timetable}
 - Active Relief Tanker: ${tankerId} (Driver: ${driver}, ETA: ${etaMins} mins)
 - 4-Digit Delivery Verification OTP: ${otpCode}
-- BMC Toll-free Emergency Helpline: 1916
+- BMC Operations Helpline: +91 8369978764
 - User's Preferred Language: ${lang === "hi" ? "Hindi (हिंदी)" : lang === "mr" ? "Marathi (मराठी)" : "English"}.
 
 Instructions:
@@ -258,11 +258,11 @@ Instructions:
     // 3. Fallback to Local Municipal Knowledge if offline
     if (!replyText) {
       if (lang === "mr") {
-        replyText = `वॉर्ड ${wardCode} (${wardName}) साठी आजचे पाणी वेळापत्रक ${timetable} आहे. तातडीचा टँकर ${tankerId} (ETA ${etaMins} मिनिटे) तैनात आहे. डिलिव्हरी OTP: ${otpCode}. तातडीच्या मदतीसाठी १९१६ वर कॉल करा.`;
+        replyText = `वॉर्ड ${wardCode} (${wardName}) साठी आजचे पाणी वेळापत्रक ${timetable} आहे. तातडीचा टँकर ${tankerId} (ETA ${etaMins} मिनिटे) तैनात आहे. डिलिव्हरी OTP: ${otpCode}. तातडीच्या मदतीसाठी +91 8369978764 वर कॉल करा.`;
       } else if (lang === "hi") {
-        replyText = `वार्ड ${wardCode} (${wardName}) के लिए आज का जलापूर्ति समय ${timetable} है। राहत टैंकर ${tankerId} (ETA ${etaMins} मिनट) रास्ते में है। डिलीवरी OTP: ${otpCode} है। आपातकालीन हेल्पलाइन: 1916.`;
+        replyText = `वार्ड ${wardCode} (${wardName}) के लिए आज का जलापूर्ति समय ${timetable} है। राहत टैंकर ${tankerId} (ETA ${etaMins} मिनट) रास्ते में है। डिलीवरी OTP: ${otpCode} है। हेल्पलाइन: +91 8369978764.`;
       } else {
-        replyText = `For Ward ${wardCode} (${wardName}), regular water supply is scheduled for ${timetable}. Relief Tanker ${tankerId} is assigned with an ETA of ~${etaMins} mins. Delivery OTP: ${otpCode}. For emergency escalations, dial 1916.`;
+        replyText = `For Ward ${wardCode} (${wardName}), regular water supply is scheduled for ${timetable}. Relief Tanker ${tankerId} is assigned with an ETA of ~${etaMins} mins. Delivery OTP: ${otpCode}. For emergency escalations, dial +91 8369978764.`;
       }
     }
 
@@ -307,11 +307,11 @@ Instructions:
           {onOpenEmergencyModal && (
             <button
               onClick={onOpenEmergencyModal}
-              title="Emergency SOS Webhook"
+              title="Emergency Helpline & Queue Webhook"
               className="p-1.5 rounded-lg bg-rose-600/80 hover:bg-rose-600 text-white transition cursor-pointer text-xs flex items-center space-x-1 shadow-2xs"
             >
               <Phone className="w-3.5 h-3.5" />
-              <span className="text-[10px] font-bold hidden sm:inline">1916</span>
+              <span className="text-[10px] font-bold hidden sm:inline">+91 8369978764</span>
             </button>
           )}
 
@@ -348,7 +348,7 @@ Instructions:
               className="px-2 py-0.5 rounded-full bg-rose-50 border border-rose-300 text-rose-700 text-[10.5px] font-bold hover:bg-rose-100 transition shadow-2xs cursor-pointer flex items-center space-x-1"
             >
               <Phone className="w-3 h-3 text-rose-600" />
-              <span>1916 SOS</span>
+              <span>Helpline Call</span>
             </button>
           )}
         </div>

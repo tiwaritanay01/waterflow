@@ -36,6 +36,7 @@ try {
 } catch (_) {}
 
 const { MISSION_VERSIONS, verifyMissionDelivery, initDemoMissions } = require("./field_sync");
+const { computePriority } = require("./core_algorithms");
 
 // ---------------------------------------------------------------------------
 // In-Memory Fallback State (Synchronized with PostgreSQL if available)
@@ -477,12 +478,12 @@ const handleEmergencyCallWebhook = async (req, res) => {
         dest_number: phone,
         status: "QUEUED_IMMEDIATE_RING",
         expected_callback_seconds: 10,
-        voice_script: `नमस्कार. बृहन्मुंबई महानगरपालिका जल विभाग. तुमची तातडीची तक्रार #${emergencyTicketId} नोंदवली आहे. तातडीचा टँकर T-08 रवाना करण्यात आला आहे.`,
+        voice_script: `नमस्कार. बृहन्मुंबई महानगरपालिका जल विभाग. तुमची तातडीची तक्रार #${emergencyTicketId} नोंदवली आहे. तातडीचा टँकर T-08 रवाना करण्यात आला आहे. हेल्पलाइन: +91 8369978764.`,
       },
       sms_notification: {
         dispatched: true,
-        gateway: "1916 / 56161",
-        sms_text: `MCGM WATERFLOW RED ALERT: Emergency Ticket #${emergencyTicketId} logged for Ward ${ward}. Tanker T-08 en route (ETA 8 mins). Delivery OTP: 7419. Toll-Free: 1916.`,
+        gateway: "+91 8369978764 / 56161",
+        sms_text: `MCGM WATERFLOW RED ALERT: Emergency Ticket #${emergencyTicketId} logged for Ward ${ward}. Tanker T-08 en route (ETA 8 mins). Delivery OTP: 7419. Helpline: +91 8369978764.`,
       },
       webhook_delivered_to_scada: true,
       timestamp: new Date().toISOString(),
@@ -527,9 +528,406 @@ router.post("/citizen/emergency-call-webhook", handleEmergencyCallWebhook);
 router.get("/emergency/status", (req, res) => {
   res.json({
     success: true,
+    helpline_number: "+91 8369978764",
     active_red_alerts: emergencyCallLogs.length,
     recent_emergency_calls: emergencyCallLogs.slice(0, 10),
   });
+});
+
+// ===========================================================================
+// HELPLINE IVR & PRIORITY ESCALATION CALL QUEUE (+91 8369978764)
+//
+// 1. Citizen connects to Helpline +91 8369978764
+// 2. Automated Voice Bot ("JalVaani AI") answers (not an officer!)
+// 3. Bot instantly generates Ticket ID (WF-CALL-XXXXXX)
+// 4. Bot speaks real-time area status in preferred language (EN, HI, MR)
+// 5. Bot verifies satisfaction ("Satisfied" vs "Speak to Officer")
+// 6. If unsatisfied, caller is inserted into Municipal Mobile Call Queue
+//    PRIORITIZED strictly by the water distress equity algorithm (computePriority)
+// 7. Officer bridge connects caller based on priority rank
+// ===========================================================================
+
+const HELPLINE_PHONE_NUMBER = "+91 8369978764";
+
+const WARD_MUNICIPAL_DATA = {
+  "M/E": {
+    ward_code: "M/E",
+    name: "Govandi / Mankhurd / Shivaji Nagar",
+    vulnerability_index: 0.96,
+    dry_pipe_hours: 58,
+    historical_deficit: 0.78,
+    population: 807720,
+    depot_distance_km: 4.8,
+    timetable: "06:00 - 09:30 AM",
+    deficit_pct: 32,
+    tanker_id: "T-08",
+    driver_name: "Rajesh Patil",
+    driver_phone: "+91 98201 55432",
+    eta_mins: 12,
+    otp_code: "7419",
+  },
+  "G/N": {
+    ward_code: "G/N",
+    name: "Dharavi / Mahim / Dadar West",
+    vulnerability_index: 0.93,
+    dry_pipe_hours: 52,
+    historical_deficit: 0.70,
+    population: 599039,
+    depot_distance_km: 3.6,
+    timetable: "05:30 - 08:30 AM",
+    deficit_pct: 28,
+    tanker_id: "T-03",
+    driver_name: "Sunil Shinde",
+    driver_phone: "+91 98203 11223",
+    eta_mins: 15,
+    otp_code: "3892",
+  },
+  "K/E": {
+    ward_code: "K/E",
+    name: "Andheri East / Marol",
+    vulnerability_index: 0.65,
+    dry_pipe_hours: 36,
+    historical_deficit: 0.52,
+    population: 824586,
+    depot_distance_km: 6.2,
+    timetable: "07:00 - 10:00 AM",
+    deficit_pct: 20,
+    tanker_id: "T-11",
+    driver_name: "Amit Kamble",
+    driver_phone: "+91 98204 44556",
+    eta_mins: 22,
+    otp_code: "5124",
+  },
+  "L": {
+    ward_code: "L",
+    name: "Kurla / Chunabhatti",
+    vulnerability_index: 0.88,
+    dry_pipe_hours: 44,
+    historical_deficit: 0.62,
+    population: 902227,
+    depot_distance_km: 5.1,
+    timetable: "06:30 - 09:30 AM",
+    deficit_pct: 25,
+    tanker_id: "T-05",
+    driver_name: "Vikas More",
+    driver_phone: "+91 98205 66778",
+    eta_mins: 18,
+    otp_code: "6431",
+  },
+  "A": {
+    ward_code: "A",
+    name: "Colaba / Fort / Churchgate",
+    vulnerability_index: 0.35,
+    dry_pipe_hours: 12,
+    historical_deficit: 0.20,
+    population: 185014,
+    depot_distance_km: 2.1,
+    timetable: "04:30 - 07:00 AM",
+    deficit_pct: 8,
+    tanker_id: "T-14",
+    driver_name: "Pradeep Joshi",
+    driver_phone: "+91 98206 77889",
+    eta_mins: 35,
+    otp_code: "8910",
+  },
+};
+
+function getWardMunicipalProfile(wardCode) {
+  const code = (wardCode || "M/E").toUpperCase().trim();
+  if (WARD_MUNICIPAL_DATA[code]) return WARD_MUNICIPAL_DATA[code];
+  return {
+    ward_code: code,
+    name: `BMC Ward ${code}`,
+    vulnerability_index: 0.60,
+    dry_pipe_hours: 30,
+    historical_deficit: 0.45,
+    population: 450000,
+    depot_distance_km: 5.0,
+    timetable: "06:00 - 09:00 AM",
+    deficit_pct: 20,
+    tanker_id: "T-08",
+    driver_name: "Rajesh Patil",
+    driver_phone: "+91 98201 55432",
+    eta_mins: 15,
+    otp_code: "7419",
+  };
+}
+
+const activeCallSessions = new Map();
+
+// Seeded background callers in queue waiting for an officer
+let prioritizedCallQueue = [
+  {
+    ticket_id: "WF-CALL-310482",
+    session_id: "IVR-BMC-QUEUE-1",
+    phone_number: "+91 98200 88111",
+    ward_code: "L",
+    ward_name: "Kurla / Chunabhatti",
+    issue_type: "Pressure Deficit at Standpost",
+    priority_score: 64.2,
+    tier: 2,
+    tier_name: "Tier-2 Elevated Priority",
+    queued_at: new Date(Date.now() - 180000).toISOString(),
+    lang: "mr",
+  },
+  {
+    ticket_id: "WF-CALL-194028",
+    session_id: "IVR-BMC-QUEUE-2",
+    phone_number: "+91 98200 77222",
+    ward_code: "A",
+    ward_name: "Colaba / Fort",
+    issue_type: "General Supply Inquiries",
+    priority_score: 28.5,
+    tier: 4,
+    tier_name: "Tier-4 Nominal Priority",
+    queued_at: new Date(Date.now() - 300000).toISOString(),
+    lang: "en",
+  },
+];
+
+// 1. POST /api/call/ivr-connect
+// Citizen calls helpline +91 8369978764 -> Bot answers, raises ticket, briefs status in caller's language
+router.post("/call/ivr-connect", (req, res) => {
+  try {
+    const { phone_number, caller_phone, ward_code, lang, source } = req.body;
+    const phone = caller_phone || phone_number || "+91-9820012345";
+    const wardCode = (ward_code || "M/E").toUpperCase().trim();
+    const currentLang = (lang || "mr").toLowerCase();
+    const wardProfile = getWardMunicipalProfile(wardCode);
+
+    const ticketId = `WF-CALL-${Math.floor(100000 + Math.random() * 900000)}`;
+    const sessionId = `CALL-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const scripts = {
+      mr: `नमस्कार! मी बृहन्मुंबई महानगरपालिकेचा AI जलवाणी सहाय्यक बोलत आहे. तुमची चौकशी/तक्रार तिकीट #${ticketId} स्वयंचलितपणे नोंदवली गेली आहे. वॉर्ड ${wardProfile.ward_code} (${wardProfile.name}) मधील सद्यस्थिती: आज पाणीपुरवठा वेळ ${wardProfile.timetable} आहे. सध्या भागात ${wardProfile.deficit_pct}% तुटवडा असून तातडीचा टँकर ${wardProfile.tanker_id} मार्गस्थ आहे (चालक: ${wardProfile.driver_name}, अंदाजे पोहोचण्याची वेळ ${wardProfile.eta_mins} मिनिटे, डिलिव्हरी OTP: ${wardProfile.otp_code}). ही माहिती पुरेशी आहे का? नसल्यास 'अधिकाऱ्याशी बोला' पर्याय निवडा.`,
+      hi: `नमस्ते! मैं बृहन्मुंबई महानगरपालिका (BMC) का AI जलवाणी सहायक बोल रहा हूँ। आपका पूछताछ/शिकायत टिकट #${ticketId} स्वतः दर्ज कर लिया गया है। वार्ड ${wardProfile.ward_code} (${wardProfile.name}) की वर्तमान स्थिति: आज जलापूर्ति का समय ${wardProfile.timetable} है। वर्तमान में ${wardProfile.deficit_pct}% जलाभाव है और राहत टैंकर ${wardProfile.tanker_id} रास्ते में है (चालक: ${wardProfile.driver_name}, अनुमानित समय ${wardProfile.eta_mins} मिनट, डिलीवरी OTP: ${wardProfile.otp_code})। क्या आप इस जानकारी से संतुष्ट हैं? यदि नहीं, तो 'अधिकारी से बात करें' चुनें।`,
+      en: `Hello! This is Brihanmumbai Municipal Corporation (BMC) AI JalVaani Voice Assistant. Your inquiry/grievance ticket #${ticketId} has been automatically logged. Current status for Ward ${wardProfile.ward_code} (${wardProfile.name}): Scheduled water supply is ${wardProfile.timetable}. Current distribution deficit is ${wardProfile.deficit_pct}%, and relief tanker ${wardProfile.tanker_id} is en route (Driver: ${wardProfile.driver_name}, ETA ~${wardProfile.eta_mins} mins, Delivery OTP: ${wardProfile.otp_code}). Are you satisfied with this update? If not, select 'Speak to Officer'.`,
+    };
+
+    const selectedScript = scripts[currentLang] || scripts.mr;
+
+    const sessionData = {
+      session_id: sessionId,
+      ticket_id: ticketId,
+      phone_number: phone,
+      helpline_number: HELPLINE_PHONE_NUMBER,
+      ward_code: wardProfile.ward_code,
+      ward_name: wardProfile.name,
+      lang: currentLang,
+      stage: "BOT_BRIEFING",
+      area_status: {
+        timetable: wardProfile.timetable,
+        deficit_pct: wardProfile.deficit_pct,
+        relief_tanker: {
+          tanker_id: wardProfile.tanker_id,
+          driver_name: wardProfile.driver_name,
+          driver_phone: wardProfile.driver_phone,
+          eta_mins: wardProfile.eta_mins,
+          otp_code: wardProfile.otp_code,
+        },
+      },
+      bot_voice_script: selectedScript,
+      scripts,
+      created_at: new Date().toISOString(),
+    };
+
+    activeCallSessions.set(sessionId, sessionData);
+
+    // Register inquiry in active reports
+    activeReports.unshift({
+      report_id: ticketId,
+      phone_number: phone,
+      issue_type: `📞 HELPLINE IVR INTAKE (Ward ${wardProfile.ward_code})`,
+      status: "ivr_ticket_raised",
+      lat: 19.055,
+      lng: 72.918,
+      ward_code: wardProfile.ward_code,
+      ward_name: wardProfile.name,
+      assigned_tanker_id: wardProfile.tanker_id,
+      notes: `Auto-ticket raised via Voice Bot Helpline (${HELPLINE_PHONE_NUMBER})`,
+      created_at: new Date().toISOString(),
+    });
+
+    console.log(`📞 [IVR BOT CALL] Handled call on ${HELPLINE_PHONE_NUMBER} | Auto-Ticket: ${ticketId} | Ward: ${wardProfile.ward_code} | Lang: ${currentLang}`);
+
+    return res.status(200).json({
+      success: true,
+      helpline_number: HELPLINE_PHONE_NUMBER,
+      ticket_id: ticketId,
+      session_id: sessionId,
+      ward_code: wardProfile.ward_code,
+      ward_name: wardProfile.name,
+      lang: currentLang,
+      stage: "BOT_BRIEFING",
+      area_status: sessionData.area_status,
+      bot_voice_script: selectedScript,
+      script: selectedScript,
+      scripts,
+      message: "AI Voice Bot connected. Inquiry ticket raised and area status briefed to caller in preferred language.",
+    });
+  } catch (err) {
+    console.error("Error in /api/call/ivr-connect:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 2. POST /api/call/satisfaction
+// Caller confirms whether bot's status briefing was sufficient
+router.post("/call/satisfaction", (req, res) => {
+  try {
+    const { session_id, ticket_id, satisfied, notes } = req.body;
+    const session = activeCallSessions.get(session_id);
+
+    if (satisfied) {
+      if (session) {
+        session.stage = "RESOLVED_BY_BOT";
+        session.resolved_at = new Date().toISOString();
+      }
+
+      // Update in activeReports
+      const rep = activeReports.find((r) => r.report_id === ticket_id);
+      if (rep) {
+        rep.status = "resolved_by_ivr_bot";
+        rep.notes = notes || "Caller satisfied with automated area timetable and tanker status.";
+      }
+
+      return res.json({
+        success: true,
+        ticket_id,
+        status: "RESOLVED_BY_BOT",
+        message: "Ticket marked resolved. Caller satisfied with automated area briefing.",
+        sms_confirmation: `MCGM WATERFLOW: Inquiry #${ticket_id} resolved via AI JalVaani Voice Bot. For future queries, dial ${HELPLINE_PHONE_NUMBER}.`,
+      });
+    } else {
+      return res.json({
+        success: true,
+        ticket_id,
+        status: "PENDING_ESCALATION",
+        message: "Caller not satisfied. Ready for priority queue escalation.",
+      });
+    }
+  } catch (err) {
+    console.error("Error in /api/call/satisfaction:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 3. POST /api/call/escalate
+// Caller is unsatisfied -> Enqueued into Municipal Mobile Call Queue strictly prioritized by WaterFlow equity algorithm
+router.post("/call/escalate", (req, res) => {
+  try {
+    const { session_id, ticket_id, phone_number, ward_code, issue_type, lang } = req.body;
+    const wardCode = (ward_code || "M/E").toUpperCase().trim();
+    const wardProfile = getWardMunicipalProfile(wardCode);
+    const phone = phone_number || "+91-9820012345";
+    const ticket = ticket_id || `WF-CALL-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    // Evaluate equity priority using authoritative core algorithm
+    const priorityResult = computePriority(wardProfile);
+    const score = Number(priorityResult.total_score ?? priorityResult.total ?? 0);
+    const factors = priorityResult.priority_factors || priorityResult.factors || priorityResult.breakdown || [];
+
+    // Remove existing entry for this ticket if already present
+    prioritizedCallQueue = prioritizedCallQueue.filter((item) => item.ticket_id !== ticket);
+
+    const queueItem = {
+      ticket_id: ticket,
+      session_id: session_id || `IVR-BMC-${Date.now()}`,
+      phone_number: phone,
+      ward_code: wardProfile.ward_code,
+      ward_name: wardProfile.name,
+      issue_type: issue_type || "Water Deficit Escalation (Unsatisfied with Bot)",
+      priority_score: score,
+      tier: priorityResult.tier || 1,
+      tier_name:
+        priorityResult.tier === 1
+          ? "Tier-1 Critical Priority"
+          : priorityResult.tier === 2
+          ? "Tier-2 Elevated Priority"
+          : "Tier-3 Moderate Priority",
+      factors: factors,
+      queued_at: new Date().toISOString(),
+      lang: lang || "mr",
+    };
+
+    // Add and sort queue descending by priority_score (CRITICAL EQUITY INVARIANT)
+    prioritizedCallQueue.push(queueItem);
+    prioritizedCallQueue.sort((a, b) => b.priority_score - a.priority_score);
+
+    const queuePosition = prioritizedCallQueue.findIndex((item) => item.ticket_id === ticket) + 1;
+    const estimatedWaitSeconds = Math.max(30, queuePosition * 45);
+
+    // Update session state
+    if (session_id && activeCallSessions.has(session_id)) {
+      const s = activeCallSessions.get(session_id);
+      s.stage = "QUEUED_ESCALATION";
+      s.priority_score = score;
+      s.queue_position = queuePosition;
+    }
+
+    console.log(`📋 [PRIORITY CALL QUEUE] Caller ticket ${ticket} (Ward ${wardCode}) queued at Position #${queuePosition}/${prioritizedCallQueue.length} (Score: ${score})`);
+
+    return res.status(200).json({
+      success: true,
+      ticket_id: ticket,
+      queue_position: queuePosition,
+      total_waiting: prioritizedCallQueue.length,
+      priority_score: score,
+      tier: priorityResult.tier,
+      tier_name: queueItem.tier_name,
+      factors: factors,
+      estimated_wait_seconds: estimatedWaitSeconds,
+      active_queue: prioritizedCallQueue,
+      message: "Caller prioritized in mobile call escalation queue based on municipal water distress equity metrics.",
+    });
+  } catch (err) {
+    console.error("Error in /api/call/escalate:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 4. GET /api/call/queue: Read live prioritized municipal call escalation queue
+router.get("/call/queue", (req, res) => {
+  res.json({
+    success: true,
+    helpline_number: HELPLINE_PHONE_NUMBER,
+    total_waiting: prioritizedCallQueue.length,
+    queue_length: prioritizedCallQueue.length,
+    queue: prioritizedCallQueue,
+  });
+});
+
+// 5. POST /api/call/connect-officer: Connects caller to available municipal officer
+router.post("/call/connect-officer", (req, res) => {
+  try {
+    const { ticket_id, ward_code } = req.body;
+    const wardCode = (ward_code || "M/E").toUpperCase().trim();
+    const wardProfile = getWardMunicipalProfile(wardCode);
+
+    const officerData = {
+      officer_name: "Er. Nilesh Shinde",
+      designation: `Executive Water Engineer (${wardProfile.name})`,
+      badge_number: "BMC-EE-4182",
+      control_room: "Eastern Suburbs Zonal Water SCADA Control Room, Chembur",
+      call_channel: "SECURE_VOIP_ENCRYPTED_BRIDGE",
+      connected_at: new Date().toISOString(),
+      ticket_id: ticket_id || "WF-CALL-LIVE",
+    };
+
+    // Remove from queue once connected
+    if (ticket_id) {
+      prioritizedCallQueue = prioritizedCallQueue.filter((item) => item.ticket_id !== ticket_id);
+    }
+
+    return res.json({
+      success: true,
+      message: "Caller successfully connected with Municipal Zonal Water Engineer.",
+      officer: officerData,
+    });
+  } catch (err) {
+    console.error("Error in /api/call/connect-officer:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -550,7 +948,7 @@ Core Objectives:
 
 Authoritative Context:
 - Mumbai BMC 24 Administrative Wards: Ward M/East (Govandi/Mankhurd/Shivaji Nagar - timetable 06:00-09:30, high deficit), Ward G/North (Dharavi/Mahim - timetable 05:30-08:30), Ward K/East (Andheri East - timetable 07:00-10:00), Ward L (Kurla - timetable 06:30-09:30), Ward A (Colaba - 04:30-07:00).
-- Emergency Water Helpline: Dial 1916 (Toll-Free 24x7 BMC Control Room).
+- Emergency Water Helpline: Dial +91 8369978764 (24x7 BMC Operations Helpline).
 - Delivery Verification: Relief tankers require a 4-digit Delivery OTP (e.g. 7419) shared with the driver upon physical arrival at the standpost to ensure verified delivery without black-marketing.
 - Mathematical Equity Guarantee: Allocations are based on need (vulnerability + dry hours + population density), not VIP influence or first-come first-served favoritism.
 - In case of contamination: Advise boiling water for 15+ minutes or using municipal chlorine tablets, and offer to register an emergency water quality complaint immediately.
@@ -621,7 +1019,7 @@ router.post("/citizen/chat", async (req, res) => {
       } else if (lastUserMsg.includes("टँकर") || lastUserMsg.includes("ट्रॅक")) {
         fallbackReply = `वॉर्ड ${ward} साठी टँकर T-08 (चालक: राजेश पाटील, ९८२०१ ५५४३२) मार्गस्थ आहे. अंदाजे पोहोचण्याची वेळ: १२-१४ मिनिटे. डिलिव्हरी OTP: ७४१९ हा चालकाला द्या.`;
       } else {
-        fallbackReply = `नमस्कार! मी जलमित्र (BMC AI सहाय्यक) आहे. वॉर्ड ${ward} मधील पाणी पुरवठा, टँकर ट्रॅकिंग, तक्रार नोंदणी किंवा मनपा हेल्पलाइन १९१६ बाबत मी आपली काय मदत करू?`;
+        fallbackReply = `नमस्कार! मी जलमित्र (BMC AI सहाय्यक) आहे. वॉर्ड ${ward} मधील पाणी पुरवठा, टँकर ट्रॅकिंग, तक्रार नोंदणी किंवा मनपा हेल्पलाइन +91 8369978764 बाबत मी आपली काय मदत करू?`;
       }
     } else if (currentLang === "hi") {
       if (lastUserMsg.includes("पानी") && (lastUserMsg.includes("कब") || lastUserMsg.includes("समय"))) {
@@ -629,7 +1027,7 @@ router.post("/citizen/chat", async (req, res) => {
       } else if (lastUserMsg.includes("टैंकर") || lastUserMsg.includes("ट्रैक")) {
         fallbackReply = `वार्ड ${ward} के लिए टैंकर T-08 (चालक: राजेश पाटिल, 98201 55432) रास्ते में है। अनुमानित समय 12-14 मिनट है। कृपया चालक को डिलीवरी OTP: 7419 प्रदान करें।`;
       } else {
-        fallbackReply = `नमस्ते! मैं जलमित्र (BMC AI सहायक) हूँ। वार्ड ${ward} में पानी का समय, टैंकर ट्रैकिंग, दूषित पानी की शिकायत या मनपा हेल्पलाइन 1916 से संबंधित किसी भी सहायता के लिए पूछें।`;
+        fallbackReply = `नमस्ते! मैं जलमित्र (BMC AI सहायक) हूँ। वार्ड ${ward} में पानी का समय, टैंकर ट्रैकिंग, दूषित पानी की शिकायत या मनपा हेल्पलाइन +91 8369978764 से संबंधित किसी भी सहायता के लिए पूछें।`;
       }
     } else {
       if (lastUserMsg.includes("when") || lastUserMsg.includes("time") || lastUserMsg.includes("schedule")) {
@@ -637,7 +1035,7 @@ router.post("/citizen/chat", async (req, res) => {
       } else if (lastUserMsg.includes("tanker") || lastUserMsg.includes("track")) {
         fallbackReply = `For Ward ${ward}, Emergency Tanker T-08 (Driver: Rajesh Patil, +91 98201 55432) is en route with an ETA of ~12 mins. Share Delivery OTP: 7419 upon arrival.`;
       } else {
-        fallbackReply = `Hello! I am JalMitra, your BMC Water Assistant. How can I help you today regarding Ward ${ward} water timetable, emergency tanker tracking, or registering a grievance? Toll-free helpline: 1916.`;
+        fallbackReply = `Hello! I am JalMitra, your BMC Water Assistant. How can I help you today regarding Ward ${ward} water timetable, emergency tanker tracking, or registering a grievance? Helpline: +91 8369978764.`;
       }
     }
 
