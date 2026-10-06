@@ -60,13 +60,33 @@ export default function LandingPage({
         </div>
 
         {/* Right Actions: Language & Login CTA */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setLang(lang === "en" ? "mr" : "en")}
-            className="text-slate-600 hover:text-slate-900 text-xs font-bold px-2 py-1 rounded border border-slate-200 bg-slate-50 transition"
-          >
-            {lang === "en" ? "मराठी" : "English"}
-          </button>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+            <button
+              onClick={() => setLang("en")}
+              className={`px-2 py-1 rounded text-xs font-bold transition cursor-pointer ${
+                lang === "en" ? "bg-white text-[#0056b3] shadow-2xs" : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              English
+            </button>
+            <button
+              onClick={() => setLang("hi")}
+              className={`px-2 py-1 rounded text-xs font-bold transition cursor-pointer ${
+                lang === "hi" ? "bg-white text-[#0056b3] shadow-2xs" : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              हिंदी
+            </button>
+            <button
+              onClick={() => setLang("mr")}
+              className={`px-2 py-1 rounded text-xs font-bold transition cursor-pointer ${
+                lang === "mr" ? "bg-white text-[#0056b3] shadow-2xs" : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              मराठी
+            </button>
+          </div>
 
           <button
             onClick={onNavigateToLogin}
