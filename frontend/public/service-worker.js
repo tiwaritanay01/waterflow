@@ -3,7 +3,7 @@
 // Offline Resilience & Background Sync for Field Worker Deliveries
 // ============================================================
 
-const CACHE_NAME = 'waterflow-worker-cache-v5';
+const CACHE_NAME = 'waterflow-worker-cache-v6';
 const STATIC_ASSETS = [
   '/',
   '/worker',
@@ -26,7 +26,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[ServiceWorker] Pre-caching offline application shell v5...');
+      console.log('[ServiceWorker] Pre-caching offline application shell v6...');
       return cache.addAll(STATIC_ASSETS).catch((err) => {
         console.warn('[ServiceWorker] Non-critical pre-cache warning:', err);
       });
