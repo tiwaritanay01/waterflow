@@ -687,9 +687,9 @@ let prioritizedCallQueue = [
 
 // 1. POST /api/call/ivr-connect
 // Citizen calls helpline +91 8369978764 -> Bot answers, raises ticket, briefs status in caller's language
-router.post("/call/ivr-connect", (req, res) => {
+router.post("/call/ivr-connect", async (req, res) => {
   try {
-    const { phone_number, caller_phone, ward_code, lang, source } = req.body;
+    const { phone_number, caller_phone, ward_code, lang, source, caller_speech } = req.body;
     const phone = caller_phone || phone_number || "+91-9820012345";
     const wardCode = (ward_code || "M/E").toUpperCase().trim();
     const currentLang = (lang || "mr").toLowerCase();
@@ -698,13 +698,53 @@ router.post("/call/ivr-connect", (req, res) => {
     const ticketId = `WF-CALL-${Math.floor(100000 + Math.random() * 900000)}`;
     const sessionId = `CALL-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-    const scripts = {
+    const defaultScripts = {
       mr: `नमस्कार! मी मनपा जलवाणी मदत सेवेतून बोलत आहे. काळजी करू नका, तुमची तक्रार नोंदवली आहे (तक्रार क्र. #${ticketId}). वॉर्ड ${wardProfile.ward_code} (${wardProfile.name}) मध्ये आज नळाचे पाणी सकाळी ${wardProfile.timetable} येणार होते. भागात पाणी कमी असल्यामुळे तुमच्या मदतीसाठी मनपाचा पाण्याचा टँकर ${wardProfile.tanker_id} निघाला आहे. ड्रायव्हर ${wardProfile.driver_name} साधारण ${wardProfile.eta_mins} मिनिटांत पोहोचेल. पाणी घेताना ड्रायव्हरला OTP ${wardProfile.otp_code} सांगा. ही माहिती समजली का? तुम्हाला पाणी अधिकाऱ्यांशी थेट बोलायचे असल्यास 'अधिकाऱ्यांशी बोला' हे बटण दाबा.`,
       hi: `नमस्ते! मैं मनपा जलवाणी सहायता से बोल रहा हूँ। परेशान मत होइए, आपकी शिकायत दर्ज हो गई है (शिकायत क्र. #${ticketId})। वार्ड ${wardProfile.ward_code} (${wardProfile.name}) में आज नल का पानी सुबह ${wardProfile.timetable} आना था। इलाके में पानी की किल्लत की वजह से आपके लिए राहत टैंकर ${wardProfile.tanker_id} भेज दिया गया है। ड्राइवर ${wardProfile.driver_name} लगभग ${wardProfile.eta_mins} मिनट में पहुँच रहा है। पानी लेते समय ड्राइवर को OTP ${wardProfile.otp_code} बता दीजिएगा। क्या आपको पूरी जानकारी मिल गई? यदि आप किसी अधिकारी से सीधे बात करना चाहते हैं, तो 'अधिकारी से बात करें' दबाएं।`,
       en: `Hello! This is the BMC Water Helpline. Don't worry, your water complaint is registered (Ticket #${ticketId}). In Ward ${wardProfile.ward_code} (${wardProfile.name}), tap water was scheduled for ${wardProfile.timetable}. Because water is short today, relief tanker ${wardProfile.tanker_id} has already been sent to your street. Driver ${wardProfile.driver_name} will reach in about ${wardProfile.eta_mins} minutes. When you collect water, please give him OTP ${wardProfile.otp_code}. Does this help you? If you still need to speak directly with an officer, choose 'Speak to Officer'.`,
     };
 
-    const selectedScript = scripts[currentLang] || scripts.mr;
+    let selectedScript = defaultScripts[currentLang] || defaultScripts.mr;
+
+    // Dynamically generate personalized spoken briefing using Groq LLM if available
+    if (GROQ_API_KEY) {
+      try {
+        const voicePrompt = `You are the automated BMC Municipal Voice Helper speaking on phone helpline +91 8369978764 to a Mumbai citizen.
+Caller Context:
+- Language: ${currentLang === "hi" ? "Hindi (हिंदी)" : currentLang === "mr" ? "Marathi (मराठी)" : "English"}
+- Ward: Ward ${wardProfile.ward_code} (${wardProfile.name})
+- Auto-Generated Ticket ID: #${ticketId}
+- Scheduled tap water time: ${wardProfile.timetable}
+- Dispatched relief tanker: ${wardProfile.tanker_id} (Driver: ${wardProfile.driver_name}, ETA ~${wardProfile.eta_mins} mins, Delivery OTP: ${wardProfile.otp_code})
+${caller_speech ? `- Caller's words: "${caller_speech}"` : ""}
+
+Generate a caring, short spoken briefing (3-4 natural sentences) in plain everyday spoken language without bureaucratic jargon. Reassure the caller, state their ticket ID and tanker details, remind them to give OTP ${wardProfile.otp_code} to the driver, and ask if they are satisfied or want to connect with an officer.`;
+
+        const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${GROQ_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: GROQ_CHAT_MODEL,
+            messages: [{ role: "system", content: voicePrompt }],
+            max_tokens: 220,
+            temperature: 0.5,
+          }),
+        });
+
+        if (groqRes.ok) {
+          const gData = await groqRes.json();
+          const llmScript = gData.choices?.[0]?.message?.content;
+          if (llmScript && llmScript.trim().length > 30) {
+            selectedScript = llmScript.trim();
+          }
+        }
+      } catch (voiceErr) {
+        console.warn("Groq voice script generation fallback:", voiceErr.message);
+      }
+    }
 
     const sessionData = {
       session_id: sessionId,
@@ -727,7 +767,7 @@ router.post("/call/ivr-connect", (req, res) => {
         },
       },
       bot_voice_script: selectedScript,
-      scripts,
+      scripts: defaultScripts,
       created_at: new Date().toISOString(),
     };
 
@@ -762,7 +802,7 @@ router.post("/call/ivr-connect", (req, res) => {
       area_status: sessionData.area_status,
       bot_voice_script: selectedScript,
       script: selectedScript,
-      scripts,
+      scripts: defaultScripts,
       message: "AI Voice Bot connected. Inquiry ticket raised and area status briefed to caller in preferred language.",
     });
   } catch (err) {
