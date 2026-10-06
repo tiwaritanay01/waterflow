@@ -57,10 +57,10 @@ export default function EvidencePanelModal({ isOpen, onClose }) {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-slate-200 bg-white px-6 text-xs font-semibold text-slate-600">
+        <div className="flex border-b border-slate-200 bg-white px-2 sm:px-6 text-xs font-semibold text-slate-600 overflow-x-auto custom-scroll whitespace-nowrap">
           <button
             onClick={() => setActiveTab("provenance")}
-            className={`py-3 px-4 border-b-2 transition-all flex items-center space-x-2 ${
+            className={`shrink-0 py-3 px-3 sm:px-4 border-b-2 transition-all flex items-center space-x-2 ${
               activeTab === "provenance"
                 ? "border-blue-600 text-blue-600 font-bold"
                 : "border-transparent hover:text-slate-900"

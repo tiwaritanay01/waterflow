@@ -534,60 +534,60 @@ export default function MumbaiLeafletMap({
   return (
     <div className="relative w-full h-full flex flex-col overflow-hidden select-none bg-[#EAF2F9] isolate">
       {/* Top Map Control Bar */}
-      <div className="z-20 absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
+      <div className="z-20 absolute top-2 left-2 right-2 flex flex-wrap gap-1.5 items-center justify-between pointer-events-none">
         {/* Layer Selector */}
-        <div className="pointer-events-auto bg-white/95 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-card-border shadow-sm flex items-center space-x-1.5 text-xs">
-          <span className="font-bold text-[10px] text-sec-text flex items-center space-x-1 pr-1 border-r border-slate-200">
+        <div className="pointer-events-auto bg-white/95 backdrop-blur-md px-2 py-1 rounded-lg border border-card-border shadow-sm flex items-center space-x-1 text-xs overflow-x-auto max-w-full">
+          <span className="font-bold text-[10px] text-sec-text flex items-center space-x-1 pr-1 border-r border-slate-200 shrink-0">
             <Layers className="w-3.5 h-3.5 text-deep-blue" />
             <span className="hidden sm:inline">Layer:</span>
           </span>
           <button
-            className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
+            className={`px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-bold whitespace-nowrap transition-all ${
               activeLayer === "deficit"
                 ? "bg-deep-blue text-white shadow-2xs"
                 : "text-sec-text hover:bg-slate-100"
             }`}
             onClick={() => setActiveLayer("deficit")}
           >
-            Water Deficit
+            Deficit
           </button>
           <button
-            className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
+            className={`px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-bold whitespace-nowrap transition-all ${
               activeLayer === "vulnerability"
                 ? "bg-deep-blue text-white shadow-2xs"
                 : "text-sec-text hover:bg-slate-100"
             }`}
             onClick={() => setActiveLayer("vulnerability")}
           >
-            Vulnerability (Vw)
+            Vulnerability
           </button>
           <button
-            className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
+            className={`px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-bold whitespace-nowrap transition-all ${
               activeLayer === "dry_pipe"
                 ? "bg-deep-blue text-white shadow-2xs"
                 : "text-sec-text hover:bg-slate-100"
             }`}
             onClick={() => setActiveLayer("dry_pipe")}
           >
-            Dry-Pipe Hours
+            Dry-Pipe
           </button>
           <button
-            className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
+            className={`px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-bold whitespace-nowrap transition-all ${
               activeLayer === "priority"
                 ? "bg-deep-blue text-white shadow-2xs"
                 : "text-sec-text hover:bg-slate-100"
             }`}
             onClick={() => setActiveLayer("priority")}
           >
-            Priority Tiers
+            Tiers
           </button>
 
-          <span className="h-4 w-px bg-slate-200 mx-1 hidden sm:inline" />
+          <span className="h-4 w-px bg-slate-200 mx-0.5 shrink-0" />
 
           {/* Choropleth Colors Toggle Button */}
           <button
             id="toggle-map-colors"
-            className={`px-2.5 py-0.5 rounded text-[11px] font-bold flex items-center space-x-1.5 transition-all shadow-xs cursor-pointer ${
+            className={`px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-bold flex items-center space-x-1 transition-all shadow-xs cursor-pointer whitespace-nowrap shrink-0 ${
               showColors
                 ? "bg-deep-blue text-white ring-1 ring-blue-300"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-300"
@@ -595,13 +595,13 @@ export default function MumbaiLeafletMap({
             onClick={() => setShowColors(!showColors)}
             title={showColors ? "Click to hide polygon colors (clean outline mode)" : "Click to show choropleth colors"}
           >
-            <Palette className={`w-3.5 h-3.5 ${showColors ? "text-blue-200" : "text-slate-500"}`} />
+            <Palette className={`w-3 h-3 ${showColors ? "text-blue-200" : "text-slate-500"}`} />
             <span>{showColors ? "Colors: ON" : "Colors: OFF"}</span>
           </button>
         </div>
 
         {/* Right Quick Controls */}
-        <div className="pointer-events-auto flex items-center space-x-1.5">
+        <div className="pointer-events-auto flex items-center space-x-1 shrink-0">
           <div className="bg-white/95 backdrop-blur-md px-2 py-1 rounded-lg border border-card-border shadow-sm flex items-center space-x-1 text-[11px]">
             <button
               className={`px-1.5 py-0.5 rounded font-semibold text-[10px] ${

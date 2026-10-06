@@ -179,7 +179,7 @@ export default function MapPanel({
           </div>
 
           {/* Factor breakdown bars */}
-          <div className="grid grid-cols-5 gap-2 my-1.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 my-1.5">
             {(spotlightWard.breakdown || [
               { factor: "Vulnerability", weighted_score: 28.8, normalized: 0.96, description: "Informal density" },
               { factor: "Dry Pipe Time", weighted_score: 20.1, normalized: 0.81, description: "58h dry" },
@@ -213,8 +213,8 @@ export default function MapPanel({
           </div>
 
           {/* Recommendation CTA */}
-          <div className="flex items-center justify-between bg-blue-50/70 border border-blue-200 rounded-lg px-2.5 py-1.5">
-            <div className="flex items-center space-x-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-blue-50/70 border border-blue-200 rounded-lg px-2.5 py-1.5">
+            <div className="flex items-center space-x-2 min-w-0">
               <span className="text-deep-blue shrink-0">✓</span>
               <span className="text-xs font-bold text-head-text truncate">
                 Recommended:{" "}
@@ -227,7 +227,7 @@ export default function MapPanel({
             <button
               onClick={handleAssignTanker}
               disabled={dispatching}
-              className={`px-3 py-1 rounded text-xs font-bold shadow-2xs flex items-center space-x-1.5 transition-all ${
+              className={`w-full sm:w-auto justify-center px-3 py-1.5 sm:py-1 rounded text-xs font-bold shadow-2xs flex items-center space-x-1.5 transition-all cursor-pointer ${
                 dispatchedMission
                   ? "bg-olive-green text-white"
                   : dispatching

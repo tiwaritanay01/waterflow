@@ -243,7 +243,7 @@ export default function PolicySandbox({ onNavigateToGovernance }) {
         </div>
 
         {/* ─── Controls ─────────────────────────── */}
-        <div className="grid grid-cols-[1fr_1fr_auto] gap-2 mt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] gap-2 mt-2">
           {/* Policy Selector */}
           <div>
             <label className="text-[9px] font-bold text-sec-text uppercase tracking-wider block mb-1">Policy Preset</label>
@@ -275,11 +275,11 @@ export default function PolicySandbox({ onNavigateToGovernance }) {
           </div>
 
           {/* Run Button */}
-          <div className="flex items-end">
+          <div className="flex items-end sm:col-span-2 lg:col-span-1">
             <button
               onClick={runSimulation}
               disabled={isRunning}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-lg bg-deep-blue text-white text-xs font-bold hover:bg-blue-700 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              className="w-full lg:w-auto flex items-center justify-center space-x-1.5 px-4 py-2 rounded-lg bg-deep-blue text-white text-xs font-bold hover:bg-blue-700 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap cursor-pointer"
             >
               {isRunning ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
