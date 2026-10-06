@@ -488,10 +488,10 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
               <div className="truncate">
                 <div className="flex items-center gap-1.5 leading-none">
                   <span className="text-[11px] font-bold text-white tracking-tight">
-                    Install WaterFlow Field App
+                    WaterFlow Driver App (चालक ॲप)
                   </span>
                   <span className="text-[9px] bg-sky-700 text-blue-100 font-mono font-bold px-1 py-0.5 rounded leading-none">
-                    PWA
+                    DRIVER APP
                   </span>
                 </div>
                 <span className="text-[10px] text-slate-300 flex items-center gap-1 mt-0.5">
@@ -516,11 +516,11 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
 
               <button
                 type="button"
-                onClick={() => alert("PWA Added to Home Screen: WaterFlow Field Terminal is now cached offline for low-connectivity zones.")}
+                onClick={() => alert("WaterFlow App Saved: The driver app is now added to your home screen and works even without internet.")}
                 className="bg-[#0056b3] hover:bg-sky-800 active:bg-sky-900 text-white text-[11px] font-bold px-2.5 py-1 rounded shadow-2xs transition-colors flex items-center gap-1"
               >
                 <Smartphone className="w-3 h-3" />
-                <span>Add to Home</span>
+                <span>Add to Phone (फोनवर जोडा)</span>
               </button>
             </div>
           </div>
@@ -1436,22 +1436,39 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                               ? "bg-red-200 text-red-900"
                               : "bg-emerald-200 text-emerald-900"
                           }`}>
-                            {item.status}
+                            {item.status === "pending" || item.status === "retry"
+                              ? "SAVED ON PHONE (साठवले)"
+                              : item.status === "conflict" || item.status === "rejected"
+                              ? "CHECK WITH OFFICE (तपासा)"
+                              : "SENT TO OFFICE (पाठवले)"}
                           </span>
-                          <span className="font-bold text-slate-900">{item.action_type}</span>
+                          <span className="font-bold text-slate-900">
+                            {item.action_type === "UPDATE_STAGE"
+                              ? "Trip Progress (प्रवास टप्पा)"
+                              : item.action_type === "COMPLETE_MISSION"
+                              ? "Water Delivery Completed (पाणी दिले)"
+                              : item.action_type === "REPORT_INCIDENT"
+                              ? "Road Issue (समस्या)"
+                              : item.action_type}
+                          </span>
                         </div>
                         <span className="font-mono text-[10px] text-slate-400">
                           {new Date(item.created_at || item.local_timestamp).toLocaleTimeString()}
                         </span>
                       </div>
 
-                      <div className="font-mono text-[10px] text-slate-600 truncate">
-                        ID: {item.operation_id} · Mission #{item.mission_id} (v{item.mission_version})
+                      <div className="text-[10.5px] text-slate-600">
+                        Delivery Mission #{item.mission_id}
                       </div>
 
                       {item.payload && (
-                        <div className="bg-white/90 p-2 rounded border border-slate-200 font-mono text-[10px] text-slate-700">
-                          {JSON.stringify(item.payload)}
+                        <div className="bg-white/90 p-2 rounded border border-slate-200 text-[11px] text-slate-800 font-medium">
+                          {item.payload.stage === "ARRIVED" && "📍 Arrived at Delivery Spot (जागेवर पोहोचलो)"}
+                          {item.payload.stage === "DISPENSING" && "💧 Giving Water to Residents (पाणी देणे सुरू)"}
+                          {item.payload.stage === "EN_ROUTE" && "🚚 Driving to Ward (मार्गावर आहे)"}
+                          {item.payload.liters_delivered && `💧 ${Number(item.payload.liters_delivered).toLocaleString()} Liters given to ${item.payload.receiver_name || "Residents"}`}
+                          {item.payload.note && `📝 Note: ${item.payload.note}`}
+                          {!item.payload.stage && !item.payload.liters_delivered && !item.payload.note && "Delivery action recorded"}
                         </div>
                       )}
 
@@ -1463,7 +1480,7 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
 
                       {item.last_error && (
                         <div className="text-[10px] text-amber-800 bg-amber-100/70 p-1.5 rounded">
-                          Network Retry Note: {item.last_error} (Retries: {item.retry_count || 0})
+                          Will send automatically as soon as phone gets mobile signal.
                         </div>
                       )}
                     </div>

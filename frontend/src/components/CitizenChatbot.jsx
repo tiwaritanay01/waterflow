@@ -307,7 +307,7 @@ Instructions:
           {onOpenEmergencyModal && (
             <button
               onClick={onOpenEmergencyModal}
-              title="Emergency Helpline & Queue Webhook"
+              title="Emergency Water Helpline & Priority Queue (+91 8369978764)"
               className="p-1.5 rounded-lg bg-rose-600/80 hover:bg-rose-600 text-white transition cursor-pointer text-xs flex items-center space-x-1 shadow-2xs"
             >
               <Phone className="w-3.5 h-3.5" />

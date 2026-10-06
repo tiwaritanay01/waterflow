@@ -382,11 +382,11 @@ export default function LandingPage({
                   Tier 2 · Mumbai Residents
                 </span>
                 <h3 className="text-base font-bold text-slate-900 mt-0.5">
-                  Citizen Grievance &amp; Tracking PWA
+                  Citizen Grievance &amp; Tracking App
                 </h3>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Mobile-first PWA for residents to report water deficit, verify WGS84 GPS coordinates, track dispatched relief tankers, and receive secure 4-digit OTPs.
+                Mobile app for residents to report water shortage, view location on map, track dispatched relief tankers, and receive secure 4-digit OTPs.
               </p>
               <ul className="text-xs text-slate-600 space-y-1.5 pt-1">
                 <li className="flex items-center gap-2">
@@ -424,7 +424,7 @@ export default function LandingPage({
                   Tier 3 · Drivers &amp; Crews
                 </span>
                 <h3 className="text-base font-bold text-slate-900 mt-0.5">
-                  Worker Logistics &amp; Valve PWA
+                  Worker Logistics &amp; Field App
                 </h3>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">

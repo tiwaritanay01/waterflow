@@ -584,8 +584,8 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
           setRecentTicketsList((prev) => [
             {
               id: `#${data.ticket_id}`,
-              type: `📞 HELPLINE IVR INTAKE (Ward ${detectedWard.ward_code})`,
-              status: "IVR Bot Briefing",
+              type: `📞 HELPLINE CALL (Ward ${detectedWard.ward_code})`,
+              status: "Voice Helper Active",
               tanker: `Tanker ${data.area_status?.relief_tanker?.tanker_id || "T-08"}`,
               time: "Just now",
               otp: data.area_status?.relief_tanker?.otp_code || "7419",
@@ -1063,15 +1063,19 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-xs font-bold text-slate-900 tracking-tight">
-                  Install WaterFlow Citizen PWA
+                  {lang === "hi" ? "वॉटरफ्लो ऐप फोन स्क्रीन पर जोड़ें" : lang === "mr" ? "वॉटरफ्लो ॲप फोनवर जोडा" : "Add WaterFlow to Phone Screen"}
                 </span>
                 <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 font-mono text-[9px] font-semibold">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse"></span>
-                  Offline Ready
+                  {lang === "hi" ? "बिना इंटरनेट चलेगा" : lang === "mr" ? "इंटरनेटशिवाय चालेल" : "Works Offline"}
                 </span>
               </div>
               <p className="text-[10.5px] text-slate-600 leading-tight mt-1">
-                Instant offline grievance drafting, WhatsApp tanker tracking &amp; live GPS alerts without app store downloads.
+                {lang === "hi"
+                  ? "बिना इंटरनेट शिकायत लिखें, पानी टैंकर की लाइव स्थिति देखें और बिना ऐप स्टोर के तुरंत चलाएं।"
+                  : lang === "mr"
+                  ? "इंटरनेटशिवाय तक्रार नोंदवा, पाण्याचा टँकर ट्रॅक करा आणि ॲप स्टोअरशिवाय फोनवर थेट वापरा."
+                  : "Report water problems offline, track relief water tankers, and use directly without app store downloads."}
               </p>
             </div>
           </div>
@@ -1087,7 +1091,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
 
         <div className="mt-2.5 pt-2 border-t border-slate-200/80 flex items-center justify-between">
           <div className="flex items-center space-x-2 text-[10px] text-slate-500 font-mono">
-            <span>⚡ Fast Cache Sync</span>
+            <span>⚡ {lang === "hi" ? "तेज़ व सुरक्षित" : lang === "mr" ? "जलद व सुरक्षित" : "Fast & Offline Ready"}</span>
             <span>•</span>
             <span>🔒 BMC Verified</span>
           </div>
@@ -1106,7 +1110,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
             className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#0056b3] hover:bg-sky-700 text-white text-[11px] font-bold shadow-xs active:scale-95 transition cursor-pointer"
           >
             {pwaInstalled ? <Check className="w-3.5 h-3.5" /> : <Smartphone className="w-3.5 h-3.5" />}
-            <span>{pwaInstalled ? "Installed" : "Install App"}</span>
+            <span>{pwaInstalled ? (lang === "hi" ? "जोड़ा गया" : lang === "mr" ? "जोडले" : "Added") : (lang === "hi" ? "फोन में जोड़ें" : lang === "mr" ? "फोनवर जोडा" : "Add to Phone")}</span>
           </button>
         </div>
       </div>
@@ -1911,7 +1915,9 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
               <div className="p-2 rounded bg-sky-50/70 border border-sky-200 flex items-center justify-between">
                 <div>
                   <span className="font-bold text-slate-900 block">MCGM Disaster Helpline</span>
-                  <span className="text-[10px] text-slate-500 font-mono">24/7 Automated IVR & Voice Bot</span>
+                  <span className="text-[10px] text-slate-500 font-mono">
+                    {lang === "hi" ? "24/7 फोन व आवाज सहायता (+91 8369978764)" : lang === "mr" ? "२४/७ फोन व आवाज मदत (+91 8369978764)" : "24/7 Phone & Voice Helper (+91 8369978764)"}
+                  </span>
                 </div>
                 <a href="tel:+918369978764" className="font-mono font-black text-xs text-[#0056b3] bg-sky-100 hover:bg-sky-200 px-2 py-1 rounded transition">+91 8369978764</a>
               </div>
@@ -2034,7 +2040,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
               <button
                 onClick={() => setShowEmergencyModal(true)}
                 className="px-2 py-0.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-bold flex items-center space-x-1 shadow-xs transition active:scale-95 cursor-pointer animate-pulse border border-rose-400"
-                title="Emergency SOS Webhook / Helpline"
+                title="Emergency Water Help / Helpline"
               >
                 <AlertOctagon className="w-3 h-3 text-white" />
                 <span>SOS</span>
@@ -2195,10 +2201,10 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="flex items-center space-x-1.5 text-xs font-bold text-rose-900 uppercase">
                         <AlertOctagon className="w-4 h-4 text-rose-600 animate-pulse" />
-                        <span>{lang === "hi" ? "आपातकालीन वेबहुक" : lang === "mr" ? "तातडीचा वेबहुक" : "Emergency Webhook SOS"}</span>
+                        <span>{lang === "hi" ? "आपातकालीन जल सहायता" : lang === "mr" ? "तातडीची पाणी मदत" : "Emergency Water SOS"}</span>
                       </span>
                       <span className="text-[10px] font-mono font-bold bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full border border-rose-300">
-                        Tier-1 Priority
+                        {lang === "hi" ? "अति आवश्यक सेवा" : lang === "mr" ? "तातडीची सेवा" : "Immediate Relief"}
                       </span>
                     </div>
                     <div className="text-sm font-black text-slate-900">
@@ -2223,7 +2229,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                     <button
                       onClick={handleStartHelplineCall}
                       className="py-2 px-3 rounded-lg bg-white border border-rose-300 text-rose-800 font-bold text-xs hover:bg-rose-50 transition cursor-pointer flex items-center justify-center space-x-1 shadow-2xs"
-                      title="Direct Helpline Voice Bot (+91 8369978764)"
+                      title="Direct Helpline (+91 8369978764)"
                     >
                       <PhoneCall className="w-3.5 h-3.5 text-rose-600" />
                       <span>+91 8369978764</span>
@@ -2373,7 +2379,13 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                           <PhoneCall className="w-4 h-4 text-emerald-600" />
                           <span>+91 8369978764</span>
                         </div>
-                        <div className="text-[10.5px] text-slate-600 mt-0.5">Automated IVR Voice Bot &amp; Municipal Escalation Queue</div>
+                        <div className="text-[10.5px] text-slate-600 mt-0.5">
+                          {lang === "hi"
+                            ? "स्वचालित फोन सहायता व त्वरित अधिकारी कतार"
+                            : lang === "mr"
+                            ? "स्वयंचलित फोन मदत व तातडीचे अधिकारी केंद्र"
+                            : "Automated Voice Helpline & Urgent Officer Queue"}
+                        </div>
                       </div>
                       <div className="flex items-center space-x-2">
                         <button
@@ -2381,7 +2393,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                           className="px-3 py-1.5 bg-[#0056b3] hover:bg-sky-700 text-white font-bold text-xs rounded-lg shadow-xs transition cursor-pointer flex items-center space-x-1"
                         >
                           <Phone className="w-3.5 h-3.5" />
-                          <span>Call Bot</span>
+                          <span>{lang === "hi" ? "सहायता कॉल" : lang === "mr" ? "मदत कॉल" : "Call Helpline"}</span>
                         </button>
                         <button
                           onClick={handleOpenSmsComposer}
@@ -2648,7 +2660,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
             <button
               onClick={() => setShowEmergencyModal(true)}
               className="p-3 rounded-full bg-rose-600 hover:bg-rose-700 text-white shadow-lg transition active:scale-95 cursor-pointer flex items-center justify-center border-2 border-white animate-pulse"
-              title="Emergency SOS Webhook"
+              title="Emergency Water Help (SOS)"
             >
               <AlertOctagon className="w-5 h-5 text-white" />
             </button>
@@ -2673,7 +2685,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
         </footer>
 
         {/* ============================================================
-            1. EMERGENCY CALL WEBHOOK MODAL
+            1. EMERGENCY CALL MODAL
             ============================================================ */}
         {showEmergencyModal && (
           <div className="fixed inset-0 bg-slate-900/65 backdrop-blur-xs z-[9999] flex items-center justify-center p-4 animate-fade-in">
@@ -2686,14 +2698,14 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                   </div>
                   <div>
                     <span className="text-[10px] font-mono uppercase bg-rose-900/70 px-2 py-0.5 rounded border border-rose-400/40 text-rose-200">
-                      RED ALERT · TIER-1 DISPATCH
+                      RED ALERT · IMMEDIATE RELIEF (तातडीची मदत)
                     </span>
                     <h3 className="text-sm font-black mt-0.5">
                       {lang === "hi"
-                        ? "मनपा आपातकालीन कॉल वेबहुक एवं हेल्पलाइन"
+                        ? "मनपा आपातकालीन जल सहायता (SOS)"
                         : lang === "mr"
-                        ? "मनपा तातडीचा कॉल वेबहुक व हेल्पलाइन"
-                        : "Municipal Emergency Call Webhook & SOS"}
+                        ? "मनपा तातडीची आपत्कालीन पाणी मदत (SOS)"
+                        : "Municipal Emergency Water Relief (SOS)"}
                     </h3>
                   </div>
                 </div>
@@ -2763,22 +2775,36 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                         <strong className="text-rose-700">{emergencyWebhookResult.ticket_id}</strong>
                       </div>
                       <div className="flex justify-between border-b border-slate-100 pb-1">
-                        <span className="text-slate-500">IVR Call Session:</span>
+                        <span className="text-slate-500">
+                          {lang === "hi" ? "कॉल सत्र:" : lang === "mr" ? "कॉल सत्र:" : "Helpline Call Session:"}
+                        </span>
                         <span className="text-slate-700 font-bold">{emergencyWebhookResult.session_id}</span>
                       </div>
                       <div className="flex justify-between border-b border-slate-100 pb-1">
-                        <span className="text-slate-500">Outbound Callback:</span>
-                        <span className="text-emerald-700 font-bold">Calling +91 {phoneNumber} (~10s)</span>
+                        <span className="text-slate-500">
+                          {lang === "hi" ? "वापसी कॉल:" : lang === "mr" ? "परत कॉल:" : "Outbound Callback:"}
+                        </span>
+                        <span className="text-emerald-700 font-bold">
+                          {lang === "hi" ? `+91 ${phoneNumber} पर कॉल आ रहा है (~10s)` : lang === "mr" ? `+91 ${phoneNumber} वर कॉल येत आहे (~10s)` : `Calling +91 ${phoneNumber} (~10s)`}
+                        </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Relief Tanker:</span>
-                        <span className="text-[#0056b3] font-bold">Tanker T-08 (Priority Override)</span>
+                        <span className="text-slate-500">
+                          {lang === "hi" ? "राहत टैंकर:" : lang === "mr" ? "मदत टँकर:" : "Relief Tanker:"}
+                        </span>
+                        <span className="text-[#0056b3] font-bold">
+                          {lang === "hi" ? "टैंकर T-08 (सर्वोच्च प्राथमिकता)" : lang === "mr" ? "टँकर T-08 (तातडीने रवाना)" : "Tanker T-08 (Priority Override)"}
+                        </span>
                       </div>
                     </div>
 
                     <p className="text-[10.5px] text-emerald-800 leading-normal">
-                      {emergencyWebhookResult?.details?.ivr_callback?.voice_script ||
-                        "MCGM Voice IVR is calling your phone now with priority emergency dispatch confirmation."}
+                      {emergencyWebhookResult?.details?.ivr_callback?.voice_script?.replace(/IVR/g, "Helpline") ||
+                        (lang === "hi"
+                          ? "मनपा हेल्पलाइन आपके फोन पर तुरंत कॉल कर रही है। आपातकालीन सहायता टीम रवाना हो चुकी है।"
+                          : lang === "mr"
+                          ? "मनपा हेल्पलाईन तुमच्या फोनवर थेट कॉल करत आहे. तातडीचे मदत पथक रवाना झाले आहे."
+                          : "Municipal Helpline is calling your phone now with priority emergency dispatch confirmation.")}
                     </p>
                   </div>
                 )}
@@ -3278,7 +3304,9 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                         <span className="text-amber-300 font-bold">{callSession?.area_status?.relief_tanker?.otp_code || "7419"}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">SMS Gateway:</span>
+                        <span className="text-slate-400">
+                          {lang === "hi" ? "एसएमएस हेल्पलाइन:" : lang === "mr" ? "एसएमएस हेल्पलाईन:" : "SMS Helpline:"}
+                        </span>
                         <span className="text-sky-300 font-bold">+91 8369978764 / 56161</span>
                       </div>
                     </div>
@@ -3298,7 +3326,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
               {callStage !== "resolved" && (
                 <div className="p-3 bg-slate-950 border-t border-slate-800 flex justify-between items-center">
                   <div className="text-[10px] text-slate-400 font-mono">
-                    Session: {callSession?.session_id || "IVR-ACTIVE"}
+                    Call Ref: {callSession?.session_id || "ACTIVE"}
                   </div>
                   <button
                     onClick={handleEndCall}

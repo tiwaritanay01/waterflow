@@ -256,7 +256,7 @@ export default function LoginPage({ onNavigateToLanding, onLoginSuccess }) {
                 }`}
               >
                 <Truck className="w-4 h-4" />
-                <span>Field Driver &amp; Valve PWA</span>
+                <span>Field Driver &amp; Worker App</span>
               </button>
             </div>
 
@@ -436,7 +436,7 @@ export default function LoginPage({ onNavigateToLanding, onLoginSuccess }) {
                   <div className="flex justify-between items-start">
                     <div>
                       <span className="text-[11px] text-amber-700 font-bold uppercase tracking-wider">
-                        Fleet Terminal PWA
+                        Tanker Driver &amp; Field App
                       </span>
                       <h3 className="text-lg font-bold text-slate-900 mt-0.5">
                         Tanker &amp; Valve Operator Dispatch
