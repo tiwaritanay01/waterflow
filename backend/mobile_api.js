@@ -699,9 +699,9 @@ router.post("/call/ivr-connect", (req, res) => {
     const sessionId = `CALL-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const scripts = {
-      mr: `नमस्कार! मी बृहन्मुंबई महानगरपालिकेचा AI जलवाणी सहाय्यक बोलत आहे. तुमची चौकशी/तक्रार तिकीट #${ticketId} स्वयंचलितपणे नोंदवली गेली आहे. वॉर्ड ${wardProfile.ward_code} (${wardProfile.name}) मधील सद्यस्थिती: आज पाणीपुरवठा वेळ ${wardProfile.timetable} आहे. सध्या भागात ${wardProfile.deficit_pct}% तुटवडा असून तातडीचा टँकर ${wardProfile.tanker_id} मार्गस्थ आहे (चालक: ${wardProfile.driver_name}, अंदाजे पोहोचण्याची वेळ ${wardProfile.eta_mins} मिनिटे, डिलिव्हरी OTP: ${wardProfile.otp_code}). ही माहिती पुरेशी आहे का? नसल्यास 'अधिकाऱ्याशी बोला' पर्याय निवडा.`,
-      hi: `नमस्ते! मैं बृहन्मुंबई महानगरपालिका (BMC) का AI जलवाणी सहायक बोल रहा हूँ। आपका पूछताछ/शिकायत टिकट #${ticketId} स्वतः दर्ज कर लिया गया है। वार्ड ${wardProfile.ward_code} (${wardProfile.name}) की वर्तमान स्थिति: आज जलापूर्ति का समय ${wardProfile.timetable} है। वर्तमान में ${wardProfile.deficit_pct}% जलाभाव है और राहत टैंकर ${wardProfile.tanker_id} रास्ते में है (चालक: ${wardProfile.driver_name}, अनुमानित समय ${wardProfile.eta_mins} मिनट, डिलीवरी OTP: ${wardProfile.otp_code})। क्या आप इस जानकारी से संतुष्ट हैं? यदि नहीं, तो 'अधिकारी से बात करें' चुनें।`,
-      en: `Hello! This is Brihanmumbai Municipal Corporation (BMC) AI JalVaani Voice Assistant. Your inquiry/grievance ticket #${ticketId} has been automatically logged. Current status for Ward ${wardProfile.ward_code} (${wardProfile.name}): Scheduled water supply is ${wardProfile.timetable}. Current distribution deficit is ${wardProfile.deficit_pct}%, and relief tanker ${wardProfile.tanker_id} is en route (Driver: ${wardProfile.driver_name}, ETA ~${wardProfile.eta_mins} mins, Delivery OTP: ${wardProfile.otp_code}). Are you satisfied with this update? If not, select 'Speak to Officer'.`,
+      mr: `नमस्कार! मी मनपा जलवाणी मदत सेवेतून बोलत आहे. काळजी करू नका, तुमची तक्रार नोंदवली आहे (तक्रार क्र. #${ticketId}). वॉर्ड ${wardProfile.ward_code} (${wardProfile.name}) मध्ये आज नळाचे पाणी सकाळी ${wardProfile.timetable} येणार होते. भागात पाणी कमी असल्यामुळे तुमच्या मदतीसाठी मनपाचा पाण्याचा टँकर ${wardProfile.tanker_id} निघाला आहे. ड्रायव्हर ${wardProfile.driver_name} साधारण ${wardProfile.eta_mins} मिनिटांत पोहोचेल. पाणी घेताना ड्रायव्हरला OTP ${wardProfile.otp_code} सांगा. ही माहिती समजली का? तुम्हाला पाणी अधिकाऱ्यांशी थेट बोलायचे असल्यास 'अधिकाऱ्यांशी बोला' हे बटण दाबा.`,
+      hi: `नमस्ते! मैं मनपा जलवाणी सहायता से बोल रहा हूँ। परेशान मत होइए, आपकी शिकायत दर्ज हो गई है (शिकायत क्र. #${ticketId})। वार्ड ${wardProfile.ward_code} (${wardProfile.name}) में आज नल का पानी सुबह ${wardProfile.timetable} आना था। इलाके में पानी की किल्लत की वजह से आपके लिए राहत टैंकर ${wardProfile.tanker_id} भेज दिया गया है। ड्राइवर ${wardProfile.driver_name} लगभग ${wardProfile.eta_mins} मिनट में पहुँच रहा है। पानी लेते समय ड्राइवर को OTP ${wardProfile.otp_code} बता दीजिएगा। क्या आपको पूरी जानकारी मिल गई? यदि आप किसी अधिकारी से सीधे बात करना चाहते हैं, तो 'अधिकारी से बात करें' दबाएं।`,
+      en: `Hello! This is the BMC Water Helpline. Don't worry, your water complaint is registered (Ticket #${ticketId}). In Ward ${wardProfile.ward_code} (${wardProfile.name}), tap water was scheduled for ${wardProfile.timetable}. Because water is short today, relief tanker ${wardProfile.tanker_id} has already been sent to your street. Driver ${wardProfile.driver_name} will reach in about ${wardProfile.eta_mins} minutes. When you collect water, please give him OTP ${wardProfile.otp_code}. Does this help you? If you still need to speak directly with an officer, choose 'Speak to Officer'.`,
     };
 
     const selectedScript = scripts[currentLang] || scripts.mr;
@@ -939,20 +939,25 @@ router.post("/call/connect-officer", (req, res) => {
 const GROQ_API_KEY = process.env.GROQ_API_KEY || "";
 const GROQ_CHAT_MODEL = process.env.GROQ_CHAT_MODEL || "qwen/qwen3.8-27b";
 
-const JALMITRA_SYSTEM_PROMPT = `You are "JalMitra" (जलमित्र), the authoritative AI Water Operations Assistant for Brihanmumbai Municipal Corporation (BMC / मनपा) Water Department.
+const JALMITRA_SYSTEM_PROMPT = `You are "JalMitra" (जलमित्र), the caring, down-to-earth AI Water Assistant for Mumbai residents, speaking on behalf of the Brihanmumbai Municipal Corporation (BMC / मनपा) Water Department.
 
-Core Objectives:
-1. Provide accurate, empathetic, and rapid assistance to Mumbai citizens regarding water supply, water rationing timetables, emergency tankers, pipeline bursts, water contamination, and delivery OTP codes.
-2. Support trilingual communication fluently: English, Hindi (हिंदी), and Marathi (मराठी). Always reply in the language the user speaks or the specified language.
-3. Keep responses concise (2-4 brief paragraphs max or easy bullet points) so they are readable on mobile phones.
+Core Persona & Tone (Layman-First):
+1. Speak in warm, simple, everyday conversational language that any layman, chawl resident, elderly citizen, or daily-wage worker in Mumbai can easily understand.
+2. Absolutely DO NOT use complex engineering or bureaucratic jargon.
+   - Use "पानी का समय" instead of "जलापूर्ति समय सारिणी / रोस्टर"
+   - Use "पानी की कमी / किल्लत" instead of "जलाभाव / डेफिसिट"
+   - Use "मुफ्त टैंकर" instead of "राहत वाहन"
+   - Use "नल का पानी" instead of "ग्रिड टेलीमेट्री"
+3. Fluently understand and respond to colloquial language, Bambaiya Hindi, Marathi, and Hinglish (e.g. "bhai do din se paani nahi aaya", "nal sukha pada hai", "tanker kidhar hai", "chawl me bache pyase hain").
+4. Keep replies clear, empathetic, and reassuring (2-3 short, spoken-style paragraphs or easy bullet points).
+5. Always reply in the exact language or dialect the citizen used (Hindi, Marathi, or English).
 
-Authoritative Context:
-- Mumbai BMC 24 Administrative Wards: Ward M/East (Govandi/Mankhurd/Shivaji Nagar - timetable 06:00-09:30, high deficit), Ward G/North (Dharavi/Mahim - timetable 05:30-08:30), Ward K/East (Andheri East - timetable 07:00-10:00), Ward L (Kurla - timetable 06:30-09:30), Ward A (Colaba - 04:30-07:00).
-- Emergency Water Helpline: Dial +91 8369978764 (24x7 BMC Operations Helpline).
-- Delivery Verification: Relief tankers require a 4-digit Delivery OTP (e.g. 7419) shared with the driver upon physical arrival at the standpost to ensure verified delivery without black-marketing.
-- Mathematical Equity Guarantee: Allocations are based on need (vulnerability + dry hours + population density), not VIP influence or first-come first-served favoritism.
-- In case of contamination: Advise boiling water for 15+ minutes or using municipal chlorine tablets, and offer to register an emergency water quality complaint immediately.
-- If the user wants to log a complaint or needs an emergency tanker, confirm their ward/locality and advise them that a ticket can be logged right here or via the Grievance tab.`;
+Key Information:
+- Mumbai BMC 24 Wards: Ward M/E (Govandi/Mankhurd/Shivaji Nagar - water time 06:00-09:30 AM, high shortage), Ward G/N (Dharavi/Mahim - water time 05:30-08:30 AM), Ward K/E (Andheri East - 07:00-10:00 AM), Ward L (Kurla - 06:30-09:30 AM), Ward A (Colaba - 04:30-07:00 AM).
+- Official 24/7 Free Helpline: +91 8369978764 (Direct Voice Help).
+- Free Relief Tanker OTP: When the municipal water tanker arrives, tell the driver the 4-digit Delivery OTP (e.g. 7419) to get your water.
+- Bad / Dirty Water: Tell them to boil water for 15+ minutes or use chlorine tablets, and reassure them that an urgent repair team will check the pipeline.
+- If someone needs urgent water or wants to file a complaint, assure them their complaint is being logged right here or they can tap 'Grievance' or call +91 8369978764.`;
 
 router.post("/citizen/chat", async (req, res) => {
   try {
@@ -1014,28 +1019,28 @@ router.post("/citizen/chat", async (req, res) => {
     let fallbackReply = "";
 
     if (currentLang === "mr") {
-      if (lastUserMsg.includes("पाणी") && (lastUserMsg.includes("कधी") || lastUserMsg.includes("वेळ"))) {
-        fallbackReply = `नमस्कार! वॉर्ड ${ward} साठी नियमित पाणी पुरवठा वेळ सकाळी ०६:०० ते ०९:३० आहे. सध्या स्काडा ग्रिड स्थिर आहे. जर पाणी आले नसेल, तर त्वरित तक्रार टॅबमधून तातडीचा टँकर बुक करा.`;
-      } else if (lastUserMsg.includes("टँकर") || lastUserMsg.includes("ट्रॅक")) {
-        fallbackReply = `वॉर्ड ${ward} साठी टँकर T-08 (चालक: राजेश पाटील, ९८२०१ ५५४३२) मार्गस्थ आहे. अंदाजे पोहोचण्याची वेळ: १२-१४ मिनिटे. डिलिव्हरी OTP: ७४१९ हा चालकाला द्या.`;
+      if (lastUserMsg.includes("पाणी") && (lastUserMsg.includes("कधी") || lastUserMsg.includes("वेळ") || lastUserMsg.includes("नाही"))) {
+        fallbackReply = `नमस्कार! वॉर्ड ${ward} मध्ये नळाचे पाणी सकाळी ०६:०० ते ०९:३० वाजता येते. जर पाणी आले नसेल तर काळजी करू नका, तुम्ही खालील 'तक्रार नोंदवा' बटणावरून मोफत मदतीचा टँकर मागवू शकता.`;
+      } else if (lastUserMsg.includes("टँकर") || lastUserMsg.includes("ट्रॅक") || lastUserMsg.includes("कुठे")) {
+        fallbackReply = `वॉर्ड ${ward} साठी पाण्याचा टँकर T-08 (चालक: राजेश पाटील, ९८२०१ ५५४३२) रस्त्यावर आहे. साधारण १२ ते १४ मिनिटांत पोहोचेल. पाणी घेताना चालकाला OTP ७४१९ सांगा.`;
       } else {
-        fallbackReply = `नमस्कार! मी जलमित्र (BMC AI सहाय्यक) आहे. वॉर्ड ${ward} मधील पाणी पुरवठा, टँकर ट्रॅकिंग, तक्रार नोंदणी किंवा मनपा हेल्पलाइन +91 8369978764 बाबत मी आपली काय मदत करू?`;
+        fallbackReply = `नमस्कार! मी जलमित्र (मनपा पाणी साहाय्यक) आहे. वॉर्ड ${ward} मधील पाण्याचा वेळ, टँकर कुठे आला आहे किंवा तक्रार नोंदवण्यासाठी मी तुमची काय मदत करू? हेल्पलाईन: +91 8369978764.`;
       }
     } else if (currentLang === "hi") {
-      if (lastUserMsg.includes("पानी") && (lastUserMsg.includes("कब") || lastUserMsg.includes("समय"))) {
-        fallbackReply = `नमस्ते! वार्ड ${ward} के लिए आज का जलापूर्ति समय सुबह 06:00 से 09:30 बजे निर्धारित है। यदि आपको पानी नहीं मिल रहा है, तो कृपया तुरंत ग्रीवेंस टैब से आपातकालीन टैंकर बुक करें।`;
-      } else if (lastUserMsg.includes("टैंकर") || lastUserMsg.includes("ट्रैक")) {
-        fallbackReply = `वार्ड ${ward} के लिए टैंकर T-08 (चालक: राजेश पाटिल, 98201 55432) रास्ते में है। अनुमानित समय 12-14 मिनट है। कृपया चालक को डिलीवरी OTP: 7419 प्रदान करें।`;
+      if (lastUserMsg.includes("पानी") && (lastUserMsg.includes("कब") || lastUserMsg.includes("समय") || lastUserMsg.includes("नहीं"))) {
+        fallbackReply = `नमस्ते! वार्ड ${ward} में नल का पानी सुबह 06:00 से 09:30 बजे आता है। अगर आज पानी नहीं आया है तो फिक्र मत कीजिए—आप तुरंत 'शिकायत करें' से मुफ्त राहत टैंकर मंगा सकते हैं।`;
+      } else if (lastUserMsg.includes("टैंकर") || lastUserMsg.includes("ट्रैक") || lastUserMsg.includes("कहाँ") || lastUserMsg.includes("किधर")) {
+        fallbackReply = `वार्ड ${ward} के लिए पानी का टैंकर T-08 (ड्राइवर: राजेश पाटिल, 98201 55432) रास्ते में है। लगभग 12 से 14 मिनट में पहुँचेगा। पानी लेते वक्त ड्राइवर को OTP 7419 बता दीजिएगा।`;
       } else {
-        fallbackReply = `नमस्ते! मैं जलमित्र (BMC AI सहायक) हूँ। वार्ड ${ward} में पानी का समय, टैंकर ट्रैकिंग, दूषित पानी की शिकायत या मनपा हेल्पलाइन +91 8369978764 से संबंधित किसी भी सहायता के लिए पूछें।`;
+        fallbackReply = `नमस्ते! मैं जलमित्र (मनपा पानी सहायक) हूँ। वार्ड ${ward} में पानी का समय, टैंकर कहाँ पहुँचा है या शिकायत दर्ज करने के लिए मैं आपकी क्या मदद कर सकता हूँ? हेल्पलाइन: +91 8369978764.`;
       }
     } else {
-      if (lastUserMsg.includes("when") || lastUserMsg.includes("time") || lastUserMsg.includes("schedule")) {
-        fallbackReply = `Hello! Water supply for Ward ${ward} is scheduled from 06:00 to 09:30 IST today. If you are facing dry pipes, please report via the Grievance tab for priority emergency tanker dispatch.`;
-      } else if (lastUserMsg.includes("tanker") || lastUserMsg.includes("track")) {
-        fallbackReply = `For Ward ${ward}, Emergency Tanker T-08 (Driver: Rajesh Patil, +91 98201 55432) is en route with an ETA of ~12 mins. Share Delivery OTP: 7419 upon arrival.`;
+      if (lastUserMsg.includes("when") || lastUserMsg.includes("time") || lastUserMsg.includes("schedule") || lastUserMsg.includes("no water")) {
+        fallbackReply = `Hello! Tap water for Ward ${ward} comes from 06:00 to 09:30 AM. If your taps are dry today, don't worry—you can request a free relief tanker right from the Grievance tab.`;
+      } else if (lastUserMsg.includes("tanker") || lastUserMsg.includes("track") || lastUserMsg.includes("where")) {
+        fallbackReply = `For Ward ${ward}, water tanker T-08 (Driver: Rajesh Patil, +91 98201 55432) is on the way and will arrive in ~12 mins. Share Delivery OTP: 7419 when taking water.`;
       } else {
-        fallbackReply = `Hello! I am JalMitra, your BMC Water Assistant. How can I help you today regarding Ward ${ward} water timetable, emergency tanker tracking, or registering a grievance? Helpline: +91 8369978764.`;
+        fallbackReply = `Hello! I am JalMitra, your BMC Water Assistant. How can I help you today with water timing, tracking your relief tanker, or reporting an issue? Helpline: +91 8369978764.`;
       }
     }
 
