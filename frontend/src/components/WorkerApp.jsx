@@ -496,7 +496,7 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                 </div>
                 <span className="text-[10px] text-slate-300 flex items-center gap-1 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                  Offline SCADA Caching Active (Govandi Zone)
+                  Works Without Internet · Govandi Route (इंटरनेटशिवाय सुरू)
                 </span>
               </div>
             </div>
@@ -586,7 +586,7 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
               ) : (
                 <div className="flex items-center space-x-1.5 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full text-[11px] font-semibold text-emerald-700">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 live-pulse"></span>
-                  <span>SCADA Online</span>
+                  <span>Online (इंटरनेट चालू)</span>
                 </div>
               )}
 
@@ -594,7 +594,7 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
               <button
                 type="button"
                 onClick={() => setShowQueueDrawer(true)}
-                title="View Offline Action Queue"
+                title="View Saved Deliveries"
                 className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-[11px] font-bold border transition cursor-pointer ${
                   pendingCount > 0
                     ? "bg-amber-100 hover:bg-amber-200 border-amber-300 text-amber-900 animate-pulse"
@@ -602,7 +602,7 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                 }`}
               >
                 <CloudUpload className="w-3.5 h-3.5 text-amber-600" />
-                <span>{pendingCount} Pending</span>
+                <span>{pendingCount} Saved</span>
               </button>
 
               {/* Manual "Sync Now" Action Button */}
@@ -610,7 +610,7 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                 type="button"
                 onClick={runSync}
                 disabled={isSyncing || simulateOffline || (!isServerReachable && !isOnline)}
-                title="Synchronize Durable Queue with BMC Authority"
+                title="Send Saved Deliveries to BMC Office"
                 className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center space-x-1 shadow-2xs transition cursor-pointer ${
                   isSyncing
                     ? "bg-sky-200 text-sky-800 cursor-wait"
@@ -620,13 +620,13 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                 }`}
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin" : ""}`} />
-                <span>{isSyncing ? "Syncing..." : "Sync Now"}</span>
+                <span>{isSyncing ? "Sending..." : "Send to Office"}</span>
               </button>
 
               <button
                 onClick={fetchMission}
                 disabled={loading}
-                aria-label="Refresh Telemetry Data"
+                aria-label="Refresh Delivery Data"
                 className="w-8 h-8 rounded-lg bg-slate-50 hover:bg-slate-200 border border-slate-200 flex items-center justify-center text-slate-600 transition-colors"
                 type="button"
               >
@@ -666,13 +666,13 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                   {isCachedSnapshot ? (
                     <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-md">
                       <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                      <span>CACHED OFFLINE SNAPSHOT (v{mission.version || 1})</span>
-                      {isStale && <span className="text-[10px] text-rose-600 font-black ml-1">· STALE</span>}
+                      <span>SAVED ON PHONE · OFFLINE MODE</span>
+                      {isStale && <span className="text-[10px] text-rose-600 font-black ml-1">· CHECK FOR UPDATE</span>}
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-emerald-50 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded-md">
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>AUTHORITATIVE SERVER MISSION (v{mission.version || 1})</span>
+                      <span>OFFICIAL BMC MISSION (अधिकृत काम)</span>
                     </span>
                   )}
 
@@ -771,7 +771,7 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
               <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200 uppercase tracking-wide">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                  Priority Dispatch Mission
+                  Water Delivery Task (पाणी वाटप काम)
                 </span>
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1">
                   <Building2 className="w-3.5 h-3.5 text-slate-400" />
@@ -784,7 +784,7 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                 <div>
                   <div className="flex items-center gap-1 text-[11px] font-bold tracking-wider text-rose-600 uppercase">
                     <MapPin className="w-3.5 h-3.5 text-rose-500" />
-                    Target Delivery Sector
+                    Delivery Location (पाणी देण्याची जागा)
                   </div>
                   <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight mt-0.5">
                     {mission.destination_ward}
@@ -796,18 +796,18 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
 
                 {/* Quota Target Badge */}
                 <div className="bg-gradient-to-b from-sky-50 to-blue-100/70 border border-sky-200 px-3 py-2 rounded-xl text-center min-w-[96px] shadow-2xs">
-                  <div className="text-[9px] uppercase tracking-wider font-bold text-sky-700">Quota Target</div>
+                  <div className="text-[9px] uppercase tracking-wider font-bold text-sky-700">Water Tank Quota</div>
                   <div className="text-lg font-black font-mono text-sky-900 leading-none mt-1">
                     {mission.volume_liters?.toLocaleString() || "10,000"}
                   </div>
-                  <div className="text-[10px] font-semibold text-sky-600 mt-0.5">Liters (Potable)</div>
+                  <div className="text-[10px] font-semibold text-sky-600 mt-0.5">Liters (पिण्याचे पाणी)</div>
                 </div>
               </div>
 
               {/* Recipient Liaison Line */}
               <div className="mt-3.5 pt-2.5 border-t border-dashed border-slate-200 flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2 text-slate-700">
-                  <span className="text-slate-600">Lead: <strong>{mission.citizen_name}</strong></span>
+                  <span className="text-slate-600">Citizen: <strong>{mission.citizen_name}</strong></span>
                 </div>
                 <a
                   className="inline-flex items-center gap-1 font-mono text-xs font-bold text-sky-700 hover:text-sky-900 bg-sky-50 px-2.5 py-1 rounded-md border border-sky-200"
@@ -824,7 +824,7 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                 className="mt-3.5 w-full py-2.5 px-4 rounded-lg bg-[#0056b3] hover:bg-sky-800 active:bg-sky-900 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-xs transition-all duration-150 cursor-pointer"
               >
                 <Navigation className="w-4 h-4 text-white" />
-                <span className="tracking-wide">LAUNCH TURN-BY-TURN ROUTE (BMC PRIORITY CORRIDOR)</span>
+                <span className="tracking-wide">OPEN ROUTE IN MAPS / रस्ता पहा (Google Maps)</span>
                 <ExternalLink className="w-3.5 h-3.5 opacity-80" />
               </button>
             </section>
@@ -834,7 +834,7 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
               <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-bold text-slate-700">
                 <span className="flex items-center gap-1.5">
                   <Radio className="w-4 h-4 text-sky-700" />
-                  <span>Live Dispatch Route &amp; Geofence Corridor</span>
+                  <span>Water Delivery Route &amp; Standpost Map</span>
                 </span>
                 <span className="text-[10px] font-mono text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-semibold">
                   GPS Active ±2.4m
@@ -903,10 +903,10 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
               </div>
             </div>
 
-            {/* Ultrasonic Flow & Tank Telemetry */}
+            {/* Water Tank & Valve Status */}
             <section className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-2.5">
               <div className="flex items-center justify-between text-xs font-bold text-slate-700 uppercase tracking-wider">
-                <span>Ultrasonic Flow &amp; Tank Telemetry</span>
+                <span>Water Tank &amp; Tap Status (पाणी मीटर)</span>
                 <span className="font-mono text-emerald-600 font-semibold text-[11px] flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Sensor Active
                 </span>
@@ -915,13 +915,13 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {/* Flow Valve Status */}
                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                  <div className="text-[10px] text-slate-500 font-semibold uppercase">Discharge Valve</div>
+                  <div className="text-[10px] text-slate-500 font-semibold uppercase">Water Outlet / Valve (नळ / व्हॉल्व्ह)</div>
                   <div className="font-bold text-slate-800 mt-1 flex items-center gap-1.5">
                     <span className={`w-2.5 h-2.5 rounded-full ${
                       deliverySuccess ? "bg-emerald-500" : mission.delivery_status === "dispensing" ? "bg-emerald-500 animate-ping" : "bg-amber-500"
                     }`}></span>
                     <span>
-                      {deliverySuccess ? "Discharged / Sealed" : mission.delivery_status === "dispensing" ? "Flow Active (Dispensing)" : "Standby (Awaiting OTP)"}
+                      {deliverySuccess ? "Closed / Delivered (बंद केले)" : mission.delivery_status === "dispensing" ? "Water Flowing (पाणी सुरू)" : "Ready (Awaiting OTP)"}
                     </span>
                   </div>
                 </div>
@@ -940,11 +940,11 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                 <div className="flex items-center space-x-2">
                   <CheckCircle2 className="w-4 h-4 text-sky-600 shrink-0" />
                   <span className="font-medium text-[11px]">
-                    GPS Geofence: <strong>18m from Standpost #4</strong>
+                    Near Standpost: <strong>18m from Standpost #4 (जवळ पोहोचलो)</strong>
                   </span>
                 </div>
                 <span className="text-[10px] bg-sky-100 text-sky-800 px-2 py-0.5 rounded font-bold uppercase tracking-wider">
-                  Valid Range
+                  In Range
                 </span>
               </div>
             </section>
@@ -954,11 +954,11 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => handleReportDelay("Corridor congestion along Eastern Express Highway")}
+                  onClick={() => handleReportDelay("Traffic delay along Eastern Express Highway")}
                   className="flex-1 py-2 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold flex items-center justify-center gap-1.5 border border-slate-300 transition-colors cursor-pointer"
                 >
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Report Route Delay</span>
+                  <span>Report Traffic Delay</span>
                 </button>
 
                 <a
@@ -981,9 +981,9 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
             <section className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs">
               <div className="flex items-center justify-between mb-2.5">
                 <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  Driver Logistics Status
+                  Delivery Progress (पाणी वाटप स्थिती)
                 </span>
-                <span className="text-[11px] font-semibold text-slate-500">Live Mission Stage</span>
+                <span className="text-[11px] font-semibold text-slate-500">Live Stage</span>
               </div>
 
               {/* 3-State Action Bar */}
@@ -1007,7 +1007,7 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                   )}
                   <Navigation className={`w-5 h-5 ${mission.delivery_status === "en_route" ? "text-amber-700" : "text-slate-400"}`} />
                   <span className={`text-[11px] font-black uppercase mt-1 tracking-tight leading-none ${mission.delivery_status === "en_route" ? "text-amber-900" : "text-slate-600"}`}>
-                    1. EN ROUTE
+                    1. ON THE WAY (निघालो)
                   </span>
                   <span className="text-[9px] font-semibold text-slate-500 mt-0.5">Dep: 14:15 IST</span>
                 </button>
@@ -1030,9 +1030,9 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                   )}
                   <MapPin className={`w-5 h-5 ${mission.delivery_status === "arrived" ? "text-sky-700" : "text-slate-400"}`} />
                   <span className={`text-[11px] font-bold uppercase mt-1 tracking-tight leading-none ${mission.delivery_status === "arrived" ? "text-sky-900" : "text-slate-600"}`}>
-                    2. ARRIVED
+                    2. ARRIVED (पोहोचलो)
                   </span>
-                  <span className="text-[9px] text-slate-500 mt-0.5">Geofence Check</span>
+                  <span className="text-[9px] text-slate-500 mt-0.5">At Standpost</span>
                 </button>
 
                 {/* State 3: Dispensing */}
@@ -1053,9 +1053,9 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                   )}
                   <Droplet className={`w-5 h-5 ${mission.delivery_status === "dispensing" ? "text-emerald-700" : "text-slate-400"}`} />
                   <span className={`text-[11px] font-bold uppercase mt-1 tracking-tight leading-none ${mission.delivery_status === "dispensing" ? "text-emerald-900" : "text-slate-600"}`}>
-                    3. DISPENSING
+                    3. GIVING WATER (पाणी सुरू)
                   </span>
-                  <span className="text-[9px] text-slate-500 mt-0.5">Req. OTP</span>
+                  <span className="text-[9px] text-slate-500 mt-0.5">Ask OTP</span>
                 </button>
               </div>
             </section>
@@ -1069,9 +1069,9 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                   </div>
                   <div>
                     <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900">
-                      Proof of Delivery Authorization
+                      Enter Citizen OTP to Confirm Delivery
                     </h2>
-                    <p className="text-[11px] text-slate-500">Enter 4-digit citizen OTP to release SCADA valve</p>
+                    <p className="text-[11px] text-slate-500">पाणी दिल्यावर नागरिकाकडून ४-अंकी OTP घ्या आणि येथे टाका</p>
                   </div>
                 </div>
                 <span className="font-mono text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded">
@@ -1097,13 +1097,13 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                   </div>
                   <h3 className="text-base font-black tracking-tight">
                     {deliverySuccess.stage === "SAVED_LOCALLY_PENDING_SYNC"
-                      ? "SAVED LOCALLY — PENDING SYNC"
-                      : "Delivery Server Accepted & Audited"}
+                      ? "SAVED ON PHONE (फोनवर नोंद झाली)"
+                      : "DELIVERY COMPLETE (पाणी वाटप पूर्ण झाले)"}
                   </h3>
                   <p className="text-xs leading-relaxed opacity-90">
                     {deliverySuccess.stage === "SAVED_LOCALLY_PENDING_SYNC"
-                      ? `Recorded ${deliverySuccess.volume?.toLocaleString()} L discharge in local IndexedDB. Server verification and invoice generation will occur once network sync completes.`
-                      : `Discharged ${deliverySuccess.volume?.toLocaleString()} Liters of potable water to ${mission.destination_ward}. Authoritative mission version ${mission.version} confirmed.`}
+                      ? `Recorded ${deliverySuccess.volume?.toLocaleString()} L delivery safely on phone. Will send to BMC office automatically when internet connects.`
+                      : `Discharged ${deliverySuccess.volume?.toLocaleString()} Liters of drinking water to ${mission.destination_ward}. BMC delivery record confirmed.`}
                   </p>
 
                   <div className="bg-white/90 p-2.5 rounded-lg text-[10px] font-mono border text-left space-y-1 border-slate-200">
@@ -1122,9 +1122,9 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Verification Authority:</span>
+                      <span className="text-slate-500">Record Status:</span>
                       <span className="font-bold text-slate-700">
-                        {deliverySuccess.stage === "SAVED_LOCALLY_PENDING_SYNC" ? "PENDING SERVER SYNC" : "SCADA AUDITED"}
+                        {deliverySuccess.stage === "SAVED_LOCALLY_PENDING_SYNC" ? "PENDING AUTO-SEND" : "BMC VERIFIED"}
                       </span>
                     </div>
                   </div>
@@ -1322,12 +1322,12 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                     {verifying ? (
                       <>
                         <RefreshCw className="w-4 h-4 animate-spin" />
-                        <span>Verifying OTP with SCADA...</span>
+                        <span>Verifying OTP (तपासत आहे)...</span>
                       </>
                     ) : (
                       <>
                         <CheckCircle2 className="w-4 h-4" />
-                        <span>CONFIRM DELIVERY (AUTHORIZE VALVE)</span>
+                        <span>CONFIRM DELIVERY (पाणी दिले)</span>
                       </>
                     )}
                   </button>
@@ -1343,7 +1343,7 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
         {/* Footer */}
         <footer className="px-4 py-2 border-t border-slate-200 text-center bg-slate-50">
           <p className="text-[10px] text-slate-400 font-medium">
-            WaterFlow OS · Municipal Water Supply &amp; Fleet Telemetry v4.12 · BMC Central Operations
+            WaterFlow Driver Terminal · Brihanmumbai Municipal Corporation (BMC Water Dept)
           </p>
         </footer>
 
@@ -1357,8 +1357,8 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                 <div className="flex items-center gap-2">
                   <CloudUpload className="w-5 h-5 text-sky-400" />
                   <div>
-                    <h3 className="text-sm font-bold">Durable Field Operation Queue</h3>
-                    <p className="text-[10px] text-slate-300">IndexedDB: WaterFlowWorkerDB · Store: sync_queue</p>
+                    <h3 className="text-sm font-bold">Saved Deliveries on Phone</h3>
+                    <p className="text-[10px] text-slate-300">Saved safely on phone · Automatically sent when network reconnects</p>
                   </div>
                 </div>
                 <button
@@ -1408,8 +1408,8 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                 {queuedActions.length === 0 ? (
                   <div className="text-center py-8 text-slate-400 text-xs">
                     <CheckCircle2 className="w-8 h-8 mx-auto text-slate-300 mb-2" />
-                    <p>No actions in queue.</p>
-                    <p className="text-[10px] mt-0.5">Offline actions (arrival, delivery, notes) will durably persist here.</p>
+                    <p>No deliveries waiting in queue.</p>
+                    <p className="text-[10px] mt-0.5">Deliveries made without internet are safely stored here and sent automatically when online.</p>
                   </div>
                 ) : (
                   queuedActions.map((item) => (

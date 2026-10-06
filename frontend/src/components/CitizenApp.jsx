@@ -57,163 +57,163 @@ const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
 // Trilingual dictionary: English, Hindi, Marathi
 const I18N = {
   en: {
-    scadaLive: "SCADA LIVE",
-    telemetryVer: "BMC Telemetry v4.12",
-    helpline: "MCGM +91 8369978764",
+    scadaLive: "LIVE WATER SERVICE",
+    telemetryVer: "BMC Water Works",
+    helpline: "+91 8369978764",
     appTitle: "WaterFlow Citizen",
     subTitle: "Brihanmumbai Municipal Corporation (BMC)",
-    emergencySupport: "Emergency Rationing Support",
-    algoActive: "Algorithmic Routing Active",
-    heroTitle: "Facing severe water deficit in your locality?",
-    heroDesc: "Directly insert grievance telemetry into Mumbai's WaterFlow Priority Queue for automated dispatch & verified emergency tanker deployment.",
-    alreadyLogged: "Already logged a complaint?",
-    trackQueueDesc: "Monitor queue priority score & GIS tanker route",
-    trackStatus: "Track Status",
-    formTitle: "Citizen Grievance Submission",
-    formId: "Form ID: WF-24-918",
-    issueClass: "Issue Classification",
-    autoWeight: "Automatic weight: +28 Pts (Priority Tier-1)",
-    tankerEligible: "Eligible for Emergency Tanker",
-    phoneLabel: "Mobile Number (Delivery OTP & Geotracking)",
-    otpVerified: "OTP Verified",
-    wardLabel: "Municipal Ward",
-    settlementLabel: "Settlement Type",
-    localityLabel: "Locality Landmark / Specific Galli",
-    gpsHeader: "GPS Dispatch Coordinates",
-    refreshGps: "Refresh GPS",
-    wgsVerified: "WGS84 Verified",
-    photoLabel: "AI Photo Triage (Optional - Fast Tracks Valve Team)",
-    photoDesc: "Automated image triage checks turbidity & valve isolation pressure",
-    submitBtn: "Report Deficit & Queue Emergency Tanker",
-    explainTitle: "Explainability Engine",
-    explainHeading: "Mathematical Equity Guarantee",
-    explainFormula: "Priority = 0.35(Vulnerability) + 0.30(DryTime) + 0.20(Density)",
-    explainBody: "VIP favoritism is disabled; allocations are automatically dispatched from the nearest depot based on verified algorithmic need.",
-    gridStability: "Grid Stability",
-    activeFleet: "Active Fleet",
-    dailyWater: "Daily Water",
-    footerDept: "Brihanmumbai Municipal Corporation (BMC) · Water Engineering Dept",
-    footerVer: "WaterFlow SCADA Algorithmic Grid Telemetry v4.12 · 24 BMC Administrative Wards",
+    emergencySupport: "Emergency Water Relief",
+    algoActive: "Fair Distribution Active",
+    heroTitle: "Facing water shortage in your area?",
+    heroDesc: "Report your water problem here to receive immediate municipal assistance and a relief tanker.",
+    alreadyLogged: "Already reported an issue?",
+    trackQueueDesc: "Check where you are in the list & track your relief tanker live",
+    trackStatus: "Check Tanker Status",
+    formTitle: "Report Water Problem",
+    formId: "Complaint No.: WF-24-918",
+    issueClass: "What is your water problem?",
+    autoWeight: "Priority: Urgent Need",
+    tankerEligible: "Eligible for Free Relief Tanker",
+    phoneLabel: "Mobile Phone Number",
+    otpVerified: "Mobile Ready",
+    wardLabel: "Your Ward / Area",
+    settlementLabel: "Area Type (Chawl / Slum / Society)",
+    localityLabel: "Near Landmark / Building / Galli No.",
+    gpsHeader: "Your Location",
+    refreshGps: "Update Location",
+    wgsVerified: "Location Confirmed",
+    photoLabel: "Attach Photo of Leak / Dry Tap (Optional)",
+    photoDesc: "A photo helps our municipal team find and fix the problem faster",
+    submitBtn: "Send Report & Request Relief Tanker",
+    explainTitle: "Fairness Guarantee",
+    explainHeading: "Fair Water For All — No VIP Influence",
+    explainFormula: "Priority = Need + Days Without Water + Population",
+    explainBody: "Water is sent first to areas with the greatest shortage. Nobody can skip the queue through political favoritism.",
+    gridStability: "Tap Supply Status",
+    activeFleet: "Tankers on Duty",
+    dailyWater: "Today's Supply",
+    footerDept: "Brihanmumbai Municipal Corporation (BMC) · Water Department",
+    footerVer: "WaterFlow Municipal Support · 24 BMC Wards",
     navHome: "Home",
-    navMap: "Live Map",
-    navGrievance: "Grievance",
-    navQueue: "Queue",
-    navChat: "AI Sahayak",
-    navProfile: "Profile",
-    sosButton: "SOS Emergency",
-    offlineMode: "Offline Mode",
-    onlineMode: "Online SCADA",
-    offlineAssisted: "Offline SMS Assisted Mode",
-    ticketRaised: "Ticket Raised",
-    smsTicketConfirmed: "Offline SMS Ticket Raised",
-    triggerWebhook: "Trigger Emergency Webhook",
-    ivrCalling: "IVR Callback Queued",
+    navMap: "Live Tanker",
+    navGrievance: "Report Issue",
+    navQueue: "My Queue",
+    navChat: "AI Helper",
+    navProfile: "My Info",
+    sosButton: "SOS Urgent Help",
+    offlineMode: "Without Internet",
+    onlineMode: "Connected",
+    offlineAssisted: "SMS Support (No Internet)",
+    ticketRaised: "Complaint Registered",
+    smsTicketConfirmed: "SMS Complaint Saved",
+    triggerWebhook: "Call Emergency Help (SOS)",
+    ivrCalling: "Calling Your Phone Now",
   },
   hi: {
-    scadaLive: "स्काडा लाइव",
-    telemetryVer: "मनपा टेलीमेट्री v4.12",
-    helpline: "मनपा +91 8369978764",
-    appTitle: "वॉटरफ्लो नागरिक",
+    scadaLive: "जल सेवा चालू",
+    telemetryVer: "मनपा जल विभाग",
+    helpline: "+91 8369978764",
+    appTitle: "वॉटरफ्लो नागरिक सेवा",
     subTitle: "बृहन्मुंबई महानगरपालिका (BMC)",
-    emergencySupport: "आपातकालीन राशनिंग सहायता",
-    algoActive: "एल्गोरिदम आधारित वितरण सक्रिय",
-    heroTitle: "क्या आपके इलाके में गंभीर जल संकट है?",
-    heroDesc: "आपातकालीन टैंकर तैनाती और त्वरित समाधान हेतु अपनी शिकायत सीधे मुंबई वॉटरफ्लो प्राथमिकता प्रणाली में दर्ज करें।",
+    emergencySupport: "आपातकालीन जल सहायता",
+    algoActive: "समान व निष्पक्ष वितरण",
+    heroTitle: "क्या आपके इलाके में पानी की किल्लत है?",
+    heroDesc: "तुरंत राहत टैंकर और सहायता के लिए अपनी शिकायत दर्ज करें।",
     alreadyLogged: "क्या पहले से शिकायत दर्ज है?",
-    trackQueueDesc: "कतार में अपनी प्राथमिकता और टैंकर का लाइव जीआईएस रूट देखें",
-    trackStatus: "स्थिति देखें",
-    formTitle: "नागरिक जल शिकायत निवारण",
-    formId: "तक्रार आईडी: WF-24-918",
-    issueClass: "समस्या का वर्गीकरण",
-    autoWeight: "प्राथमिकता अंक: +28 (स्तर-1 प्राथमिकता)",
-    tankerEligible: "आपातकालीन टैंकर हेतु पात्र",
-    phoneLabel: "मोबाइल नंबर (डिलीवरी OTP व ट्रैकिंग)",
-    otpVerified: "OTP सत्यापित",
-    wardLabel: "प्रशासनिक वार्ड",
-    settlementLabel: "बस्ती का प्रकार",
-    localityLabel: "नजदीकी लैंडमार्क / विशिष्ट गली",
-    gpsHeader: "जीपीएस वितरण निर्देशांक",
-    refreshGps: "जीपीएस रीफ्रेश करें",
-    wgsVerified: "WGS84 सत्यापित",
-    photoLabel: "AI फोटो जांच (वैकल्पिक - त्वरित वाल्व दल)",
-    photoDesc: "तस्वीर से गंदलापन और लीकेज का स्वचालित विश्लेषण होता है",
-    submitBtn: "जल संकट दर्ज करें और आपातकालीन टैंकर प्राप्त करें",
-    explainTitle: "पारदर्शिता प्रणाली",
-    explainHeading: "गणितीय समानता की गारंटी",
-    explainFormula: "प्राथमिकता = 0.35(अभाव) + 0.30(सूखे घंटे) + 0.20(जनसंख्या)",
-    explainBody: "वीआईपी पक्षपात वर्जित है; वास्तविक आवश्यकता और दूरी के आधार पर स्वतः टैंकर आवंटन होता है।",
-    gridStability: "ग्रिड स्थिरता",
-    activeFleet: "सक्रिय टैंकर",
-    dailyWater: "दैनिक जलापूर्ति",
-    footerDept: "बृहन्मुंबई महानगरपालिका · जल इंजीनियरिंग विभाग",
-    footerVer: "वॉटरफ्लो स्काडा एल्गोरिदम ग्रिड टेलीमेट्री 4.12 · 24 मनपा वार्ड",
+    trackQueueDesc: "टैंकर कहाँ पहुँचा है और कतार में अपनी स्थिति देखें",
+    trackStatus: "टैंकर की स्थिति देखें",
+    formTitle: "पानी की शिकायत दर्ज करें",
+    formId: "शिकायत क्र.: WF-24-918",
+    issueClass: "समस्या का प्रकार चुनें",
+    autoWeight: "प्राथमिकता: अति आवश्यक सहायता",
+    tankerEligible: "मुफ्त राहत टैंकर हेतु पात्र",
+    phoneLabel: "मोबाइल नंबर",
+    otpVerified: "नंबर सही है",
+    wardLabel: "आपका वार्ड / इलाका",
+    settlementLabel: "इलाके का प्रकार (चॉल / बस्ती / सोसाइटी)",
+    localityLabel: "पास का लैंडमार्क / गली नंबर",
+    gpsHeader: "आपका स्थान",
+    refreshGps: "स्थान अपडेट करें",
+    wgsVerified: "स्थान सुरक्षित",
+    photoLabel: "लीकेज या सूखे नल का फोटो (वैकल्पिक)",
+    photoDesc: "फोटो से नगर निगम टीम को समस्या ढूंढने में आसानी होती है",
+    submitBtn: "शिकायत भेजें और राहत टैंकर पाएं",
+    explainTitle: "निष्पक्षता की गारंटी",
+    explainHeading: "सभी के लिए समान पानी — कोई वीआईपी पक्षपात नहीं",
+    explainFormula: "प्राथमिकता = वास्तविक जरूरत + सूखे दिन + आबादी",
+    explainBody: "पानी सबसे पहले उन बस्तियों में पहुंचाया जाता है जहां सबसे ज्यादा संकट है। कोई भी प्रभाव डालकर कतार नहीं तोड़ सकता।",
+    gridStability: "नल आपूर्ति स्थिति",
+    activeFleet: "ड्यूटी पर टैंकर",
+    dailyWater: "आज का पानी",
+    footerDept: "बृहन्मुंबई महानगरपालिका · जल विभाग",
+    footerVer: "वॉटरफ्लो नागरिक सहायता · 24 मनपा वार्ड",
     navHome: "होम",
-    navMap: "लाइव मैप",
-    navGrievance: "शिकायत",
-    navQueue: "कतार",
+    navMap: "टैंकर देखें",
+    navGrievance: "शिकायत करें",
+    navQueue: "मेरी कतार",
     navChat: "AI सहायक",
-    navProfile: "प्रोफ़ाइल",
+    navProfile: "मेरी जानकारी",
     sosButton: "आपातकालीन SOS",
-    offlineMode: "ऑफलाइन मोड",
-    onlineMode: "ऑनलाइन स्काडा",
-    offlineAssisted: "ऑफलाइन SMS सहायता मोड",
-    ticketRaised: "टिकट दर्ज किया गया",
-    smsTicketConfirmed: "ऑफलाइन SMS टिकट दर्ज",
-    triggerWebhook: "आपातकालीन वेबहुक भेजें",
-    ivrCalling: "IVR कॉलबॅक प्रक्रिया सुरू",
+    offlineMode: "बिना इंटरनेट",
+    onlineMode: "ऑनलाइन",
+    offlineAssisted: "SMS सहायता (ऑफलाइन)",
+    ticketRaised: "शिकायत दर्ज हुई",
+    smsTicketConfirmed: "SMS शिकायत सुरक्षित",
+    triggerWebhook: "आपातकालीन सहायता बुलाएं",
+    ivrCalling: "आपके फोन पर कॉल आ रहा है",
   },
   mr: {
-    scadaLive: "स्काडा थेट",
-    telemetryVer: "मनपा टेलीमेट्री आवृत्ती ४.१२",
-    helpline: "मनपा +91 8369978764",
-    appTitle: "वॉटरफ्लो नागरिक",
+    scadaLive: "पाणीपुरवठा थेट",
+    telemetryVer: "मनपा पाणी विभाग",
+    helpline: "+91 8369978764",
+    appTitle: "वॉटरफ्लो नागरिक सेवा",
     subTitle: "बृहन्मुंबई महानगरपालिका (BMC)",
-    emergencySupport: "तातडीचे पाणी वाटप साहाय्य",
-    algoActive: "अल्गोरिदम आधारित वाटप सक्रिय",
-    heroTitle: "तुमच्या परिसरात तीव्र पाणीटंचाई आहे का?",
-    heroDesc: "तातडीच्या टँकर पुरवठ्यासाठी तुमची तक्रार थेट वॉटरफ्लो प्राधान्य प्रणालीमध्ये नोंदवा.",
-    alreadyLogged: "आधीच तक्रार नोंदवली आहे का?",
-    trackQueueDesc: "रांगेतील प्राधान्य क्रमांक आणि टँकरचा थेट मार्ग तपासा",
-    trackStatus: "स्थिती तपासा",
-    formTitle: "नागरिक पाणी तक्रार नोंदणी",
+    emergencySupport: "तातडीची पाणी मदत",
+    algoActive: "न्याय्य पाणी वाटप",
+    heroTitle: "तुमच्या भागात पाण्याची टंचाई आहे का?",
+    heroDesc: "तातडीचा पाण्याचा टँकर मिळवण्यासाठी तुमची तक्रार येथे नोंदवा.",
+    alreadyLogged: "आधी तक्रार केली आहे का?",
+    trackQueueDesc: "टँकर कुठे आला आहे आणि तुमचा नंबर तपासा",
+    trackStatus: "टँकर कुठे आहे पहा",
+    formTitle: "पाण्याची तक्रार नोंदवा",
     formId: "तक्रार क्र.: WF-24-918",
-    issueClass: "समस्येचे स्वरूप",
-    autoWeight: "प्राधान्य गुण: +२८ (स्तर-१ प्राधान्य)",
-    tankerEligible: "तातडीच्या टँकरसाठी पात्र",
-    phoneLabel: "भ्रमणध्वनी क्रमांक (ओटीपी व ट्रॅकिंगसाठी)",
-    otpVerified: "ओटीपी प्रमाणित",
-    wardLabel: "प्रभाग (वॉर्ड)",
-    settlementLabel: "वस्तीचा प्रकार",
-    localityLabel: "नजीकची खूण / गल्ली",
-    gpsHeader: "जीपीएस वितरण निर्देशक",
-    refreshGps: "जीपीएस रिफ्रेश",
-    wgsVerified: "WGS84 प्रमाणित",
-    photoLabel: "एआय फोटो तपासणी (पर्यायी)",
-    photoDesc: "फोटोवरून गळती आणि पाण्याचा गढूळपणा स्वयंचलितपणे तपासला जातो",
-    submitBtn: "तक्रार नोंदवा व तातडीचा टँकर मिळवा",
-    explainTitle: "पारदर्शकता प्रणाली",
-    explainHeading: "गणितीय समानतेची हमी",
-    explainFormula: "प्राधान्य = ०.३५(गरज) + ०.३०(कोरडे तास) + ०.२०(लोकसंख्या)",
-    explainBody: "कोणताही राजकीय हस्तक्षेप नाही; गरज आणि अंतराच्या आधारे स्वयंचलित टँकर वितरण.",
-    gridStability: "ग्रिड स्थिरता",
-    activeFleet: "सक्रिय टँकर",
-    dailyWater: "दैनिक पाणी",
-    footerDept: "बृहन्मुंबई महानगरपालिका · जल अभियंता विभाग",
-    footerVer: "वॉटरफ्लो स्काडा नियंत्रण कक्ष आवृत्ती ४.१२ · २४ मनपा प्रभाग",
+    issueClass: "समस्येचा प्रकार निवडा",
+    autoWeight: "प्राधान्य: तातडीची गरज",
+    tankerEligible: "मोफत टँकरसाठी पात्र",
+    phoneLabel: "मोबाईल नंबर",
+    otpVerified: "नंबर योग्य आहे",
+    wardLabel: "तुमचा प्रभाग (वॉर्ड)",
+    settlementLabel: "वस्तीचा प्रकार (चाळ / झोपडपट्टी / सोसायटी)",
+    localityLabel: "जवळची खूण / गल्ली क्रमांक",
+    gpsHeader: "तुमचे ठिकाण",
+    refreshGps: "ठिकाण अपडेट करा",
+    wgsVerified: "जागा निश्चित",
+    photoLabel: "गळती किंवा कोरड्या नळाचा फोटो (पर्यायी)",
+    photoDesc: "फोटोमुळे मनपाच्या कामगारांना जागा लगेच सापडते",
+    submitBtn: "तक्रार पाठवा व तातडीचा टँकर मिळवा",
+    explainTitle: "पारदर्शकता व न्याय",
+    explainHeading: "सर्वांसाठी समान पाणी — कोणावरही अन्याय नाही",
+    explainFormula: "प्राधान्य = पाण्याची गरज + कोरडे दिवस + लोकसंख्या",
+    explainBody: "ज्या भागात जास्त पाणीटंचाई आहे तिथे टँकर आधी पोहोचतो. कोणाच्याही ओळखीने किंवा प्रभावाने रांग तोडली जात नाही.",
+    gridStability: "नळाचे पाणी",
+    activeFleet: "कामावर असलेले टँकर",
+    dailyWater: "आजचे पाणी",
+    footerDept: "बृहन्मुंबई महानगरपालिका · जल विभाग",
+    footerVer: "वॉटरफ्लो नागरिक साहाय्य · २४ मनपा प्रभाग",
     navHome: "मुख्य",
-    navMap: "थेट नकाशा",
-    navGrievance: "तक्रार",
-    navQueue: "प्रतीक्षा यादी",
-    navChat: "AI साहाय्यक",
-    navProfile: "माहिती",
-    sosButton: "तातडीचे SOS",
-    offlineMode: "ऑफलाइन पद्धत",
-    onlineMode: "ऑनलाइन स्काडा",
-    offlineAssisted: "ऑफलाइन SMS साहाय्य",
+    navMap: "टँकर मार्ग",
+    navGrievance: "तक्रार नोंदवा",
+    navQueue: "माझा नंबर",
+    navChat: "AI मदतनीस",
+    navProfile: "माझी माहिती",
+    sosButton: "तातडीची मदत (SOS)",
+    offlineMode: "ऑफलाइन",
+    onlineMode: "ऑनलाइन",
+    offlineAssisted: "SMS साहाय्य (ऑफलाइन)",
     ticketRaised: "तक्रार नोंदवली",
-    smsTicketConfirmed: "ऑफलाइन SMS तिकीट नोंदवले",
-    triggerWebhook: "तातडीचा वेबहुक पाठवा",
-    ivrCalling: "IVR कॉलबॅक रांगेत",
+    smsTicketConfirmed: "SMS तक्रार सुरक्षित",
+    triggerWebhook: "तातडीची मदत मागवा",
+    ivrCalling: "फोनवर कॉल येत आहे",
   }
 };
 
@@ -291,8 +291,8 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
 
   // Form State
   const [phoneNumber, setPhoneNumber] = useState("98200 12345");
-  const [issueType, setIssueType] = useState("Severe Dry Pipe (>48 Hours Continuous)");
-  const [settlement, setSettlement] = useState("Chawl / Informal Cluster");
+  const [issueType, setIssueType] = useState("🔴 No Water for 2+ Days (दोन दिवसांपेक्षा जास्त पाणी नाही)");
+  const [settlement, setSettlement] = useState("Chawl / Slum Colony (चाळ / झोपडपट्टी)");
   const [landmark, setLandmark] = useState(MUMBAI_WARDS_DATABASE[0].default_landmark);
   const [coords, setCoords] = useState({ lat: MUMBAI_WARDS_DATABASE[0].lat, lng: MUMBAI_WARDS_DATABASE[0].lng });
   const [hasPhoto, setHasPhoto] = useState(false);
@@ -397,12 +397,12 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
           setGpsLoading(false);
         },
         (err) => {
-          console.warn("GPS permission not granted or timeout, using Mumbai centroid:", err.message);
+          console.warn("GPS permission not granted or timeout, using Mumbai default:", err.message);
           const fallback = MUMBAI_WARDS_DATABASE[0]; // Ward M/E
           setDetectedWard(fallback);
           setCoords({ lat: fallback.lat, lng: fallback.lng });
           setLandmark(fallback.default_landmark);
-          setDetectionMode("Centroid Auto-Fallback (Ward M/East)");
+          setDetectionMode("Default Location (Ward M/East)");
           setGpsAccuracy("±4.2m");
           setGpsLoading(false);
         },
@@ -707,7 +707,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
         officer_name: "Er. Nilesh Shinde",
         designation: `Executive Water Engineer (${detectedWard.name})`,
         badge_number: "BMC-EE-4182",
-        control_room: "Eastern Suburbs Zonal Water SCADA Control Room, Chembur",
+        control_room: "Eastern Suburbs Municipal Water Office, Chembur",
       });
     }
   };
@@ -877,10 +877,10 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
         setOfflineQueue([]);
         alert(
           lang === "mr"
-            ? "सर्व ऑफलाइन तक्रारी मनपा स्काडा सर्व्हरशी सिंक झाल्या आहेत!"
+            ? "सर्व ऑफलाइन तक्रारी मनपा कार्यालयाशी सिंक झाल्या आहेत!"
             : lang === "hi"
-            ? "सभी ऑफलाइन शिकायतें मनपा स्काडा सर्वर के साथ सफलतापूर्वक सिंक हो गईं!"
-            : "All queued offline tickets successfully synced with MCGM SCADA server!"
+            ? "सभी ऑफलाइन शिकायतें मनपा कार्यालय के साथ सफलतापूर्वक सिंक हो गईं!"
+            : "All queued offline tickets successfully synced with BMC Water Office!"
         );
       }
     } catch (err) {
@@ -999,7 +999,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
           </h3>
         </div>
         <span className="font-mono text-[10px] font-bold text-sky-800 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
-          Ward-Only Telemetry
+          Ward Water Status
         </span>
       </div>
 
@@ -1007,20 +1007,20 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
         {/* Supply Schedule */}
         <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
           <span className="text-[10px] font-bold uppercase text-slate-400 block font-mono">
-            Rationing Timetable
+            Supply Timetable
           </span>
           <span className="font-bold text-slate-900 block mt-0.5">
             {detectedWard.timetable}
           </span>
           <span className="text-[9.5px] text-slate-500 mt-0.5 block">
-            Feeder: {detectedWard.feeder_line}
+            Line: {detectedWard.feeder_line}
           </span>
         </div>
 
         {/* Pressure Status */}
         <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
           <span className="text-[10px] font-bold uppercase text-slate-400 block font-mono">
-            Grid Line Pressure
+            Tap Water Pressure
           </span>
           <div className="flex items-center gap-1.5 mt-0.5">
             <span className={`w-2 h-2 rounded-full ${
@@ -1031,20 +1031,20 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
             </span>
           </div>
           <span className="text-[9.5px] text-slate-500 mt-0.5 block">
-            Telemetry: SCADA Node Z-{detectedWard.ward_code}
+            Station: Ward Office {detectedWard.ward_code}
           </span>
         </div>
 
         {/* Deficit & Priority Score */}
         <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
           <span className="text-[10px] font-bold uppercase text-slate-400 block font-mono">
-            Deficit &amp; Score
+            Shortage &amp; Need
           </span>
           <span className="font-bold text-rose-700 block mt-0.5">
-            {detectedWard.water_deficit_pct}% Deficit ({detectedWard.dry_pipe_hours}h Dry)
+            {detectedWard.water_deficit_pct}% Shortage ({detectedWard.dry_pipe_hours}h Without Water)
           </span>
           <span className="text-[9.5px] text-slate-600 font-mono mt-0.5 block">
-            Priority: <strong>{detectedWard.priority_score}</strong> ({detectedWard.priority_tier})
+            Urgency Rank: <strong>{detectedWard.priority_score}</strong> ({detectedWard.priority_tier})
           </span>
         </div>
       </div>
@@ -1097,8 +1097,10 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
               setPwaInstalled(true);
               alert(
                 lang === "mr"
-                  ? "वॉटरफ्लो ॲप तुमच्या फोनवर इन्स्टॉल केले गेले आहे!"
-                  : "PWA Initialized: WaterFlow Citizen added to home screen with offline SCADA service worker cache."
+                  ? "वॉटरफ्लो ॲप तुमच्या फोनवर सुरक्षित केले आहे! इंटरनेटशिवायही चालेल."
+                  : lang === "hi"
+                  ? "वॉटरफ्लो ऐप आपके फोन में सुरक्षित हो गया है! बिना इंटरनेट भी चलेगा।"
+                  : "WaterFlow saved to your phone. Works even without internet."
               );
             }}
             className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#0056b3] hover:bg-sky-700 text-white text-[11px] font-bold shadow-xs active:scale-95 transition cursor-pointer"
@@ -1135,15 +1137,15 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
           </div>
           <div>
             <div className="text-xs font-bold text-teal-950 flex items-center space-x-1.5">
-              <span>{lang === "hi" ? "बिना इंटरनेट SMS द्वारा शिकायत दर्ज करें" : lang === "mr" ? "इंटरनेटशिवाय SMS द्वारे तक्रार नोंदवा" : "No Internet? Report via Cellular SMS"}</span>
+              <span>{lang === "hi" ? "बिना इंटरनेट SMS द्वारा शिकायत दर्ज करें" : lang === "mr" ? "इंटरनेटशिवाय SMS द्वारे तक्रार नोंदवा" : "No Internet? Report via Free SMS"}</span>
               <span className="text-[9.5px] bg-teal-200/80 text-teal-900 px-1.5 py-0.2 rounded font-mono font-bold">+91 8369978764</span>
             </div>
             <p className="text-[10.5px] text-teal-800 mt-0.5 leading-tight">
               {lang === "hi"
-                ? "एक क्लिक में एन्क्रिप्टेड SMS तैयार करें। तुरंत टिकट संख्या व टैंकर OTP प्राप्त करें।"
+                ? "बिना इंटरनेट के SMS भेजकर पानी की शिकायत दर्ज करें और तुरंत टैंकर OTP प्राप्त करें।"
                 : lang === "mr"
-                ? "एका क्लिकवर एन्क्रिप्टेड SMS तयार करा. तात्काळ तिकीट क्रमांक व टँकर OTP मिळवा."
-                : "Generates instant pre-encoded SMS payload. Receive immediate ticket ID & OTP without cellular data."}
+                ? "इंटरनेट नसतानाही साधा SMS पाठवून पाण्याची तक्रार नोंदवा आणि तात्काळ टँकर OTP मिळवा."
+                : "Send a free SMS to register your water complaint and get your relief tanker OTP immediately without internet."}
             </p>
           </div>
         </div>
@@ -1169,12 +1171,12 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
               onChange={(e) => setIssueType(e.target.value)}
               className="civic-input w-full rounded-lg text-xs font-semibold text-slate-800 py-2.5 pl-3 pr-8 focus:outline-hidden"
             >
-              <option value="Severe Dry Pipe (>48 Hours Continuous)">🔴 Severe Dry Pipe (&gt;48 Hours Continuous)</option>
-              <option value="Critical Ration Deficit (24-48 Hours)">🟠 Critical Ration Deficit (24-48 Hours)</option>
-              <option value="Low Pressure & Variable Grid Supply">🟡 Low Pressure &amp; Variable Grid Supply</option>
-              <option value="Severe Turbidity / Water Contamination">⚠️ Severe Turbidity / Water Contamination</option>
-              <option value="Main Line Burst / Road Flooding">🚰 Main Line Burst / Road Flooding</option>
-              <option value="Municipal Tanker Diversion / Non-Arrival">🚛 Municipal Tanker Diversion / Non-Arrival</option>
+              <option value="🔴 No Water for 2+ Days (दोन दिवसांपेक्षा जास्त पाणी नाही)">🔴 No Water for 2+ Days (दोन दिवसांपेक्षा जास्त पाणी नाही)</option>
+              <option value="🟠 Water Cut for 1-2 Days (१ ते २ दिवस पाणी नाही)">🟠 Water Cut for 1-2 Days (१ ते २ दिवस पाणी नाही)</option>
+              <option value="🟡 Very Low Tap Pressure (नळाला खूप कमी पाणी)">🟡 Very Low Tap Pressure (नळाला खूप कमी पाणी)</option>
+              <option value="⚠️ Dirty / Muddy / Contaminated Water (घाणेरडे किंवा गढूळ पाणी)">⚠️ Dirty / Muddy / Contaminated Water (घाणेरडे किंवा गढूळ पाणी)</option>
+              <option value="🚰 Water Pipe Burst / Street Leak (पाईप फुटला / पाणी गळती)">🚰 Water Pipe Burst / Street Leak (पाईप फुटला / पाणी गळती)</option>
+              <option value="🚛 Relief Tanker Did Not Arrive (पाण्याचा टँकर आला नाही)">🚛 Relief Tanker Did Not Arrive (पाण्याचा टँकर आला नाही)</option>
             </select>
           </div>
           <div className="mt-1 flex items-center justify-between text-[10px] text-slate-500 px-0.5">
@@ -1230,10 +1232,10 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
               onChange={(e) => setSettlement(e.target.value)}
               className="civic-input w-full rounded-lg text-xs font-medium text-slate-800 py-2 px-2.5 border border-slate-300"
             >
-              <option value="Chawl / Informal Cluster">Chawl / Informal Cluster</option>
-              <option value="Co-op Housing Society (CHS)">Co-op Housing Society (CHS)</option>
-              <option value="Slum Rehabilitation (SRA)">Slum Rehabilitation (SRA)</option>
-              <option value="Commercial / Small Trade">Commercial / Small Trade</option>
+              <option value="Chawl / Slum Colony (चाळ / झोपडपट्टी)">Chawl / Slum Colony (चाळ / झोपडपट्टी)</option>
+              <option value="Co-op Housing Society (इमारत / सोसायटी)">Co-op Housing Society (इमारत / सोसायटी)</option>
+              <option value="Slum Rehabilitation (SRA इमारत)">Slum Rehabilitation (SRA इमारत)</option>
+              <option value="Small Shop / Business (दुकान / व्यवसाय)">Small Shop / Business (दुकान / व्यवसाय)</option>
             </select>
           </div>
         </div>
@@ -1321,7 +1323,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
               <Camera className={`w-5 h-5 ${hasPhoto ? "text-emerald-600" : "text-sky-600"}`} />
               <span className="text-xs font-semibold text-slate-800">
                 {hasPhoto
-                  ? "✓ Evidence Attached: pipeline_leak_burst_evidence.jpg (Turbidity 42 NTU)"
+                  ? "✓ Photo Attached: pipeline_leak_burst_evidence.jpg (Photo Added)"
                   : "Capture dry tap or pipeline leak photo"}
               </span>
             </div>
@@ -1341,7 +1343,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
             {submitting ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>Logging Grievance into SCADA...</span>
+                <span>Sending Complaint to Water Dept...</span>
               </>
             ) : (
               <>
@@ -1360,14 +1362,14 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
       <div className="flex items-center justify-between pb-2 border-b border-slate-200">
         <div className="flex items-center space-x-2">
           <div className="px-2 py-0.5 rounded bg-[#0056b3] text-white font-mono text-[10px] font-black uppercase tracking-wider">
-            {lang === "mr" ? "स्पष्टीकरण" : "EXPLAINABILITY"}
+            {lang === "mr" ? "स्पष्टीकरण" : "FAIR QUEUE"}
           </div>
           <h4 className="text-xs font-black text-slate-900 tracking-tight">
-            {lang === "mr" ? "माझी विनंती रांगेत का आहे?" : "Why am I queued?"} — Ward {detectedWard.ward_code}
+            {lang === "mr" ? "माझा नंबर कसा ठरवला?" : "How is My Turn Decided?"} — Ward {detectedWard.ward_code}
           </h4>
         </div>
         <span className="font-mono text-[9.5px] font-bold text-sky-800 bg-white px-2 py-0.5 rounded border border-sky-300">
-          Policy v2.4.0-hardened
+          Fair Distribution Policy
         </span>
       </div>
 
@@ -1391,7 +1393,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
           className="px-2.5 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-300 text-sky-800 text-[11px] font-bold transition flex items-center space-x-1 cursor-pointer"
         >
           <HelpCircle className="w-3.5 h-3.5 text-sky-600" />
-          <span>{lang === "mr" ? "सविस्तर गणित" : "View Audit Math"}</span>
+          <span>{lang === "mr" ? "कतार कशी ठरते?" : "Why This Order?"}</span>
         </button>
       </div>
 
@@ -1455,11 +1457,11 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
       {/* Human-Readable Explanation */}
       <div className="p-2.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-700 leading-relaxed">
         <span className="font-bold text-slate-900 block mb-0.5">
-          {lang === "mr" ? "थेट कारण:" : "Algorithmic Determination:"}
+          {lang === "mr" ? "थेट कारण:" : "Why Your Turn Comes First:"}
         </span>
         {lang === "mr"
-          ? `तुमचा प्रभाग ${detectedWard.ward_code} उच्च प्राधान्य क्रमाने ठेवण्यात आला आहे, कारण येथे ${dominantDriver} आहे. वॉटरफ्लो अल्गोरिदम वेळेपेक्षा (FCFS) मानवीय गरजेला प्राधान्य देतो.`
-          : `Grievance prioritized at score ${totalScore}/100. Key driver: ${dominantDriver}. Under WaterFlow Policy v2.4.0-hardened, humanitarian need overrides submission timestamps to prevent vocal affluent wards from displacing vulnerable communities.`}
+          ? `तुमचा प्रभाग ${detectedWard.ward_code} उच्च प्राधान्य क्रमाने ठेवण्यात आला आहे, कारण येथे ${dominantDriver} आहे. कोणाच्याही ओळखीने किंवा प्रभावाने रांग तोडली जात नाही.`
+          : `Your complaint is prioritized at score ${totalScore}/100 because of ${dominantDriver}. WaterFlow delivers water first to areas with the greatest shortage without VIP favoritism.`}
       </div>
 
       {/* Live Metric Badges */}
@@ -1496,7 +1498,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
           </span>
         </div>
         <span className="font-mono text-[9px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded border border-emerald-300">
-          SCADA SECURED
+          OFFICIALLY VERIFIED
         </span>
       </div>
 
@@ -1669,7 +1671,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
               onClick={handleSyncOfflineQueue}
               disabled={syncingOffline || (!isOnline && !simulateOffline)}
               className="text-[10px] font-mono font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded border border-amber-300 hover:bg-amber-200 transition cursor-pointer flex items-center space-x-1"
-              title="Sync offline queued tickets with SCADA"
+              title="Send offline saved complaints to office"
             >
               <RefreshCw className={`w-3 h-3 ${syncingOffline ? "animate-spin" : ""}`} />
               <span>Sync {offlineQueue.length} Queued</span>
@@ -1875,23 +1877,23 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
 
         {/* Right Column: Diagnostics & Support */}
         <div className={`${forceMobileFrame ? "" : "lg:col-span-6"} space-y-4`}>
-          {/* PWA & System Diagnostics */}
+          {/* App & System Status */}
           <div className="civic-card rounded-xl p-4 bg-white border border-slate-200 shadow-xs space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">
-              SCADA System &amp; PWA Diagnostics
+              System &amp; App Status
             </h4>
             <div className="grid grid-cols-2 gap-2 text-xs font-mono">
               <div className="p-2 rounded bg-slate-50 border border-slate-200">
-                <span className="text-[9.5px] text-slate-400 block font-sans">Service Worker Cache</span>
-                <span className="font-bold text-emerald-600">Active (Offline Ready)</span>
+                <span className="text-[9.5px] text-slate-400 block font-sans">Phone Storage</span>
+                <span className="font-bold text-emerald-600">Saved (Works Offline)</span>
               </div>
               <div className="p-2 rounded bg-slate-50 border border-slate-200">
                 <span className="text-[9.5px] text-slate-400 block font-sans">GPS Accuracy</span>
                 <span className="font-bold text-slate-800">{gpsAccuracy}</span>
               </div>
               <div className="p-2 rounded bg-slate-50 border border-slate-200">
-                <span className="text-[9.5px] text-slate-400 block font-sans">Telemetry Node</span>
-                <span className="font-bold text-[#0056b3]">SCADA Node Z-{detectedWard.ward_code}</span>
+                <span className="text-[9.5px] text-slate-400 block font-sans">Water Office</span>
+                <span className="font-bold text-[#0056b3]">Ward {detectedWard.ward_code} Office</span>
               </div>
               <div className="p-2 rounded bg-slate-50 border border-slate-200">
                 <span className="text-[9.5px] text-slate-400 block font-sans">App Version</span>
@@ -2200,14 +2202,14 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                       </span>
                     </div>
                     <div className="text-sm font-black text-slate-900">
-                      {lang === "hi" ? "तत्काल मनपा सहायता व IVR कॉलबैक" : lang === "mr" ? "त्वरित मनपा साहाय्य व IVR कॉलबॅक" : "Instant SCADA Webhook & IVR Callback"}
+                      {lang === "hi" ? "तत्काल आपातकालीन सहायता व फोन कॉल" : lang === "mr" ? "तातडीची आपत्कालीन मदत व फोन कॉल" : "Emergency Water Help & Urgent Call"}
                     </div>
                     <p className="text-[11px] text-slate-600 mt-1 leading-normal">
                       {lang === "hi"
-                        ? "गंभीर जल संकट, पाइपलाइन विस्फोट या संदूषण के लिए तुरंत लाल चेतावनी (Red Alert) वेबहुक प्रेषित करें।"
+                        ? "गंभीर जल संकट, पाइपलाइन लीकेज या गंदे पानी के लिए तुरंत आपातकालीन सहायता मंगाएं।"
                         : lang === "mr"
-                        ? "गंभीर पाणीटंचाई, पाईपलाईन फुटणे किंवा दूषित पाण्यासाठी थेट मनपा स्काडाला रेड अलर्ट वेबहुक पाठवा."
-                        : "Trigger instant red-alert webhook to municipal dispatch center with automated +91 8369978764 IVR callback."}
+                        ? "गंभीर पाणीटंचाई, पाईप फुटणे किंवा दूषित पाण्यासाठी त्वरित आपत्कालीन मदत मिळवा."
+                        : "Acute water shortage, pipe burst, or bad water? Request immediate assistance with a direct call from +91 8369978764."}
                     </p>
                   </div>
                   <div className="mt-3 flex items-center gap-2">
@@ -2216,7 +2218,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                       className="flex-1 py-2 px-3 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-xs active:scale-95"
                     >
                       <AlertOctagon className="w-3.5 h-3.5" />
-                      <span>{lang === "hi" ? "आपातकालीन वेबहुक ट्रिगर करें →" : lang === "mr" ? "तातडीचा वेबहुक पाठवा →" : "Trigger Emergency SOS →"}</span>
+                      <span>{lang === "hi" ? "आपातकालीन सहायता बुलाएं →" : lang === "mr" ? "तातडीची मदत मागवा →" : "Call Emergency Help (SOS) →"}</span>
                     </button>
                     <button
                       onClick={handleStartHelplineCall}
@@ -2302,7 +2304,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                         <span>{lang === "mr" ? "तक्रार नोंदणी" : "Emergency Grievance"}</span>
                       </span>
                       <span className="text-[10px] font-mono font-bold bg-sky-100 text-sky-800 px-1.5 py-0.5 rounded">
-                        SCADA Log
+                        Complaint Registered
                       </span>
                     </div>
                     <div className="text-sm font-black text-slate-900">
@@ -2411,7 +2413,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                       Ward {detectedWard.ward_code} Live Water Delivery Radar &amp; Fleet Tracker
                     </h3>
                     <p className="text-[10.5px] text-slate-500">
-                      Real-time GPS transponder telemetry for relief tanker {detectedWard.assigned_tanker.tanker_id}
+                      Live GPS tracking for relief tanker {detectedWard.assigned_tanker.tanker_id}
                     </p>
                   </div>
                 </div>
@@ -2508,7 +2510,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                     </div>
                     <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Corridor Route:</span>
+                        <span className="text-slate-500">Delivery Route:</span>
                         <span className="font-bold text-slate-900">Eastern Expressway</span>
                       </div>
                       <div className="flex justify-between">
@@ -2712,13 +2714,13 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-rose-950 text-xs">
                       {lang === "hi"
-                        ? "आपातकालीन जीपीएस एवं वार्ड टेलीमेट्री"
+                        ? "आपातकालीन स्थिति एवं स्थान"
                         : lang === "mr"
-                        ? "तातडीचे जीपीएस व प्रभाग निर्देशक"
-                        : "Emergency GPS & Ward Telemetry"}
+                        ? "तातडीची मदत व पाण्याचे ठिकाण"
+                        : "Emergency Location & Water Status"}
                     </span>
                     <span className="text-[10px] font-mono bg-rose-200 text-rose-900 px-2 py-0.5 rounded font-bold">
-                      SCADA +91 8369978764
+                      Helpline: +91 8369978764
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-[11px] font-mono text-slate-700 bg-white p-2 rounded-lg border border-rose-200">
@@ -2748,10 +2750,10 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>
                         {lang === "hi"
-                          ? "आपातकालीन वेबहुक सफलतापूर्वक प्रेषित · टिकट दर्ज!"
+                          ? "आपातकालीन अनुरोध दर्ज हुआ · टिकट प्राप्त!"
                           : lang === "mr"
-                          ? "तातडीचा वेबहुक यशस्वीरित्या पाठवला · तिकीट नोंदवले!"
-                          : "Emergency Webhook Successfully Dispatched · Ticket Raised!"}
+                          ? "तातडीची मदत नोंदवली · तिकीट मिळाले!"
+                          : "Emergency Alert Dispatched · Ticket Raised!"}
                       </span>
                     </div>
 
@@ -2791,12 +2793,12 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                     {emergencySubmitting ? (
                       <>
                         <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                        <span>Transmitting Emergency Webhook to SCADA...</span>
+                        <span>Sending Emergency Alert to Water Office...</span>
                       </>
                     ) : (
                       <>
                         <Phone className="w-4 h-4 text-white" />
-                        <span>{t.triggerWebhook || "Trigger Emergency Call Webhook"}</span>
+                        <span>{t.triggerWebhook || "Call Emergency Help (SOS)"}</span>
                       </>
                     )}
                   </button>
@@ -2809,7 +2811,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                     className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center space-x-2 transition cursor-pointer border border-slate-300"
                   >
                     <PhoneCall className="w-4 h-4 text-[#0056b3]" />
-                    <span>Connect with Helpline Voice Bot &amp; Queue (+91 8369978764)</span>
+                    <span>Talk to Voice Helper (+91 8369978764)</span>
                   </button>
                 </div>
               </div>
@@ -2844,7 +2846,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                   </div>
                   <div>
                     <span className="text-[10px] font-mono uppercase bg-black/30 px-2 py-0.5 rounded border border-white/20 text-white">
-                      {activeSmsTicket.isOffline ? "OFFLINE ASSISTED MODE" : "SCADA TELEMETRY DISPATCH"}
+                      {activeSmsTicket.isOffline ? "OFFLINE SMS MODE" : "OFFICIAL WATER DISPATCH"}
                     </span>
                     <h3 className="text-sm font-black mt-0.5">
                       {activeSmsTicket.isOffline
@@ -2889,10 +2891,10 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                       <MessageSquare className="w-3.5 h-3.5 text-sky-700" />
                       <span>
                         {lang === "hi"
-                          ? "मनपा गेटवे (+91 8369978764 / 56161) को भेजा गया एन्क्रिप्टेड SMS:"
+                          ? "मनपा हेल्पलाइन (+91 8369978764) को भेजा जाने वाला SMS:"
                           : lang === "mr"
-                          ? "मनपा गेटवेवर (+91 8369978764 / ५६१६१) पाठवलेला एसएमएस:"
-                          : "Encrypted SMS Transmitted to MCGM +91 8369978764 Gateway:"}
+                          ? "मनपा हेल्पलाईनवर (+91 8369978764) पाठवण्याचा एसएमएस:"
+                          : "SMS to be sent to Municipal Helpline (+91 8369978764):"}
                       </span>
                     </span>
                     <span className="text-[10px] font-mono text-emerald-700 font-bold">✓ SMS READY</span>
@@ -2911,21 +2913,21 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                         ? "ऑफलाइन सहायता कैसे काम करती है?"
                         : lang === "mr"
                         ? "ऑफलाइन साहाय्य कसे कार्य करते?"
-                        : "How Offline Assisted Mode Works"}
+                        : "How Offline Mode Works"}
                     </span>
                   </div>
                   <p>
                     {activeSmsTicket.isOffline
                       ? (lang === "hi"
-                        ? "आपकी शिकायत स्थानीय स्टोरेज में सुरक्षित हो गई है। आप नीचे दिए गए बटन से इसे अपने मोबाइल के SMS ऐप से +91 8369978764 पर तुरंत भेज सकते हैं। इंटरनेट आते ही यह सीधे सर्वर से भी सिंक हो जाएगी।"
+                        ? "आपकी शिकायत मोबाइल में सुरक्षित हो गई है। आप नीचे दिए गए बटन से इसे अपने मोबाइल के SMS ऐप से +91 8369978764 पर तुरंत भेज सकते हैं। इंटरनेट आते ही यह सीधे कार्यालय से भी सिंक हो जाएगी।"
                         : lang === "mr"
-                        ? "तुमची तक्रार स्थानिक स्टोरेजमध्ये सुरक्षित झाली आहे. खालील बटनावरून तुम्ही तुमच्या फोनच्या SMS ॲपद्वारे +91 8369978764 वर थेट पाठवू शकता. इंटरनेट पूर्ववत होताच ती स्वयंचलितपणे सिंक होईल."
-                        : "Your grievance ticket is securely queued locally in offline storage. You can send this pre-filled message right now via standard cellular SMS to +91 8369978764, or wait for background sync when internet restores.")
+                        ? "तुमची तक्रार फोनवर सुरक्षित झाली आहे. खालील बटनावरून तुम्ही फोनच्या SMS ॲपद्वारे +91 8369978764 वर थेट पाठवू शकता. इंटरनेट पूर्ववत होताच ती कार्यालयात नोंदवली जाईल."
+                        : "Your complaint is safely saved on your phone. You can send this message via free SMS to +91 8369978764 now, or it will send automatically when internet returns.")
                       : (lang === "hi"
-                        ? "आपकी शिकायत मनपा प्राथमिकता कतार में दर्ज हो गई है। राहत टैंकर T-08 आवंटित किया गया है। डिलीवरी के समय चालक को OTP 7419 प्रदान करें।"
+                        ? "आपकी शिकायत मनपा प्राथमिकता सूची में दर्ज हो गई है। राहत टैंकर T-08 रवाना हुआ है। पानी लेते समय चालक को OTP 7419 बताएं।"
                         : lang === "mr"
-                        ? "तुमची तक्रार मनपा प्राधान्य रांगेत नोंदवली आहे. तातडीचा टँकर T-08 रवाना झाला आहे. पाणी वितरणावेळी चालकाला OTP ७४१९ द्या."
-                        : "Your grievance is registered in the municipal SCADA priority queue. Tanker T-08 is en route. Share OTP 7419 upon arrival.")}
+                        ? "तुमची तक्रार मनपा प्राधान्य यादीत नोंदवली आहे. तातडीचा टँकर T-08 रवाना झाला आहे. पाणी घेताना चालकाला OTP ७४१९ सांगा."
+                        : "Your complaint is registered in the municipal priority queue. Tanker T-08 is en route. Share OTP 7419 upon arrival.")}
                   </p>
                 </div>
 
@@ -2990,7 +2992,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                         {callStage === "bot_speaking"
                           ? "JalVaani AI (जलवाणी)"
                           : callStage === "queued"
-                          ? "Algorithmic Priority Queue"
+                          ? "Fair Priority Queue (कतार)"
                           : callStage === "officer_connected"
                           ? "Live Officer Bridge"
                           : callStage === "resolved"
@@ -3032,7 +3034,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                       <div>
                         <h4 className="text-sm font-bold text-white">JalVaani AI Intake Bot</h4>
                         <p className="text-[10px] text-sky-300 font-mono">
-                          Automated Ward {detectedWard.ward_code} Telemetry Dispatcher
+                          BMC Ward {detectedWard.ward_code} Automated Assistance
                         </p>
                       </div>
 
@@ -3139,10 +3141,10 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                         <Users className="w-6 h-6 animate-pulse" />
                       </div>
                       <h4 className="text-sm font-bold text-amber-300">
-                        Municipal Mobile Call Escalation Queue
+                        Municipal Help Call Queue
                       </h4>
                       <p className="text-[11px] text-slate-300 leading-snug">
-                        Ranked using the <strong className="text-amber-200">Municipal Water Allocation Algorithm</strong> — critical deficit &amp; informal settlements jump ahead of commercial callers!
+                        Ranked by <strong className="text-amber-200">Fair Water Need</strong> — areas without water and chawls connect first without VIP favoritism.
                       </p>
                     </div>
 
@@ -3221,7 +3223,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                           {officerData?.designation || `Executive Water Engineer (${detectedWard.name})`}
                         </p>
                         <span className="text-[10px] font-mono text-slate-400 block mt-0.5">
-                          ID: {officerData?.badge_number || "BMC-EE-4182"} · {officerData?.control_room || "Eastern Suburbs SCADA Control Room"}
+                          ID: {officerData?.badge_number || "BMC-EE-4182"} · {officerData?.control_room || "Eastern Suburbs Municipal Water Office"}
                         </span>
                       </div>
                     </div>
@@ -3320,10 +3322,10 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
               <div className="bg-[#0056b3] text-white p-4 flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-mono uppercase bg-sky-900/60 px-2 py-0.5 rounded border border-sky-400/40 text-sky-200">
-                    POLICY v2.4.0-HARDENED
+                    FAIR ALLOCATION RULES
                   </span>
                   <h3 className="text-sm font-black mt-1">
-                    {lang === "hi" ? "गणितीय आवंटन पारदर्शिता ऑडिट" : lang === "mr" ? "गणितीय वाटप पारदर्शकता ऑडिट" : "Municipal Algorithmic Equity Audit"}
+                    {lang === "hi" ? "निष्पक्ष जल आवंटन नियम व पारदर्शिता" : lang === "mr" ? "पारदर्शक व न्याय्य पाणी वाटप नियम" : "Fair Water Allocation & Anti-Favoritism Rules"}
                   </h3>
                 </div>
                 <button
@@ -3340,15 +3342,15 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                     {lang === "hi" ? "जल आवंटन कैसे तय होता है?" : lang === "mr" ? "पाणी वाटप कसे ठरवले जाते?" : "How is Relief Priority Determined?"}
                   </div>
                   <p className="text-[11.5px] leading-relaxed text-slate-600">
-                    Unlike legacy First-Come-First-Served (FCFS) pipelines where high-bandwidth commercial users dominate relief tankers, WaterFlow calculates an authoritative equity score:
+                    WaterFlow prioritizes relief water purely on real need and days without water, preventing VIP influence or favoritism:
                   </p>
                   <div className="mt-2 font-mono bg-white p-2 rounded border border-sky-200 text-slate-800 text-[11px] font-bold">
-                    Score = 30·V + 25·U + 20·P + 15·H + 10·(1 - D)
+                    Need Score = 30·V + 25·U + 20·P + 15·H + 10·(1 - D)
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <div className="font-bold text-slate-900 text-xs">Audited Ward Inputs (Ward {detectedWard.ward_code}):</div>
+                  <div className="font-bold text-slate-900 text-xs">Area Water Details (Ward {detectedWard.ward_code}):</div>
                   <ul className="space-y-1.5 text-[11px] list-disc list-inside text-slate-600 font-mono">
                     <li><strong className="text-slate-800">Vulnerability (V):</strong> {detectedWard.slum_pop_pct || 65}% slum share (Weight: 30%)</li>
                     <li><strong className="text-slate-800">Unmet Demand (U):</strong> {detectedWard.dry_pipe_hours || 36} hours without water (Weight: 25%)</li>
@@ -3361,10 +3363,10 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                 <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200">
                   <div className="flex items-center space-x-1.5 text-emerald-900 font-bold text-xs mb-1">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>Anti-Discrimination &amp; VIP Immunity Guarantee</span>
+                    <span>Fair Treatment Guarantee — No VIP Bias</span>
                   </div>
                   <p className="text-[11px] text-emerald-800 leading-normal">
-                    Mathematical policy constraints ensure that submission timestamps cannot override genuine physiological urgency. All 24 BMC ward allocations are reproducible and auditable in real time.
+                    Our fair rule system ensures that water is delivered based on genuine shortage and days without water, not who registered first or VIP influence.
                   </p>
                 </div>
               </div>
@@ -3374,7 +3376,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                   onClick={() => setShowExplainModal(false)}
                   className="px-4 py-1.5 bg-[#0056b3] hover:bg-sky-700 text-white font-bold text-xs rounded-lg shadow-xs cursor-pointer transition"
                 >
-                  {lang === "hi" ? "बंद करें" : lang === "mr" ? "बंद करा" : "Close Audit"}
+                  {lang === "hi" ? "बंद करें" : lang === "mr" ? "बंद करा" : "Close"}
                 </button>
               </div>
             </div>
