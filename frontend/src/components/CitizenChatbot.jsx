@@ -16,11 +16,12 @@ import {
   Volume2,
   Clock,
   Compass,
-  FileText
+  FileText,
+  Star,
 } from "lucide-react";
 
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || "";
-const GROQ_MODEL = "qwen/qwen3.8-27b";
+const GROQ_MODEL = import.meta.env.VITE_GROQ_CHAT_MODEL || "openai/gpt-oss-20b";
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 // Multilingual labels for the Chatbot interface
@@ -90,6 +91,8 @@ const CHAT_I18N = {
 export default function CitizenChatbot({
   lang = "en",
   detectedWard,
+  citizenCredits = 145,
+  credibilityScore = 92,
   onOpenGrievance,
   onOpenEmergencyModal,
   onClose,
@@ -289,7 +292,7 @@ STRICT DOMAIN SCOPE & RELEVANCE RULES (MANDATORY):
 Respond politely and warmly in the user's language (${lang === "hi" ? "Hindi" : lang === "mr" ? "Marathi" : "English"}).`;
 
       try {
-        const candidateModels = ["qwen/qwen3.8-27b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
+        const candidateModels = ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "qwen/qwen3.8-27b"];
         for (const m of candidateModels) {
           const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
@@ -337,12 +340,28 @@ Respond politely and warmly in the user's language (${lang === "hi" ? "Hindi" : 
         } else {
           replyText = `Your emergency water request has been enqueued into the official Municipal Water Allocation Queue! Ticket ID: ${allocationQueue.ticket_id}. Priority Score: ${allocationQueue.priority_score}/100. Assigned Tanker: ${allocationQueue.assigned_tanker} (~${allocationQueue.eta_mins} mins). Delivery OTP: ${allocationQueue.otp_code}. Helpline: 8369978764.`;
         }
+      } else if (/priority|score|calculate|formula|कैलकुलेट|स्कोर|गुण|कसा/i.test(query)) {
+        if (lang === "mr") {
+          replyText = `प्राधान्य गुण (Priority Score) वॉटरफ्लो समता मॉडेलद्वारे मोजला जातो:\n• वॉर्ड संवेदनशीलता निर्देशांक (४०%)\n• नळ कोरडे राहण्याचा कालावधी (३५%)\n• ऐतिहासिक पाण्याचा तुटवडा (२५%)\n• चाळ लोकसंख्या आणि जल तक्रारी\n\nसर्वाधिक टंचाई असलेल्या भागांना आपत्कालीन टँकर वाटपात प्रथम प्राधान्य दिले जाते.`;
+        } else if (lang === "hi") {
+          replyText = `प्राथमिकता स्कोर (Priority Score) जल आवंटन समानता फॉर्मूले से तय होता है:\n• वार्ड संवेदनशीलता सूचकांक (40%)\n• नल सूखा रहने का समय (35%)\n• ऐतिहासिक जल अभाव प्रतिशत (25%)\n• आबादी घनत्व और नागरिक शिकायतें\n\nअधिक किल्लत वाले वार्डों को आपातकालीन राहत टैंकर कतार में शीर्ष स्थान मिलता है।`;
+        } else {
+          replyText = `Your Municipal Priority Score is calculated using the WaterFlow OS Equity Formula:\n• Ward Vulnerability Index: 40%\n• Dry-Pipe Hours: 35%\n• Historical Deficit %: 25%\n• Population Density & Spatially Corroborated Complaints.\n\nWards facing severe deficits receive highest ranking in the tanker dispatch queue.`;
+        }
+      } else if (/hello|hi|heeloo|hey|namaste|नमस्ते|नमस्कार/i.test(query)) {
+        if (lang === "mr") {
+          replyText = `नमस्कार! मी जलमित्र, मनपा (BMC) जल विभागाचा साहाय्यक आहे. मी वॉर्ड ${wardCode} पाणी पुरवठा वेळ, टँकर वाटप किंवा पाणी तक्रारीत कशी मदत करू?`;
+        } else if (lang === "hi") {
+          replyText = `नमस्ते! मैं जलमित्र, बीएमसी (BMC) जल विभाग का सहायक हूँ। मैं वार्ड ${wardCode} में जलापूर्ति समय, आपातकालीन टैंकर या पानी की समस्या में आपकी क्या मदद कर सकता हूँ?`;
+        } else {
+          replyText = `Hello! I am JalMitra, your official BMC Water Operations Assistant. How can I assist you with Ward ${wardCode} water supply timings, emergency tanker delivery, or reporting a shortage?`;
+        }
       } else if (lang === "mr") {
-        replyText = `वॉर्ड ${wardCode} (${wardName}) साठी आजचे पाणी वेळापत्रक ${timetable} आहे. तातडीचा टँकर ${tankerId} (ETA ${etaMins} मिनिटे) तैनात आहे. डिलिव्हरी OTP: ${otpCode}. तातडीच्या मदतीसाठी +91 8369978764 वर कॉल करा.`;
+        replyText = `वॉर्ड ${wardCode} (${wardName}) साठी आजचे पाणी वेळापत्रक ${timetable} आहे. तातडीच्या मदतीसाठी हेल्पलाइन 8369978764 वर कॉल करा.`;
       } else if (lang === "hi") {
-        replyText = `वार्ड ${wardCode} (${wardName}) के लिए आज का जलापूर्ति समय ${timetable} है। राहत टैंकर ${tankerId} (ETA ${etaMins} मिनट) रास्ते में है। डिलीवरी OTP: ${otpCode} है। हेल्पलाइन: +91 8369978764.`;
+        replyText = `वार्ड ${wardCode} (${wardName}) के लिए आज का जलापूर्ति समय ${timetable} है। सहायता के लिए हेल्पलाइन 8369978764 पर कॉल करें।`;
       } else {
-        replyText = `For Ward ${wardCode} (${wardName}), regular water supply is scheduled for ${timetable}. Relief Tanker ${tankerId} is assigned with an ETA of ~${etaMins} mins. Delivery OTP: ${otpCode}. For emergency escalations, dial +91 8369978764.`;
+        replyText = `For Ward ${wardCode} (${wardName}), regular water supply is scheduled for ${timetable}. For escalations, dial Helpline 8369978764.`;
       }
     }
 
@@ -387,6 +406,13 @@ Respond politely and warmly in the user's language (${lang === "hi" ? "Hindi" : 
         </div>
 
         <div className="flex items-center space-x-1.5">
+          {/* Citizen Civic Credit Badge in Chatbot Header */}
+          <div className="px-2 py-0.5 rounded-lg bg-amber-400 text-slate-950 font-bold text-[10.5px] font-mono flex items-center space-x-1 shadow-2xs">
+            <Star className="w-3 h-3 fill-amber-700 text-amber-900" />
+            <span>{citizenCredits} Cr</span>
+            <span className="hidden sm:inline text-[9px] opacity-75">({credibilityScore}% Trust)</span>
+          </div>
+
           {onOpenEmergencyModal && (
             <button
               onClick={onOpenEmergencyModal}
@@ -504,8 +530,8 @@ Respond politely and warmly in the user's language (${lang === "hi" ? "Hindi" : 
                       <span className="font-bold text-slate-800 text-[10px] truncate block">
                         {msg.allocation_queue.assigned_tanker} ({msg.allocation_queue.plate})
                       </span>
-                      <span className="text-slate-500 text-[9px] block">
-                        {msg.allocation_queue.driver}
+                      <span className="text-slate-600 text-[9px] block font-mono">
+                        {msg.allocation_queue.driver} · ⭐ 120 Cr (Preferred)
                       </span>
                     </div>
                     <div className="bg-white/90 p-2 rounded-lg border border-amber-200 bg-amber-50/60">

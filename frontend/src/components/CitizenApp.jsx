@@ -1724,7 +1724,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
               <span className="text-sm font-bold text-slate-900">
                 Tanker {detectedWard.assigned_tanker.tanker_id}
               </span>
-              <span className="font-mono text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold border border-slate-300">
+              <span className="font-mono text-[10px] bg-slate-100 text-slate-800 px-1.5 py-0.5 rounded font-bold border border-slate-300">
                 {detectedWard.assigned_tanker.plate}
               </span>
             </div>
@@ -1743,6 +1743,24 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
             Status: {detectedWard.assigned_tanker.delivery_status}
           </span>
         </div>
+      </div>
+
+      {/* Tanker & Driver Integrity Credit Pill */}
+      <div className="flex items-center justify-between p-2 rounded-lg bg-amber-50/80 border border-amber-200 text-xs">
+        <div className="flex items-center space-x-1.5">
+          <Star className="w-4 h-4 fill-amber-500 text-amber-700" />
+          <span className="font-black text-slate-900 font-mono">120 Credits</span>
+          <span className="text-[10px] bg-amber-200 text-amber-900 px-1.5 py-0.2 rounded font-bold font-mono">
+            ⭐ Preferred Contractor (94% Rating)
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => handleOpenDriverReview({ tanker: detectedWard.assigned_tanker.tanker_id })}
+          className="px-2 py-0.5 rounded bg-white hover:bg-slate-100 text-[#0056b3] border border-sky-300 font-bold text-[10px] transition cursor-pointer shadow-2xs"
+        >
+          Rate Driver / Grievance
+        </button>
       </div>
 
       {/* Driver Contact & Target Standpost */}
@@ -1792,7 +1810,10 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
           <Popup>
             <div className="text-xs font-bold font-sans">
               Tanker {detectedWard.assigned_tanker.tanker_id} ({detectedWard.assigned_tanker.driver})
-              <div className="text-[10px] text-amber-600 font-semibold">
+              <div className="text-[10px] font-mono text-slate-700 mt-0.5">
+                Plate: {detectedWard.assigned_tanker.plate} · ⭐ 120 Cr (Preferred)
+              </div>
+              <div className="text-[10px] text-amber-600 font-semibold mt-0.5">
                 ETA {detectedWard.assigned_tanker.eta_mins} Mins · En Route
               </div>
             </div>
@@ -2548,6 +2569,20 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
             </div>
 
             <div className="flex items-center space-x-2">
+              {/* Civic Credit Score Pill (Always Visible in Header) */}
+              <button
+                type="button"
+                onClick={() => setActiveNav("profile")}
+                className="px-2.5 py-1 rounded-lg bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 font-black text-xs flex items-center space-x-1.5 shadow-sm border border-amber-300 transition cursor-pointer"
+                title="Your Civic Credit Balance & Credibility - Click to view Audit Ledger"
+              >
+                <Star className="w-3.5 h-3.5 fill-amber-700 text-amber-900" />
+                <span className="font-mono">{citizenCredits} Cr</span>
+                <span className="text-[10px] bg-slate-950/15 text-slate-900 px-1 py-0.2 rounded font-bold font-mono">
+                  {credibilityScore}% Trust
+                </span>
+              </button>
+
               <div className="px-2.5 py-1 rounded bg-sky-800/90 border border-sky-400/40 text-[11px] font-medium text-sky-100 flex items-center">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
                 <span>Ward {detectedWard.ward_code}</span>
@@ -2615,6 +2650,47 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
             <div className="space-y-4 animate-fade-in">
               {renderWardBanner()}
               {renderTimetableAdvisory()}
+
+              {/* Civic Trust & Credit Score Summary Card on Home */}
+              <div className="civic-card rounded-2xl p-4 bg-gradient-to-r from-amber-500/15 via-amber-50/70 to-white border-2 border-amber-400 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center space-x-3.5">
+                  <div className="w-12 h-12 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black shadow-sm shrink-0 border border-amber-300">
+                    <Star className="w-6 h-6 fill-amber-700 text-amber-900" />
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-2 flex-wrap">
+                      <span className="text-xs font-black uppercase tracking-wider text-amber-900">
+                        {lang === "hi" ? "नागरिक साख व क्रेडिट स्कोर" : lang === "mr" ? "नागरी पत व क्रेडिट स्कोअर" : "Citizen Civic Credit & Trust Score"}
+                      </span>
+                      <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-amber-200 text-amber-900 border border-amber-300">
+                        ⭐ {citizenTier}
+                      </span>
+                    </div>
+                    <div className="flex items-baseline space-x-2 mt-0.5">
+                      <span className="text-2xl font-black text-slate-900 font-mono">{citizenCredits} Credits</span>
+                      <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">
+                        {credibilityScore}% Trust Credibility
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 mt-0.5">
+                      {lang === "hi"
+                        ? "सच्ची रिपोर्ट पर +25 क्रेडिट, झूठी रिपोर्ट पर -40 कटौती। फ़ास्ट-ट्रैक कतार उपलब्ध।"
+                        : lang === "mr"
+                        ? "खऱ्या तक्रारीवर +25 क्रेडिट, खोट्या तक्रारीवर -40 दंड. जलद कतार उपलब्ध."
+                        : "Genuine reports earn +25 Cr. False reports docked -40 Cr. Fast-track queue boost available."}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => setActiveNav("profile")}
+                    className="py-2 px-3.5 rounded-lg bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold text-xs flex items-center space-x-1.5 transition cursor-pointer shadow-xs"
+                  >
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>{lang === "mr" ? "क्रेडिट इतिहास पहा →" : "View Credit Ledger →"}</span>
+                  </button>
+                </div>
+              </div>
 
               {/* Emergency Call Webhook & JalMitra AI Banner */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -2708,20 +2784,45 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                         ETA {detectedWard.assigned_tanker.eta_mins}m
                       </span>
                     </div>
-                    <div className="text-sm font-black text-slate-900">
-                      Tanker {detectedWard.assigned_tanker.tanker_id}
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm font-black text-slate-900">
+                        Tanker {detectedWard.assigned_tanker.tanker_id}
+                      </div>
+                      <span className="font-mono text-[10px] font-bold text-slate-800 px-1.5 py-0.2 bg-white rounded border border-slate-300">
+                        {detectedWard.assigned_tanker.plate}
+                      </span>
                     </div>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
-                      {detectedWard.assigned_tanker.driver} · {detectedWard.standpost_name}
+                    <p className="text-[11px] text-slate-600 mt-1">
+                      Driver: <strong className="text-slate-800">{detectedWard.assigned_tanker.driver}</strong> · {detectedWard.standpost_name}
                     </p>
+                    {/* Tanker Credit Score Pill */}
+                    <div className="mt-2 p-1.5 rounded-lg bg-amber-100/70 border border-amber-300/80 flex items-center justify-between text-[10.5px]">
+                      <div className="flex items-center space-x-1 font-mono">
+                        <Star className="w-3.5 h-3.5 fill-amber-600 text-amber-800" />
+                        <span className="font-black text-amber-950">120 Cr</span>
+                        <span className="text-[9.5px] text-amber-800 font-bold">(Preferred Contractor)</span>
+                      </div>
+                      <span className="text-[9.5px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                        GPS Verified
+                      </span>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => setActiveNav("map")}
-                    className="mt-3 w-full py-1.5 px-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs flex items-center justify-center space-x-1 transition cursor-pointer shadow-2xs"
-                  >
-                    <Compass className="w-3.5 h-3.5" />
-                    <span>{lang === "mr" ? "थेट नकाशा पहा →" : "Track on Live Map →"}</span>
-                  </button>
+                  <div className="mt-3 flex items-center gap-1.5">
+                    <button
+                      onClick={() => setActiveNav("map")}
+                      className="flex-1 py-1.5 px-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs flex items-center justify-center space-x-1 transition cursor-pointer shadow-2xs"
+                    >
+                      <Compass className="w-3.5 h-3.5" />
+                      <span>{lang === "mr" ? "थेट नकाशा →" : "Live Map →"}</span>
+                    </button>
+                    <button
+                      onClick={() => handleOpenDriverReview({ tanker: detectedWard.assigned_tanker.tanker_id })}
+                      className="py-1.5 px-2 rounded-lg bg-white hover:bg-slate-50 text-[#0056b3] border border-sky-300 font-bold text-[11px] transition cursor-pointer shadow-2xs whitespace-nowrap"
+                      title="Rate Driver (Award +10 Cr) or File Grievance (-30 Cr)"
+                    >
+                      Rate / Grievance
+                    </button>
+                  </div>
                 </div>
 
                 {/* Card 2: Grievance Submission */}
@@ -2976,6 +3077,9 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
               <CitizenChatbot
                 lang={lang}
                 detectedWard={detectedWard}
+                citizenCredits={citizenCredits}
+                credibilityScore={credibilityScore}
+                phoneNumber={phoneNumber}
                 onOpenGrievance={() => setActiveNav("grievance")}
                 onOpenEmergencyModal={handleStartHelplineCall}
               />
@@ -3071,7 +3175,12 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
             {activeNav === "profile" && (
               <div className="absolute -top-1 w-8 h-1 bg-[#0056b3] rounded-full"></div>
             )}
-            <User className="w-4 h-4 mb-0.5" />
+            <div className="relative">
+              <User className="w-4 h-4 mb-0.5" />
+              <span className="absolute -top-1.5 -right-3.5 px-1 py-0.2 rounded-full bg-amber-400 text-[8px] text-slate-950 font-mono font-bold leading-none shadow-2xs border border-amber-300">
+                {citizenCredits}
+              </span>
+            </div>
             <span>{t.navProfile}</span>
           </button>
         </nav>

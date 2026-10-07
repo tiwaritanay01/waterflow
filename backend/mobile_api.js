@@ -1009,9 +1009,9 @@ router.post("/call/connect-officer", (req, res) => {
 // ---------------------------------------------------------------------------
 
 const GROQ_CANDIDATE_MODELS = [
-  process.env.GROQ_CHAT_MODEL || "qwen/qwen3.8-27b",
   "openai/gpt-oss-20b",
   "openai/gpt-oss-120b",
+  process.env.GROQ_CHAT_MODEL || "qwen/qwen3.8-27b",
 ];
 
 const JALMITRA_SYSTEM_PROMPT = `You are "JalMitra" (जलमित्र), the official AI Municipal Water Operations Assistant for Brihanmumbai Municipal Corporation (BMC / मनपा) Water Department.
@@ -1216,6 +1216,22 @@ REMEMBER: If the user input is nonsense or unrelated to water operations, polite
           generatedReply = `नमस्ते! वार्ड ${ward} (${wardData.name}) के लिए नल का पानी सुबह ${wardData.timetable} बजे निर्धारित है। अगर आज पानी नहीं आया है तो परेशान न हों, आप आपातकालीन टैंकर मंगा सकते हैं या हेल्पलाइन 8369978764 पर कॉल कर सकते हैं।`;
         } else {
           generatedReply = `Hello! Tap water for Ward ${ward} (${wardData.name}) is scheduled for ${wardData.timetable}. If your taps are currently dry, you can request an emergency relief tanker right here or call helpline 8369978764.`;
+        }
+      } else if (/priority|score|calculate|formula|कैलकुलेट|स्कोर|गुण|कसा/i.test(lastUserMsgLower)) {
+        if (currentLang === "mr") {
+          generatedReply = `प्राधान्य गुण (Priority Score) वॉटरफ्लो समता मॉडेलद्वारे मोजला जातो:\n• वॉर्ड संवेदनशीलता निर्देशांक (४०%)\n• नळ कोरडे राहण्याचा कालावधी (३५%)\n• ऐतिहासिक पाण्याचा तुटवडा (२५%)\n• चाळ लोकसंख्या आणि जल तक्रारी\n\nसर्वाधिक टंचाई असलेल्या भागांना आपत्कालीन टँकर वाटपात प्रथम प्राधान्य दिले जाते.`;
+        } else if (currentLang === "hi") {
+          generatedReply = `प्राथमिकता स्कोर (Priority Score) जल आवंटन समानता फॉर्मूले से तय होता है:\n• वार्ड संवेदनशीलता सूचकांक (40%)\n• नल सूखा रहने का समय (35%)\n• ऐतिहासिक जल अभाव प्रतिशत (25%)\n• आबादी घनत्व और नागरिक शिकायतें\n\nअधिक किल्लत वाले वार्डों को आपातकालीन राहत टैंकर कतार में शीर्ष स्थान मिलता है।`;
+        } else {
+          generatedReply = `Your Municipal Priority Score is calculated using the WaterFlow OS Equity Formula:\n• Ward Vulnerability Index: 40%\n• Dry-Pipe Hours: 35%\n• Historical Deficit %: 25%\n• Population Density & Spatially Corroborated Complaints.\n\nWards facing severe deficits receive highest ranking in the tanker dispatch queue.`;
+        }
+      } else if (/hello|hi|heeloo|hey|namaste|नमस्ते|नमस्कार/i.test(lastUserMsgLower)) {
+        if (currentLang === "mr") {
+          generatedReply = `नमस्कार! मी जलमित्र, मनपा (BMC) जल विभागाचा साहाय्यक आहे. मी वॉर्ड ${ward} पाणी पुरवठा वेळ, टँकर वाटप किंवा पाणी तक्रारीत कशी मदत करू?`;
+        } else if (currentLang === "hi") {
+          generatedReply = `नमस्ते! मैं जलमित्र, बीएमसी (BMC) जल विभाग का सहायक हूँ। मैं वार्ड ${ward} में जलापूर्ति समय, आपातकालीन टैंकर या पानी की समस्या में आपकी क्या मदद कर सकता हूँ?`;
+        } else {
+          generatedReply = `Hello! I am JalMitra, your official BMC Water Operations Assistant. How can I assist you with Ward ${ward} water supply timings, emergency tanker delivery, or reporting a shortage?`;
         }
       } else {
         if (currentLang === "mr") {

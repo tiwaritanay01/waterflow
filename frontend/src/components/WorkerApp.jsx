@@ -679,12 +679,22 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                   <Truck className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 flex-wrap">
                     <span className="text-sm font-bold text-slate-900 tracking-tight">
                       Tanker {mission.tanker_id}
                     </span>
                     <span className="font-mono text-[10px] bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-bold border border-slate-300">
                       {mission.license_plate}
+                    </span>
+                    <span className={`font-mono text-[10px] px-2 py-0.5 rounded font-black border flex items-center gap-1 ${
+                      isBlacklisted
+                        ? "bg-rose-100 text-rose-800 border-rose-300 animate-pulse"
+                        : driverCredits >= 90
+                        ? "bg-amber-100 text-amber-900 border-amber-300"
+                        : "bg-blue-100 text-blue-900 border-blue-300"
+                    }`}>
+                      <Star className="w-3 h-3 fill-current" />
+                      <span>{driverCredits} Cr ({isBlacklisted ? "Banned" : isPreferred ? "Preferred" : "Active"})</span>
                     </span>
                   </div>
                   <div className="text-xs text-slate-500 font-medium">

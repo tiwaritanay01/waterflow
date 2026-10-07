@@ -155,6 +155,32 @@ export default function LandingPage({
                 WaterFlow OS transforms municipal water governance across Mumbai’s 24 BMC wards. By analyzing real-time SCADA pressure, vulnerability indices, and citizen deficit reports, it guarantees mathematically equitable water distribution and coordinated emergency tanker dispatch.
               </p>
 
+              {/* CTAs */}
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <button
+                  onClick={() => onOpenPortalDirectly("command")}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-[#0056b3] text-white font-bold text-xs sm:text-sm hover:bg-sky-800 transition-all shadow-sm active:scale-95 cursor-pointer"
+                >
+                  <Activity className="w-4 h-4" />
+                  <span>Explore Live Command Center</span>
+                </button>
+
+                <button
+                  onClick={() => onOpenPortalDirectly("citizen")}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white text-sky-800 border border-sky-300 font-bold text-xs sm:text-sm hover:bg-sky-50 transition-all shadow-2xs active:scale-95 cursor-pointer"
+                >
+                  <Droplet className="w-4 h-4 text-sky-600" />
+                  <span>Citizen Water Portal (⭐ 145 Civic Credits)</span>
+                </button>
+
+                <button
+                  onClick={() => onOpenPortalDirectly("worker")}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white text-amber-800 border border-amber-300 font-bold text-xs sm:text-sm hover:bg-amber-50 transition-all shadow-2xs active:scale-95 cursor-pointer"
+                >
+                  <Truck className="w-4 h-4 text-amber-600" />
+                  <span>Worker Field Terminal (⭐ 120 Cr · T-08)</span>
+                </button>
+              </div>
 
               {/* Quick Auto-Detect Ward Action */}
               <div className="pt-1">

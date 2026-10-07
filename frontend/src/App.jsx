@@ -63,6 +63,7 @@ const NAV_ITEMS = [
   { id: "overview", label: "Live Overview", icon: LayoutDashboard },
   { id: "spatial", label: "GIS Spatial Dispatch", icon: Map },
   { id: "queue", label: "Allocation Queue", icon: ListOrdered, badge: null },
+  { id: "integrity", label: "Credit & Integrity Hub", icon: Award, suffix: "145/120 Cr" },
   { id: "governance", label: "Governance Gate", icon: ShieldAlert },
   { id: "resilience", label: "Network Resilience", icon: Network },
   { id: "sandbox", label: "Policy Sandbox", icon: Beaker },
@@ -227,7 +228,69 @@ function AppContent() {
   };
 
   const [fleetFilter, setFleetFilter] = useState("all");
+  const [integrityFilter, setIntegrityFilter] = useState("all");
+  const [integrityCitizenFilter, setIntegrityCitizenFilter] = useState("all");
   const [optimizerRunning, setOptimizerRunning] = useState(false);
+
+  // Citizen Directory State for Municipal Audit Gate
+  const [citizenDirectory, setCitizenDirectory] = useState([
+    {
+      phone: "+91 98200 12345",
+      name: "Aarav Sharma",
+      ward: "M/E",
+      credits: 145,
+      trust: 92,
+      tier: "Gold Civic Contributor",
+      ticketId: "WF-24-918",
+      reports: 5,
+      verified: 4,
+      false_reports: 0,
+      fast_track: true,
+      last_reason: "Verified genuine dry tap at Shivaji Nagar standpost #4",
+    },
+    {
+      phone: "+91 98334 88120",
+      name: "Priya Verma",
+      ward: "L",
+      credits: 25,
+      trust: 48,
+      tier: "Probationary Resident",
+      ticketId: "WF-24-942",
+      reports: 3,
+      verified: 1,
+      false_reports: 2,
+      fast_track: false,
+      last_reason: "Flagged false report: SCADA line pressure normal (2.4 bar)",
+    },
+    {
+      phone: "+91 99201 54321",
+      name: "Rohit Salvi",
+      ward: "G/N",
+      credits: 110,
+      trust: 85,
+      tier: "Silver Civic Contributor",
+      ticketId: "WF-24-884",
+      reports: 4,
+      verified: 3,
+      false_reports: 0,
+      fast_track: false,
+      last_reason: "Verified standpost valve leak repair on-site",
+    },
+    {
+      phone: "+91 97690 11223",
+      name: "Meera Joshi",
+      ward: "F/N",
+      credits: 160,
+      trust: 96,
+      tier: "Platinum Civic Guardian",
+      ticketId: "WF-24-771",
+      reports: 8,
+      verified: 8,
+      false_reports: 0,
+      fast_track: true,
+      last_reason: "Aadhaar verified community standpost leader",
+    },
+  ]);
 
   // Admin: Review citizen complaint (verify genuine +25 Cr or downvote false -40 Cr)
   const handleReviewCitizenReport = async (phone, ticketId, action) => {
@@ -252,11 +315,55 @@ function AppContent() {
             ? `✓ Citizen report #${ticketId} verified genuine! Awarded +25 Civic Credits. New Trust Score: ${json.profile.credibility_score}%.`
             : `⚠️ Citizen report #${ticketId} flagged FALSE! Downvoted -40 Civic Credits. New Trust Score: ${json.profile.credibility_score}%.`,
         });
+
+        // Update local directory in real-time
+        setCitizenDirectory((prev) =>
+          prev.map((c) => {
+            if (c.phone === phone || c.ticketId === ticketId) {
+              const delta = action === "VERIFY_GENUINE" ? 25 : -40;
+              const newCreds = json.profile?.credit_balance ?? Math.max(0, c.credits + delta);
+              const newTrust = json.profile?.credibility_score ?? (action === "VERIFY_GENUINE" ? Math.min(100, c.trust + 4) : Math.max(10, c.trust - 24));
+              return {
+                ...c,
+                credits: newCreds,
+                trust: newTrust,
+                tier: json.profile?.tier ?? (newCreds >= 150 ? "Platinum Civic Guardian" : newCreds >= 100 ? "Gold Civic Contributor" : newCreds >= 50 ? "Silver Civic Contributor" : "Probationary Resident"),
+                verified: action === "VERIFY_GENUINE" ? c.verified + 1 : c.verified,
+                false_reports: action === "DOWNVOTE_FALSE" ? c.false_reports + 1 : c.false_reports,
+                last_reason: action === "VERIFY_GENUINE" ? "Verified genuine shortage report by Ward Engineer (+25 Cr)" : "Flagged false report via acoustic telemetry (-40 Cr)",
+              };
+            }
+            return c;
+          })
+        );
+
         setTimeout(() => setDispatchNotification(null), 8000);
       }
     } catch (e) {
       console.warn("Review complaint error:", e);
     }
+  };
+
+  const handleFastTrackCitizenAdmin = (phone, ticketId) => {
+    setCitizenDirectory((prev) =>
+      prev.map((c) => {
+        if (c.phone === phone || c.ticketId === ticketId) {
+          const newCreds = Math.max(0, c.credits - 20);
+          return {
+            ...c,
+            credits: newCreds,
+            fast_track: true,
+            last_reason: "Fast-Track Priority Boost redeemed (-20 Cr)",
+          };
+        }
+        return c;
+      })
+    );
+    setDispatchNotification({
+      type: "info",
+      message: `⚡ Fast-Track booster activated for ticket #${ticketId}. -20 Credits redeemed from citizen balance.`,
+    });
+    setTimeout(() => setDispatchNotification(null), 8000);
   };
 
   // Admin: Record driver infraction (route diversion -25, gps tamper -35, illegal sale -60)
@@ -518,22 +625,39 @@ function AppContent() {
           <button
             onClick={() => setPortalMode("citizen")}
             className="px-2 sm:px-2.5 py-1 rounded-md transition-all flex items-center space-x-1 sm:space-x-1.5 text-sec-text hover:text-deep-blue"
-            title="Citizen Portal"
+            title="Citizen Water Portal (⭐ 145 Civic Credits)"
           >
             <Smartphone className="w-3.5 h-3.5 text-vibrant-blue" />
-            <span className="hidden sm:inline">Citizen Portal</span>
-            <span className="sm:hidden text-[11px]">Citizen</span>
+            <span className="hidden sm:inline">Citizen Portal (⭐ 145 Cr)</span>
+            <span className="sm:hidden text-[11px]">Citizen (145 Cr)</span>
           </button>
           <button
             onClick={() => setPortalMode("worker")}
             className="px-2 sm:px-2.5 py-1 rounded-md transition-all flex items-center space-x-1 sm:space-x-1.5 text-sec-text hover:text-deep-blue"
-            title="Worker Portal"
+            title="Worker Terminal (⭐ 120 Cr · MH-03-BW-7821)"
           >
             <Truck className="w-3.5 h-3.5 text-warm-amber" />
-            <span className="hidden sm:inline">Worker Portal</span>
-            <span className="sm:hidden text-[11px]">Worker</span>
+            <span className="hidden sm:inline">Worker Portal (⭐ 120 Cr)</span>
+            <span className="sm:hidden text-[11px]">Worker (120 Cr)</span>
           </button>
         </div>
+
+        {/* Top Header Integrity Hub Quick Pill */}
+        <button
+          onClick={() => setActiveTab("integrity")}
+          className={`hidden xl:flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition shadow-2xs cursor-pointer ${
+            activeTab === "integrity"
+              ? "bg-amber-400 text-slate-950 font-black border border-amber-300 shadow-xs"
+              : "bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300"
+          }`}
+          title="Inspect Citizen Civic Credits & Tanker Fleet Integrity Matrix"
+        >
+          <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-700" />
+          <span>Civic &amp; Tanker Credits</span>
+          <span className="text-[10px] bg-amber-200/90 text-amber-950 px-1 py-0.2 rounded font-mono font-black">
+            145 / 120 Cr
+          </span>
+        </button>
 
         {/* Right: Controls */}
         <div className="flex items-center space-x-1 sm:space-x-2">
@@ -694,6 +818,11 @@ function AppContent() {
                           {queueCount}
                         </span>
                       )}
+                      {item.id === "integrity" && (
+                        <span className="px-1.5 py-0.5 bg-amber-400 text-slate-950 text-[10px] font-black rounded-full shadow-2xs font-mono">
+                          ⭐ 145 / 120 Cr
+                        </span>
+                      )}
                       {item.id === "governance" && govPending > 0 && (
                         <span className="px-1.5 py-0.5 bg-crit-red text-white text-[10px] font-bold rounded-full animate-pulse">
                           {govPending}
@@ -815,6 +944,11 @@ function AppContent() {
                     {item.id === "queue" && (
                       <span className="px-1.5 py-0.5 bg-warm-amber text-white text-[10px] font-bold rounded-full">
                         {queueCount}
+                      </span>
+                    )}
+                    {item.id === "integrity" && (
+                      <span className="px-1.5 py-0.5 bg-amber-400 text-slate-950 text-[10px] font-black rounded-full shadow-2xs font-mono">
+                        ⭐ 145 / 120 Cr
                       </span>
                     )}
                     {item.id === "governance" && govPending > 0 && (
@@ -1269,6 +1403,375 @@ function AppContent() {
                 </div>
               </div>
             )}
+
+            {/* TAB: Credit & Integrity Operations Hub */}
+            {activeTab === "integrity" && (() => {
+              const allTankers = (tankers && tankers.length > 0) ? tankers : DEFAULT_MUMBAI_TANKERS;
+              const preferredTankers = allTankers.filter(t => t.is_preferred || (t.credit_balance || 100) >= 90);
+              const blacklistedTankers = allTankers.filter(t => t.is_blacklisted || (t.credit_balance || 100) < 30);
+
+              const filteredCitizens = citizenDirectory.filter(c => {
+                if (integrityCitizenFilter === "gold") return c.credits >= 100;
+                if (integrityCitizenFilter === "probationary") return c.credits < 50;
+                if (integrityCitizenFilter === "fast_track") return c.fast_track;
+                return true;
+              });
+
+              return (
+                <div className="h-full w-full bg-white rounded-xl border border-card-border shadow-sm flex flex-col overflow-hidden p-3 animate-fade-in">
+                  {/* Header Strip */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-card-border shrink-0 gap-2">
+                    <div>
+                      <h3 className="font-extrabold text-sm text-head-text flex items-center space-x-2">
+                        <Award className="w-4.5 h-4.5 text-amber-500" />
+                        <span>Municipal Credit &amp; Integrity Operations Center</span>
+                      </h3>
+                      <p className="text-[11px] text-sec-text">
+                        Dual-Sided Accountability: Citizen credibility audit (+25 Cr genuine, -40 Cr false) &amp; Municipal tanker contractor integrity (⭐ 120 Cr preferred, ⛔ &lt;30 Cr contract revocation).
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="px-2.5 py-1 bg-amber-50 text-amber-900 border border-amber-300 text-xs font-bold rounded-lg flex items-center space-x-1 shadow-2xs font-mono">
+                        <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-700" />
+                        <span>Active Citizen: 145 Cr · Preferred Fleet: 120 Cr</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Summary Metric Strip */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 my-2 shrink-0">
+                    <div className="p-2.5 bg-gradient-to-br from-amber-50 to-white rounded-lg border border-amber-300">
+                      <div className="text-[9.5px] font-bold text-amber-900 uppercase">⭐ Resident Aarav Sharma</div>
+                      <div className="text-base font-black text-amber-950 font-mono mt-0.5">145 Civic Credits</div>
+                      <div className="text-[10px] text-emerald-700 font-bold mt-0.5">92% Trust Score (Gold Contributor)</div>
+                    </div>
+                    <div className="p-2.5 bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200">
+                      <div className="text-[9.5px] font-bold text-deep-blue uppercase">🚚 Tanker T-08 (MH-03-BW-7821)</div>
+                      <div className="text-base font-black text-deep-blue font-mono mt-0.5">120 Credits</div>
+                      <div className="text-[10px] text-emerald-700 font-bold mt-0.5">⭐ Preferred Municipal Contractor</div>
+                    </div>
+                    <div className="p-2.5 bg-gradient-to-br from-rose-50 to-white rounded-lg border border-rose-300">
+                      <div className="text-[9.5px] font-bold text-rose-800 uppercase">⛔ Banned Tanker (MH-02-OP-5012)</div>
+                      <div className="text-base font-black text-rose-900 font-mono mt-0.5">20 Credits (&lt;30 Cr)</div>
+                      <div className="text-[10px] text-rose-700 font-bold mt-0.5">Contract Revoked / Water Barred</div>
+                    </div>
+                    <div className="p-2.5 bg-gradient-to-br from-slate-50 to-white rounded-lg border border-card-border">
+                      <div className="text-[9.5px] font-bold text-sec-text uppercase">⚖️ Anti-Fraud Balance Policy</div>
+                      <div className="text-xs font-bold text-head-text font-mono mt-0.5">+25 Genuine / -40 False</div>
+                      <div className="text-[10px] text-sec-text mt-0.5">-25 Route / -35 GPS / -60 Bribe</div>
+                    </div>
+                  </div>
+
+                  {/* Top-Level Filter Tabs */}
+                  <div className="flex items-center space-x-1.5 pb-2 shrink-0 border-b border-card-border text-xs">
+                    <button
+                      onClick={() => setIntegrityFilter("all")}
+                      className={`px-3 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        integrityFilter === "all"
+                          ? "bg-deep-blue text-white shadow-2xs"
+                          : "bg-slate-100 text-sec-text hover:bg-slate-200"
+                      }`}
+                    >
+                      Unified Directory (Split View)
+                    </button>
+                    <button
+                      onClick={() => setIntegrityFilter("citizens")}
+                      className={`px-3 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        integrityFilter === "citizens"
+                          ? "bg-deep-blue text-white shadow-2xs"
+                          : "bg-slate-100 text-sec-text hover:bg-slate-200"
+                      }`}
+                    >
+                      👤 Citizen Civic Trust Register ({citizenDirectory.length})
+                    </button>
+                    <button
+                      onClick={() => setIntegrityFilter("tankers")}
+                      className={`px-3 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        integrityFilter === "tankers"
+                          ? "bg-deep-blue text-white shadow-2xs"
+                          : "bg-slate-100 text-sec-text hover:bg-slate-200"
+                      }`}
+                    >
+                      🚚 Municipal Tanker Fleet &amp; Blacklist ({allTankers.length})
+                    </button>
+                  </div>
+
+                  {/* Body Content */}
+                  <div className="flex-1 min-h-0 overflow-y-auto custom-scroll mt-2 space-y-4">
+                    {/* SECTION 1: CITIZEN CREDIBILITY & ANTI-FRAUD DIRECTORY */}
+                    {(integrityFilter === "all" || integrityFilter === "citizens") && (
+                      <div className="rounded-xl border border-card-border p-3 bg-slate-50/50 space-y-2.5">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-2 border-b border-card-border">
+                          <div>
+                            <h4 className="font-bold text-xs text-head-text flex items-center space-x-1.5">
+                              <UserIcon className="w-3.5 h-3.5 text-deep-blue" />
+                              <span>Citizen Credibility Ledger &amp; Anti-Fraud Gate</span>
+                            </h4>
+                            <p className="text-[10px] text-sec-text">
+                              Residents with verified genuine reports receive +25 Civic Credits. False complaints detected via ultrasonic flowmeter logs lose -40 Credits.
+                            </p>
+                          </div>
+                          <div className="flex items-center space-x-1 text-[10px]">
+                            <button
+                              onClick={() => setIntegrityCitizenFilter("all")}
+                              className={`px-2 py-0.5 rounded font-bold transition ${
+                                integrityCitizenFilter === "all" ? "bg-deep-blue text-white" : "bg-white text-sec-text border border-slate-300"
+                              }`}
+                            >
+                              All Residents
+                            </button>
+                            <button
+                              onClick={() => setIntegrityCitizenFilter("gold")}
+                              className={`px-2 py-0.5 rounded font-bold transition ${
+                                integrityCitizenFilter === "gold" ? "bg-amber-500 text-slate-950 font-black" : "bg-white text-sec-text border border-slate-300"
+                              }`}
+                            >
+                              ⭐ Gold Tier (&ge;100 Cr)
+                            </button>
+                            <button
+                              onClick={() => setIntegrityCitizenFilter("probationary")}
+                              className={`px-2 py-0.5 rounded font-bold transition ${
+                                integrityCitizenFilter === "probationary" ? "bg-rose-600 text-white font-black" : "bg-white text-sec-text border border-slate-300"
+                              }`}
+                            >
+                              ⚠️ Flagged (&lt;50 Cr)
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-xs min-w-[750px]">
+                            <thead className="bg-white text-sec-text border-b border-card-border">
+                              <tr>
+                                <th className="py-2 px-3">Citizen Contact</th>
+                                <th className="py-2 px-3">Ward &amp; Status</th>
+                                <th className="py-2 px-3">Civic Credit Score</th>
+                                <th className="py-2 px-3">Trust Credibility</th>
+                                <th className="py-2 px-3">Report History</th>
+                                <th className="py-2 px-3">Latest Audit Reason</th>
+                                <th className="py-2 px-3 text-right">Admin Verification Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-card-border bg-white">
+                              {filteredCitizens.map((citizen) => (
+                                <tr key={citizen.phone} className="hover:bg-slate-50/80 transition-colors">
+                                  <td className="py-2.5 px-3">
+                                    <div className="font-bold text-slate-900">{citizen.name}</div>
+                                    <div className="text-[10px] font-mono text-sec-text">{citizen.phone}</div>
+                                  </td>
+                                  <td className="py-2.5 px-3">
+                                    <span className="font-bold text-deep-blue">Ward {citizen.ward}</span>
+                                    <span className="block text-[9.5px] text-sec-text font-medium">{citizen.tier}</span>
+                                  </td>
+                                  <td className="py-2.5 px-3">
+                                    <div className="flex items-center space-x-1.5 font-mono">
+                                      <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-700" />
+                                      <span className={`font-black text-sm ${citizen.credits >= 100 ? "text-amber-800" : citizen.credits < 50 ? "text-rose-600" : "text-deep-blue"}`}>
+                                        {citizen.credits} Cr
+                                      </span>
+                                    </div>
+                                    {citizen.fast_track && (
+                                      <span className="text-[9px] font-bold bg-amber-100 text-amber-900 px-1 py-0.2 rounded font-mono block mt-0.5">
+                                        ⚡ Fast-Track Used (-20)
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td className="py-2.5 px-3">
+                                    <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold font-mono ${
+                                      citizen.trust >= 80 ? "bg-emerald-100 text-emerald-800" : citizen.trust >= 50 ? "bg-amber-100 text-amber-800" : "bg-rose-100 text-rose-800"
+                                    }`}>
+                                      {citizen.trust}% Trust
+                                    </span>
+                                  </td>
+                                  <td className="py-2.5 px-3 text-[10px] font-mono">
+                                    <span className="text-emerald-700 font-bold">{citizen.verified} Verified</span>
+                                    {citizen.false_reports > 0 && (
+                                      <span className="text-rose-600 font-bold ml-1.5">({citizen.false_reports} Flagged False)</span>
+                                    )}
+                                  </td>
+                                  <td className="py-2.5 px-3 text-[10px] text-sec-text max-w-[200px] truncate" title={citizen.last_reason}>
+                                    {citizen.last_reason}
+                                  </td>
+                                  <td className="py-2.5 px-3 text-right">
+                                    <div className="flex items-center justify-end space-x-1.5">
+                                      <button
+                                        onClick={() => handleReviewCitizenReport(citizen.phone, citizen.ticketId, "VERIFY_GENUINE")}
+                                        className="px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] transition cursor-pointer shadow-2xs whitespace-nowrap"
+                                        title="Verify genuine report: Awards +25 Civic Credits"
+                                      >
+                                        ✓ Verify (+25)
+                                      </button>
+                                      <button
+                                        onClick={() => handleReviewCitizenReport(citizen.phone, citizen.ticketId, "DOWNVOTE_FALSE")}
+                                        className="px-2 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] transition cursor-pointer shadow-2xs whitespace-nowrap"
+                                        title="Flag fabricated report: Penalizes -40 Civic Credits"
+                                      >
+                                        ⚠️ Flag (-40)
+                                      </button>
+                                      <button
+                                        onClick={() => handleFastTrackCitizenAdmin(citizen.phone, citizen.ticketId)}
+                                        className="px-1.5 py-1 rounded bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold text-[10px] transition cursor-pointer shadow-2xs whitespace-nowrap"
+                                        title="Redeem Fast-Track Boost (-20 Credits)"
+                                      >
+                                        ⚡ Boost (-20)
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SECTION 2: TANKER FLEET INTEGRITY & BLACKLIST MATRIX */}
+                    {(integrityFilter === "all" || integrityFilter === "tankers") && (
+                      <div className="rounded-xl border border-card-border p-3 bg-slate-50/50 space-y-2.5">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-2 border-b border-card-border">
+                          <div>
+                            <h4 className="font-bold text-xs text-head-text flex items-center space-x-1.5">
+                              <Truck className="w-3.5 h-3.5 text-deep-blue" />
+                              <span>Municipal Tanker Fleet Integrity &amp; Contractor Blacklist Matrix</span>
+                            </h4>
+                            <p className="text-[10px] text-sec-text">
+                              Contractors falling below 30 credits are permanently blacklisted from municipal water delivery contracts. Handover valves locked until audited.
+                            </p>
+                          </div>
+                          <span className="text-[10px] font-mono font-bold bg-amber-50 text-amber-900 border border-amber-300 px-2 py-0.5 rounded">
+                            Threshold: &lt; 30 Cr = Contract Revoked
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                          {allTankers.map((tanker) => {
+                            const tankerKey = tanker.transponder_id || tanker.tanker_id;
+                            const isBlacklisted = tanker.is_blacklisted || (tanker.credit_balance !== undefined && tanker.credit_balance < 30);
+                            const credits = tanker.credit_balance !== undefined ? tanker.credit_balance : (isBlacklisted ? 20 : 100);
+
+                            return (
+                              <div
+                                key={tankerKey}
+                                className={`p-3 rounded-xl border transition-all shadow-2xs flex flex-col justify-between ${
+                                  isBlacklisted
+                                    ? "bg-rose-50/70 border-rose-400 ring-1 ring-rose-400/50"
+                                    : tanker.is_preferred || credits >= 90
+                                    ? "bg-amber-50/30 border-amber-300 ring-1 ring-amber-300/40"
+                                    : "bg-white border-card-border hover:border-blue-300"
+                                }`}
+                              >
+                                <div>
+                                  <div className="flex items-start justify-between">
+                                    <div>
+                                      <div className="flex items-center space-x-1.5 flex-wrap">
+                                        <span className="font-mono font-black text-sm text-head-text">{tanker.transponder_id}</span>
+                                        <span className="text-[10px] font-mono font-bold text-slate-800 px-1.5 py-0.2 bg-white rounded border border-slate-300 shadow-2xs">
+                                          {tanker.plate || "MH-01-M-4491"}
+                                        </span>
+                                      </div>
+                                      <div className="text-[11px] text-sec-text mt-0.5">
+                                        Driver: <strong className="text-head-text">{tanker.driver}</strong>
+                                      </div>
+                                    </div>
+
+                                    <div className="text-right">
+                                      {isBlacklisted ? (
+                                        <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-rose-600 text-white font-mono animate-pulse block">
+                                          ⛔ Blacklisted
+                                        </span>
+                                      ) : tanker.is_preferred || credits >= 90 ? (
+                                        <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 font-mono block">
+                                          ⭐ Preferred Tier
+                                        </span>
+                                      ) : (
+                                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold text-slate-700 bg-slate-100 border border-slate-200 font-mono block">
+                                          Standard Tier
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Integrity Metric Strip */}
+                                  <div className="flex items-center justify-between bg-white p-2 rounded-lg border border-slate-200 mt-2 text-[10px] font-mono">
+                                    <div className="flex items-center space-x-1">
+                                      <span className="text-sec-text">Credits:</span>
+                                      <strong className={`text-xs ${isBlacklisted ? "text-rose-600 font-black" : credits >= 90 ? "text-amber-700 font-black" : "text-deep-blue font-bold"}`}>
+                                        {credits} Cr
+                                      </strong>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <span className="text-sec-text">GPS:</span>
+                                      <span className={`font-bold ${tanker.telemetry_status === "offline" || tanker.telemetry_status === "TAMPER_DETECTED" ? "text-rose-600" : "text-emerald-700"}`}>
+                                        {tanker.telemetry_status === "offline" || tanker.telemetry_status === "TAMPER_DETECTED" ? "⚠️ Cut" : "Online"}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <span className="text-sec-text">Route:</span>
+                                      <span className={`font-bold ${tanker.route_status === "diverted" ? "text-rose-600" : "text-emerald-700"}`}>
+                                        {tanker.route_status === "diverted" ? "Diverted" : "On Route"}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  {isBlacklisted && tanker.blacklist_reason && (
+                                    <p className="text-[10px] text-rose-800 bg-rose-100/60 p-1.5 rounded border border-rose-200 mt-2 font-medium leading-tight">
+                                      ⚠️ {tanker.blacklist_reason}
+                                    </p>
+                                  )}
+                                </div>
+
+                                {/* Simulation Controls */}
+                                <div className="mt-2.5 pt-2 border-t border-slate-200">
+                                  {isBlacklisted ? (
+                                    <button
+                                      onClick={() => handleToggleBlacklistAdmin(tankerKey, true)}
+                                      className="w-full py-1.5 px-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] transition cursor-pointer shadow-2xs"
+                                    >
+                                      ✓ Re-Instate Contract &amp; Reset to 50 Cr
+                                    </button>
+                                  ) : (
+                                    <div className="grid grid-cols-2 gap-1 text-[10px]">
+                                      <button
+                                        onClick={() => handleDriverInfractionAdmin(tankerKey, "ROUTE_DIVERSION", "Deviated from PostGIS corridor")}
+                                        className="px-1.5 py-1 rounded bg-slate-100 hover:bg-rose-100 text-slate-800 hover:text-rose-800 border border-slate-200 font-bold transition cursor-pointer"
+                                        title="Simulate Route Diversion (-25 Cr)"
+                                      >
+                                        Divert (-25)
+                                      </button>
+                                      <button
+                                        onClick={() => handleDriverInfractionAdmin(tankerKey, "GPS_TAMPER", "Transponder cut reported")}
+                                        className="px-1.5 py-1 rounded bg-slate-100 hover:bg-rose-100 text-slate-800 hover:text-rose-800 border border-slate-200 font-bold transition cursor-pointer"
+                                        title="Simulate GPS Tamper (-35 Cr)"
+                                      >
+                                        Cut GPS (-35)
+                                      </button>
+                                      <button
+                                        onClick={() => handleDriverInfractionAdmin(tankerKey, "ILLEGAL_WATER_SALE", "Vigilance alert: Selling relief water")}
+                                        className="px-1.5 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white font-black transition cursor-pointer shadow-2xs"
+                                        title="Report Illegal Sale (-60 Cr & Auto-Blacklist)"
+                                      >
+                                        Bribe (-60)
+                                      </button>
+                                      <button
+                                        onClick={() => handleDriverRewardAdmin(tankerKey, "ON_TIME_DELIVERY", "On-time arrival praise")}
+                                        className="px-1.5 py-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold transition cursor-pointer shadow-2xs"
+                                        title="Award On-Time Delivery (+15 Cr)"
+                                      >
+                                        Reward (+15)
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* TAB: Complaint & Forecast (Phase 17 — Live Time-Series Backend Pipeline) */}
             {activeTab === "forecast" && (() => {
