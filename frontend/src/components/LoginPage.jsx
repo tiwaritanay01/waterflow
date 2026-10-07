@@ -19,11 +19,16 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
-export default function LoginPage({ onNavigateToLanding, onLoginSuccess }) {
+export default function LoginPage({ onNavigateToLanding, onLoginSuccess, initialTab = "citizen" }) {
   const { login, loginAsArchetype, loading } = useAuth();
 
   // Active Role Tab: "citizen" | "engineer" | "driver"
-  const [activeTab, setActiveTab] = useState("citizen");
+  const getInitialActiveTab = () => {
+    if (initialTab === "command") return "engineer";
+    if (initialTab === "worker") return "driver";
+    return "citizen";
+  };
+  const [activeTab, setActiveTab] = useState(getInitialActiveTab());
   const [lang, setLang] = useState("en");
 
   // Form inputs

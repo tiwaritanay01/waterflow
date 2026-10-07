@@ -278,6 +278,7 @@ function AppContent() {
   if (!isAuthenticated && view === "login") {
     return (
       <LoginPage
+        initialTab={portalMode}
         onNavigateToLanding={() => setView("landing")}
         onLoginSuccess={(userRole) => {
           setView("portal");
