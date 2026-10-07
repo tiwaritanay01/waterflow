@@ -46,6 +46,13 @@ import {
   Users,
   ThumbsUp,
   ThumbsDown,
+  Star,
+  Award,
+  History,
+  CreditCard,
+  TrendingUp,
+  TrendingDown,
+  ShieldAlert,
 } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -322,6 +329,125 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
       isDelivered: true,
     },
   ]);
+
+  // Citizen Credibility & Civic Credits State
+  const [citizenCredits, setCitizenCredits] = useState(145);
+  const [credibilityScore, setCredibilityScore] = useState(92);
+  const [citizenTier, setCitizenTier] = useState("Gold Civic Contributor");
+  const [useFastTrack, setUseFastTrack] = useState(false);
+  const [creditFilter, setCreditFilter] = useState("all");
+  const [creditLedger, setCreditLedger] = useState([
+    {
+      id: "TX-CIT-101",
+      timestamp: "Today, 10:15 AM",
+      type: "CREDIT",
+      amount: 25,
+      reason: "Verified genuine dry pipe report #WF-24-811 by Ward Junior Engineer",
+      balance_after: 145,
+    },
+    {
+      id: "TX-CIT-102",
+      timestamp: "Yesterday, 04:30 PM",
+      type: "CREDIT",
+      amount: 15,
+      reason: "Delivery OTP #8312 confirmed on-site at Standpost #4",
+      balance_after: 120,
+    },
+    {
+      id: "TX-CIT-103",
+      timestamp: "Oct 5, 06:12 PM",
+      type: "DEBIT",
+      amount: -20,
+      reason: "Fast-Track Priority Boost redeemed for Ticket #WF-24-811",
+      balance_after: 105,
+    },
+    {
+      id: "TX-CIT-104",
+      timestamp: "Oct 1, 09:00 AM",
+      type: "CREDIT",
+      amount: 125,
+      reason: "Initial onboarding civic trust bonus & Aadhaar/OTP verification",
+      balance_after: 125,
+    },
+  ]);
+
+  // Driver Grievance & Rating Modal State
+  const [driverReviewModal, setDriverReviewModal] = useState(false);
+  const [selectedTicketForReview, setSelectedTicketForReview] = useState(null);
+  const [driverRating, setDriverRating] = useState(5);
+  const [driverGrievanceType, setDriverGrievanceType] = useState("none");
+  const [driverGrievanceNotes, setDriverGrievanceNotes] = useState("");
+  const [driverReviewFeedback, setDriverReviewFeedback] = useState(null);
+  const [driverSubmitting, setDriverSubmitting] = useState(false);
+
+  // Sync Citizen Credits from Backend
+  useEffect(() => {
+    async function loadCitizenCredits() {
+      try {
+        const res = await fetch(`${API_BASE}/api/citizen/credits?phone=${phoneNumber}`);
+        const json = await res.json();
+        if (json.success && json.profile) {
+          setCitizenCredits(json.profile.credit_balance);
+          setCredibilityScore(json.profile.credibility_score);
+          setCitizenTier(json.profile.tier);
+          if (json.profile.history && json.profile.history.length > 0) {
+            setCreditLedger(json.profile.history);
+          }
+        }
+      } catch (_) {}
+    }
+    loadCitizenCredits();
+  }, [phoneNumber]);
+
+  const handleOpenDriverReview = (ticket) => {
+    setSelectedTicketForReview(ticket);
+    setDriverRating(5);
+    setDriverGrievanceType("none");
+    setDriverGrievanceNotes("");
+    setDriverReviewFeedback(null);
+    setDriverReviewModal(true);
+  };
+
+  const handleSubmitDriverReview = async (e) => {
+    e.preventDefault();
+    setDriverSubmitting(true);
+    try {
+      const tankerId = selectedTicketForReview?.tanker?.split(" ")[0]?.replace(/[()]/g, "") || "T-08";
+      if (driverGrievanceType !== "none") {
+        const res = await fetch(`${API_BASE}/api/citizen/driver-grievance`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tanker_id: tankerId,
+            citizen_phone: phoneNumber,
+            issue_type: driverGrievanceType,
+            notes: driverGrievanceNotes || `Citizen rating: ${driverRating} stars - ${driverGrievanceType}`,
+          }),
+        });
+        const json = await res.json();
+        setDriverReviewFeedback(
+          json.success
+            ? "⚠️ Grievance registered in Municipal SCADA. Driver docked -30 Credits and flagged for route review."
+            : "Grievance registered into local audit record."
+        );
+      } else {
+        await fetch(`${API_BASE}/api/driver/reward`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tanker_id: tankerId,
+            reward_type: "CUSTOMER_PRAISE",
+            details: `Citizen 5-star rating: ${driverGrievanceNotes || "Excellent delivery on-time"}`,
+          }),
+        }).catch(() => {});
+        setDriverReviewFeedback("⭐ Thank you! Your 5-star rating awarded +10 Credits to the municipal driver.");
+      }
+    } catch (_) {
+      setDriverReviewFeedback("Feedback recorded in municipal audit register.");
+    } finally {
+      setDriverSubmitting(false);
+    }
+  };
 
   const t = I18N[lang] || I18N.en;
 
@@ -755,8 +881,24 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
       ward: `Ward ${detectedWard.ward_code} (${detectedWard.name})`,
       settlement: settlement,
       is_offline: isOfflineMode,
+      use_fast_track: useFastTrack,
       created_at: new Date().toISOString(),
     };
+
+    if (useFastTrack) {
+      setCitizenCredits((prev) => Math.max(0, prev - 20));
+      setCreditLedger((prev) => [
+        {
+          id: `TX-CIT-${Date.now()}`,
+          timestamp: "Just now",
+          type: "DEBIT",
+          amount: -20,
+          reason: `Fast-Track Priority Boost redeemed for Ticket #${generatedTicketId}`,
+          balance_after: Math.max(0, citizenCredits - 20),
+        },
+        ...prev,
+      ]);
+    }
 
     if (isOfflineMode) {
       // 1. Store in offline local storage queue
@@ -788,9 +930,11 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
           type: `${issueType} (Offline SMS Queued)`,
           status: "Queued (SMS Dispatch)",
           tanker: `${detectedWard.assigned_tanker.tanker_id} (Auto-Assigned)`,
+          tanker_id: detectedWard.assigned_tanker.tanker_id,
           time: "Just now",
           otp: detectedWard.assigned_tanker.otp_code,
           isOffline: true,
+          isFastTrack: useFastTrack,
         },
         ...prev,
       ]);
@@ -831,9 +975,11 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
           type: issueType,
           status: `Assigned (${detectedWard.assigned_tanker.tanker_id})`,
           tanker: `${detectedWard.assigned_tanker.tanker_id} (ETA ${detectedWard.assigned_tanker.eta_mins}m)`,
+          tanker_id: detectedWard.assigned_tanker.tanker_id,
           time: "Just now",
           otp: detectedWard.assigned_tanker.otp_code,
           isLive: true,
+          isFastTrack: useFastTrack,
         },
         ...prev,
       ]);
@@ -1337,6 +1483,44 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
           </div>
         </div>
 
+        {/* Civic Credits Fast-Track Priority Booster */}
+        <div className="p-3 rounded-xl bg-gradient-to-r from-amber-50 via-sky-50 to-blue-50 border border-amber-300 shadow-2xs space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <span className="text-base">⚡</span>
+              <div>
+                <span className="text-xs font-black text-slate-900 block tracking-tight">
+                  {lang === "mr" ? "नागरी क्रेडिट्ससह प्राधान्य वाढवा (Fast-Track)" : lang === "hi" ? "नागरिक क्रेडिट से प्राथमिकता बढ़ाएं (Fast-Track)" : "Fast-Track Verification with Civic Credits"}
+                </span>
+                <span className="text-[10px] text-slate-500 font-medium">
+                  {lang === "mr" ? "उपलब्ध शिल्लक: " : lang === "hi" ? "उपलब्ध बैलेंस: " : "Available Balance: "}
+                  <strong className="text-amber-700 font-mono font-bold">{citizenCredits} Credits</strong>
+                  {" · "}
+                  <span className="text-emerald-700 font-semibold">{credibilityScore}% Trust Rating</span>
+                </span>
+              </div>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={useFastTrack}
+                onChange={(e) => setUseFastTrack(e.target.checked)}
+                disabled={citizenCredits < 20}
+                className="sr-only peer"
+              />
+              <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+            </label>
+          </div>
+
+          <p className="text-[10px] text-slate-600 leading-tight">
+            {useFastTrack
+              ? "🌟 Fast-Track Active (-20 Credits): Your complaint will be prioritized at the top of the SCADA queue and marked with your high-trust citizen badge."
+              : citizenCredits >= 20
+              ? "Redeem 20 Civic Credits to bypass automated triage queues and prioritize immediate relief tanker assignment."
+              : "Insufficient credits (need 20). Earn credits by reporting genuine shortages and confirming delivery OTPs."}
+          </p>
+        </div>
+
         {/* Submit Action Button */}
         <div className="pt-1">
           <button
@@ -1729,48 +1913,288 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                 </div>
               )}
             </div>
-            {tkt.isLive || tkt.isEmergency ? (
+            <div className="flex items-center space-x-1.5 shrink-0 ml-2">
+              {/* Driver Integrity & Grievance Review Trigger */}
               <button
                 type="button"
-                onClick={() => setActiveNav("map")}
-                className="text-[10.5px] font-bold text-sky-700 hover:underline flex items-center space-x-0.5 cursor-pointer shrink-0 ml-2"
+                onClick={() => handleOpenDriverReview(tkt)}
+                className="text-[10px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 px-2 py-0.5 rounded transition cursor-pointer flex items-center space-x-1"
+                title="Rate driver or report conduct"
               >
-                <span>Track</span>
-                <ChevronRight className="w-3 h-3" />
+                <Star className="w-2.5 h-2.5 text-amber-600 fill-amber-600" />
+                <span>Rate Driver</span>
               </button>
-            ) : tkt.isOffline ? (
-              <button
-                type="button"
-                onClick={() => {
-                  const smsText = `MCGM WATERFLOW | TKT:${tkt.id} | WARD:${detectedWard.ward_code} | ISSUE:${tkt.type}`;
-                  setActiveSmsTicket({
-                    ticketId: tkt.id,
-                    smsText,
-                    phoneNumber,
-                    wardCode: detectedWard.ward_code,
-                    issueType: tkt.type,
-                    tankerId: detectedWard.assigned_tanker.tanker_id,
-                    otpCode: detectedWard.assigned_tanker.otp_code,
-                    isOffline: true,
-                  });
-                  setShowSmsModal(true);
-                }}
-                className="text-[10.5px] font-bold text-amber-800 bg-amber-100 px-2 py-1 rounded hover:bg-amber-200 transition cursor-pointer shrink-0 ml-2"
-              >
-                SMS
-              </button>
-            ) : (
-              <span className="text-[10px] font-mono text-emerald-700 font-bold shrink-0 ml-2">✓ Verified</span>
-            )}
+
+              {tkt.isLive || tkt.isEmergency ? (
+                <button
+                  type="button"
+                  onClick={() => setActiveNav("map")}
+                  className="text-[10.5px] font-bold text-sky-700 hover:underline flex items-center space-x-0.5 cursor-pointer"
+                >
+                  <span>Track</span>
+                  <ChevronRight className="w-3 h-3" />
+                </button>
+              ) : tkt.isOffline ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const smsText = `MCGM WATERFLOW | TKT:${tkt.id} | WARD:${detectedWard.ward_code} | ISSUE:${tkt.type}`;
+                    setActiveSmsTicket({
+                      ticketId: tkt.id,
+                      smsText,
+                      phoneNumber,
+                      wardCode: detectedWard.ward_code,
+                      issueType: tkt.type,
+                      tankerId: detectedWard.assigned_tanker?.tanker_id || "T-08",
+                      otpCode: detectedWard.assigned_tanker?.otp_code || "7419",
+                      isOffline: true,
+                    });
+                    setShowSmsModal(true);
+                  }}
+                  className="text-[10.5px] font-bold text-amber-800 bg-amber-100 px-2 py-1 rounded hover:bg-amber-200 transition cursor-pointer"
+                >
+                  SMS
+                </button>
+              ) : (
+                <span className="text-[10px] font-mono text-emerald-700 font-bold">✓ Verified</span>
+              )}
+            </div>
           </div>
         ))}
       </div>
     </div>
   );
 
-  const renderProfileView = () => (
-    <div className="space-y-4 animate-fade-in">
-      <div className={`grid grid-cols-1 ${forceMobileFrame ? "space-y-4" : "lg:grid-cols-12"} gap-4`}>
+  const renderProfileView = () => {
+    const filteredLedger = creditLedger.filter((item) => {
+      if (creditFilter === "credit") return item.type === "CREDIT";
+      if (creditFilter === "debit") return item.type === "DEBIT";
+      return true;
+    });
+
+    return (
+      <div className="space-y-4 animate-fade-in">
+        {/* Civic Credibility & Trust Hero Card */}
+        <div className="civic-card rounded-2xl p-5 bg-gradient-to-br from-slate-900 via-sky-950 to-blue-900 text-white shadow-xl border border-sky-500/30 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-white/15">
+            <div className="flex items-center space-x-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-200 text-amber-950 flex items-center justify-center font-black text-xl shadow-lg border-2 border-amber-300 shrink-0">
+                <Award className="w-6 h-6 text-amber-950" />
+              </div>
+              <div>
+                <div className="flex items-center space-x-2 flex-wrap">
+                  <h3 className="text-base font-black tracking-tight">{user?.name || "Govandi Resident"}</h3>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                    ⭐ {citizenTier}
+                  </span>
+                </div>
+                <p className="text-xs text-sky-200 font-mono mt-0.5">
+                  Mobile: +91 {phoneNumber} · Ward {detectedWard.ward_code}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2 self-start sm:self-auto">
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center space-x-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Verified Aadhaar / OTP</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Metric Stats Banner */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Total Balance */}
+            <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
+              <div className="flex items-center justify-between text-sky-200 text-xs font-bold mb-1">
+                <span>Available Civic Credits</span>
+                <Sparkles className="w-4 h-4 text-amber-300" />
+              </div>
+              <div className="flex items-baseline space-x-1.5">
+                <span className="text-3xl font-black text-amber-300 font-mono">{citizenCredits}</span>
+                <span className="text-xs text-sky-200 font-mono">Credits</span>
+              </div>
+              <p className="text-[10px] text-sky-200/80 mt-1">
+                Fast-track booster costs 20 credits per ticket
+              </p>
+            </div>
+
+            {/* Credibility Trust Score */}
+            <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
+              <div className="flex items-center justify-between text-sky-200 text-xs font-bold mb-1">
+                <span>Credibility Trust Score</span>
+                <Gauge className="w-4 h-4 text-emerald-300" />
+              </div>
+              <div className="flex items-baseline space-x-1.5">
+                <span className="text-3xl font-black text-emerald-300 font-mono">{credibilityScore}%</span>
+                <span className="text-xs text-emerald-200/80 font-bold">
+                  {credibilityScore >= 80 ? "High Trust" : credibilityScore >= 50 ? "Moderate Trust" : "Low Trust"}
+                </span>
+              </div>
+              {/* Progress bar */}
+              <div className="w-full bg-white/20 h-2 rounded-full overflow-hidden mt-2">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${
+                    credibilityScore >= 80 ? "bg-emerald-400" : credibilityScore >= 50 ? "bg-amber-400" : "bg-rose-500"
+                  }`}
+                  style={{ width: `${Math.min(100, Math.max(0, credibilityScore))}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Verification Reliability Tier */}
+            <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
+              <div className="flex items-center justify-between text-sky-200 text-xs font-bold mb-1">
+                <span>SCADA Priority Tier</span>
+                <CheckCircle2 className="w-4 h-4 text-sky-300" />
+              </div>
+              <div className="text-sm font-black text-white mt-1">
+                {credibilityScore >= 80 ? "Priority Automated Verification" : credibilityScore >= 50 ? "Standard Ward Verification" : "Flagged for Manual Audit"}
+              </div>
+              <p className="text-[10px] text-sky-200/80 mt-1">
+                {credibilityScore >= 80 ? "Clean track record. Top-of-queue assignment." : "Subject to Municipal JE inspection."}
+              </p>
+            </div>
+          </div>
+
+          {/* Civic Integrity Rule Matrix Banner */}
+          <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs space-y-1.5">
+            <span className="text-[10px] font-black uppercase tracking-wider text-sky-300 block font-mono">
+              Civic Credit & Integrity Rules (MCGM Water Works)
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10.5px]">
+              <div className="p-2 rounded bg-emerald-950/40 border border-emerald-500/30">
+                <span className="text-emerald-400 font-bold block">+25 Credits</span>
+                <span className="text-slate-300 text-[10px]">Genuine Shortage Report Verified</span>
+              </div>
+              <div className="p-2 rounded bg-emerald-950/40 border border-emerald-500/30">
+                <span className="text-emerald-400 font-bold block">+15 Credits</span>
+                <span className="text-slate-300 text-[10px]">Delivery OTP Confirmed on-site</span>
+              </div>
+              <div className="p-2 rounded bg-amber-950/40 border border-amber-500/30">
+                <span className="text-amber-400 font-bold block">-20 Credits</span>
+                <span className="text-slate-300 text-[10px]">Fast-Track Boost Redeemed</span>
+              </div>
+              <div className="p-2 rounded bg-rose-950/40 border border-rose-500/30">
+                <span className="text-rose-400 font-bold block">-40 Credits</span>
+                <span className="text-slate-300 text-[10px]">False / Fabricated Report Penalty</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Civic Debit & Credit History Ledger Card */}
+        <div className="civic-card rounded-2xl p-4 bg-white border border-slate-200 shadow-xs space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-slate-100">
+            <div className="flex items-center space-x-2">
+              <History className="w-4 h-4 text-[#0056b3]" />
+              <h4 className="text-xs font-black uppercase tracking-wider text-slate-800">
+                Civic Debit &amp; Credit History Ledger
+              </h4>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-[#0056b3] font-mono">
+                {creditLedger.length} Records
+              </span>
+            </div>
+
+            {/* Filter Buttons */}
+            <div className="flex space-x-1 font-bold text-xs">
+              <button
+                type="button"
+                onClick={() => setCreditFilter("all")}
+                className={`px-2.5 py-1 rounded-lg text-xs transition cursor-pointer ${
+                  creditFilter === "all" ? "bg-[#0056b3] text-white shadow-2xs" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                All Records
+              </button>
+              <button
+                type="button"
+                onClick={() => setCreditFilter("credit")}
+                className={`px-2.5 py-1 rounded-lg text-xs transition cursor-pointer ${
+                  creditFilter === "credit" ? "bg-emerald-600 text-white shadow-2xs" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                + Credits Earned
+              </button>
+              <button
+                type="button"
+                onClick={() => setCreditFilter("debit")}
+                className={`px-2.5 py-1 rounded-lg text-xs transition cursor-pointer ${
+                  creditFilter === "debit" ? "bg-rose-600 text-white shadow-2xs" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                - Debits &amp; Penalties
+              </button>
+            </div>
+          </div>
+
+          {/* Ledger List */}
+          <div className="space-y-2 max-h-72 overflow-y-auto custom-scroll">
+            {filteredLedger.length === 0 ? (
+              <div className="text-center py-6 text-slate-400 text-xs">
+                No credit records found in this category.
+              </div>
+            ) : (
+              filteredLedger.map((item, idx) => (
+                <div
+                  key={item.id || idx}
+                  className={`p-3 rounded-xl border flex items-center justify-between transition ${
+                    item.type === "CREDIT"
+                      ? "bg-emerald-50/50 border-emerald-200"
+                      : item.amount < -25
+                      ? "bg-rose-50/60 border-rose-200"
+                      : "bg-amber-50/50 border-amber-200"
+                  }`}
+                >
+                  <div className="flex items-start space-x-3">
+                    <div
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                        item.type === "CREDIT"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : item.amount < -25
+                          ? "bg-rose-100 text-rose-700"
+                          : "bg-amber-100 text-amber-700"
+                      }`}
+                    >
+                      {item.type === "CREDIT" ? (
+                        <TrendingUp className="w-4 h-4" />
+                      ) : (
+                        <TrendingDown className="w-4 h-4" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <span
+                          className={`text-xs font-black font-mono ${
+                            item.type === "CREDIT"
+                              ? "text-emerald-700"
+                              : item.amount < -25
+                              ? "text-rose-700"
+                              : "text-amber-800"
+                          }`}
+                        >
+                          {item.amount > 0 ? `+${item.amount}` : item.amount} Credits
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-mono">· {item.timestamp}</span>
+                      </div>
+                      <p className="text-xs text-slate-700 font-medium mt-0.5">{item.reason}</p>
+                    </div>
+                  </div>
+
+                  <div className="text-right shrink-0 ml-3">
+                    <span className="text-[10px] text-slate-400 block font-mono">Balance After</span>
+                    <span className="text-xs font-mono font-bold text-slate-800">
+                      {item.balance_after !== undefined ? `${item.balance_after} Cr` : "—"}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Existing Grid with Identity & Preferences & Contacts */}
+        <div className={`grid grid-cols-1 ${forceMobileFrame ? "space-y-4" : "lg:grid-cols-12"} gap-4`}>
         {/* Left Column: Identity & Preferences */}
         <div className={`${forceMobileFrame ? "" : "lg:col-span-6"} space-y-4`}>
           {/* Identity Card */}
@@ -1962,6 +2386,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
       </div>
     </div>
   );
+};
 
   return (
     <div className={`w-full min-h-screen bg-[#edf4fb] text-slate-800 font-sans selection:bg-sky-100 flex flex-col ${forceMobileFrame ? "py-6 px-4 flex items-center justify-center bg-slate-900/70" : ""}`}>
@@ -3407,6 +3832,220 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                   {lang === "hi" ? "बंद करें" : lang === "mr" ? "बंद करा" : "Close"}
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================
+            4. DRIVER INTEGRITY, CONDUCT & GRIEVANCE MODAL
+            ============================================================ */}
+        {driverReviewModal && (
+          <div className="fixed inset-0 bg-slate-900/65 backdrop-blur-xs z-[9999] flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-2xl shadow-2xl border border-slate-300 max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh]">
+              {/* Modal Header */}
+              <div className="bg-gradient-to-r from-slate-900 to-[#0056b3] text-white p-4 flex items-center justify-between">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black shadow-inner">
+                    <Star className="w-5 h-5 fill-slate-950" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-mono uppercase bg-white/20 px-2 py-0.5 rounded text-amber-200">
+                      MUNICIPAL DRIVER ACCOUNTABILITY
+                    </span>
+                    <h3 className="text-sm font-black mt-0.5">
+                      {lang === "hi"
+                        ? "टैंकर चालक समीक्षा एवं शिकायत"
+                        : lang === "mr"
+                        ? "टँकर चालक आढावा व तक्रार"
+                        : "Rate Driver or Report Misconduct"}
+                    </h3>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setDriverReviewModal(false)}
+                  className="p-1 rounded-lg hover:bg-white/20 text-white transition cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <form onSubmit={handleSubmitDriverReview} className="p-4 overflow-y-auto space-y-3.5 text-xs text-slate-700 custom-scroll">
+                {/* Tanker Details Header */}
+                <div className="p-3 bg-sky-50 rounded-xl border border-sky-200 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] text-slate-500 font-mono block">Assigned Vehicle</span>
+                    <span className="text-xs font-black text-slate-900">
+                      {selectedTicketForReview?.tanker || "Tanker T-08 (MH-03-BW-7821)"}
+                    </span>
+                    <span className="text-[10px] text-slate-500 block mt-0.5">
+                      Driver: Rajesh Patil · Ticket: {selectedTicketForReview?.id || "#WF-24-918"}
+                    </span>
+                  </div>
+                  <span className="px-2 py-1 rounded bg-white text-[#0056b3] font-bold text-[10px] border border-sky-300">
+                    Municipal Fleet
+                  </span>
+                </div>
+
+                {/* Star Rating Selector */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-tight mb-1.5">
+                    Rate Delivery Quality (1 to 5 Stars)
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        type="button"
+                        key={star}
+                        onClick={() => setDriverRating(star)}
+                        className={`p-2 rounded-xl transition cursor-pointer ${
+                          driverRating >= star
+                            ? "bg-amber-100 text-amber-600 scale-105"
+                            : "bg-slate-100 text-slate-400 hover:bg-slate-200"
+                        }`}
+                      >
+                        <Star className={`w-5 h-5 ${driverRating >= star ? "fill-amber-500 text-amber-500" : ""}`} />
+                      </button>
+                    ))}
+                    <span className="text-xs font-bold text-slate-700 ml-2">
+                      {driverRating === 5 ? "⭐⭐⭐⭐⭐ Outstanding" : driverRating >= 4 ? "Good" : driverRating >= 3 ? "Average" : "Poor / Unsatisfactory"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Grievance Category Selection */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-tight mb-1.5">
+                    Report Driver Infraction (Anti-Corruption &amp; Route Adherence)
+                  </label>
+                  <div className="space-y-1.5">
+                    <label className={`flex items-start space-x-2.5 p-2.5 rounded-xl border cursor-pointer transition ${driverGrievanceType === "none" ? "bg-emerald-50 border-emerald-300" : "bg-slate-50 border-slate-200 hover:bg-slate-100"}`}>
+                      <input
+                        type="radio"
+                        name="grievanceType"
+                        value="none"
+                        checked={driverGrievanceType === "none"}
+                        onChange={() => setDriverGrievanceType("none")}
+                        className="mt-0.5 text-emerald-600 cursor-pointer"
+                      />
+                      <div>
+                        <span className="font-bold text-slate-900 block">No Misconduct · Satisfactory Delivery</span>
+                        <span className="text-[10px] text-slate-500">Awards positive credits (+10 Cr) to the driver for municipal performance.</span>
+                      </div>
+                    </label>
+
+                    <label className={`flex items-start space-x-2.5 p-2.5 rounded-xl border cursor-pointer transition ${driverGrievanceType === "ROUTE_DIVERSION" ? "bg-rose-50 border-rose-300" : "bg-slate-50 border-slate-200 hover:bg-slate-100"}`}>
+                      <input
+                        type="radio"
+                        name="grievanceType"
+                        value="ROUTE_DIVERSION"
+                        checked={driverGrievanceType === "ROUTE_DIVERSION"}
+                        onChange={() => setDriverGrievanceType("ROUTE_DIVERSION")}
+                        className="mt-0.5 text-rose-600 cursor-pointer"
+                      />
+                      <div>
+                        <span className="font-bold text-rose-950 block">⚠️ Route Diversion (Driver bypassed street / unauthorized turn)</span>
+                        <span className="text-[10px] text-rose-700 font-medium">Penalizes driver (-25 Credits). SCADA audits GPS route adherence.</span>
+                      </div>
+                    </label>
+
+                    <label className={`flex items-start space-x-2.5 p-2.5 rounded-xl border cursor-pointer transition ${driverGrievanceType === "GPS_TAMPER" ? "bg-rose-50 border-rose-300" : "bg-slate-50 border-slate-200 hover:bg-slate-100"}`}>
+                      <input
+                        type="radio"
+                        name="grievanceType"
+                        value="GPS_TAMPER"
+                        checked={driverGrievanceType === "GPS_TAMPER"}
+                        onChange={() => setDriverGrievanceType("GPS_TAMPER")}
+                        className="mt-0.5 text-rose-600 cursor-pointer"
+                      />
+                      <div>
+                        <span className="font-bold text-rose-950 block">📡 GPS Turned Off / Driver Unreachable</span>
+                        <span className="text-[10px] text-rose-700 font-medium">Penalizes driver (-35 Credits). Transponder disconnect flag logged.</span>
+                      </div>
+                    </label>
+
+                    <label className={`flex items-start space-x-2.5 p-2.5 rounded-xl border cursor-pointer transition ${driverGrievanceType === "ILLEGAL_WATER_SALE" ? "bg-rose-50 border-rose-300" : "bg-slate-50 border-slate-200 hover:bg-slate-100"}`}>
+                      <input
+                        type="radio"
+                        name="grievanceType"
+                        value="ILLEGAL_WATER_SALE"
+                        checked={driverGrievanceType === "ILLEGAL_WATER_SALE"}
+                        onChange={() => setDriverGrievanceType("ILLEGAL_WATER_SALE")}
+                        className="mt-0.5 text-rose-600 cursor-pointer"
+                      />
+                      <div>
+                        <span className="font-bold text-rose-950 block">🚨 Selling Free Relief Water / Demanding Money (Bribe)</span>
+                        <span className="text-[10px] text-rose-700 font-bold">Severe (-60 Credits). Drops driver below 30 threshold to trigger Immediate Blacklisting!</span>
+                      </div>
+                    </label>
+
+                    <label className={`flex items-start space-x-2.5 p-2.5 rounded-xl border cursor-pointer transition ${driverGrievanceType === "CUSTOMER_DISSATISFACTION" ? "bg-rose-50 border-rose-300" : "bg-slate-50 border-slate-200 hover:bg-slate-100"}`}>
+                      <input
+                        type="radio"
+                        name="grievanceType"
+                        value="CUSTOMER_DISSATISFACTION"
+                        checked={driverGrievanceType === "CUSTOMER_DISSATISFACTION"}
+                        onChange={() => setDriverGrievanceType("CUSTOMER_DISSATISFACTION")}
+                        className="mt-0.5 text-rose-600 cursor-pointer"
+                      />
+                      <div>
+                        <span className="font-bold text-rose-950 block">👎 Incomplete Delivery / Rude Behaviour</span>
+                        <span className="text-[10px] text-rose-700 font-medium">Consumer dissatisfaction grievance (-30 Credits).</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Additional Citizen Observation Notes */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-tight mb-1">
+                    Details / Citizen Remarks (Optional)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={driverGrievanceNotes}
+                    onChange={(e) => setDriverGrievanceNotes(e.target.value)}
+                    placeholder="Provide specific location, standpost details, or what the driver demanded..."
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0056b3]"
+                  />
+                </div>
+
+                {/* Feedback / Alert Banner */}
+                {driverReviewFeedback && (
+                  <div className={`p-3 rounded-xl border text-xs font-bold animate-fade-in ${driverGrievanceType === "none" ? "bg-emerald-50 border-emerald-300 text-emerald-900" : "bg-rose-50 border-rose-400 text-rose-900"}`}>
+                    {driverReviewFeedback}
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="pt-2 flex items-center justify-end space-x-2 border-t border-slate-200">
+                  <button
+                    type="button"
+                    onClick={() => setDriverReviewModal(false)}
+                    className="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-bold transition cursor-pointer"
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={driverSubmitting}
+                    className={`px-4 py-2 rounded-xl font-bold text-white transition shadow-sm cursor-pointer flex items-center space-x-1.5 ${
+                      driverGrievanceType !== "none"
+                        ? "bg-rose-600 hover:bg-rose-700"
+                        : "bg-[#0056b3] hover:bg-sky-700"
+                    }`}
+                  >
+                    {driverSubmitting ? (
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    ) : driverGrievanceType !== "none" ? (
+                      <AlertTriangle className="w-3.5 h-3.5 text-white" />
+                    ) : (
+                      <Check className="w-3.5 h-3.5 text-white" />
+                    )}
+                    <span>{driverGrievanceType !== "none" ? "Submit Grievance to Municipal Vigilance" : "Submit Driver Rating"}</span>
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}

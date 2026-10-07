@@ -69,6 +69,7 @@ const {
 } = require("./field_sync");
 
 const { computePriority, computePriorityQueue, classifyWardGovernanceTier, classifyDecisionGovernanceTier, CANONICAL_PROVENANCE_CLASSES } = require("./core_algorithms");
+const { getAllDrivers, getDriverProfile } = require("./integrity_engine");
 
 // ---------------------------------------------------------------------------
 // Phase 2: WhatsApp Multi-Lingual NLP Webhook (Meta & Twilio Compatible)
@@ -943,7 +944,26 @@ async function getTankers() {
     }
   }
     if (process.env.APP_MODE === "PRODUCTION") { throw new Error("503 DATABASE_UNAVAILABLE"); }
-  return tankersState;
+  const drivers = getAllDrivers();
+  return tankersState.map(t => {
+    const dInfo = drivers.find(d => d.transponder_id === t.transponder_id || String(d.tanker_id) === String(t.tanker_id));
+    return {
+      ...t,
+      plate: dInfo?.plate || t.plate || "MH-03-BW-7821",
+      driver: dInfo?.driver_name || t.driver || "Rajesh Patil",
+      driver_name: dInfo?.driver_name || t.driver || "Rajesh Patil",
+      credit_balance: dInfo?.credit_balance ?? 110,
+      integrity_rating: dInfo?.integrity_rating ?? 85,
+      is_blacklisted: Boolean(dInfo?.is_blacklisted),
+      blacklist_reason: dInfo?.blacklist_reason || null,
+      is_preferred: Boolean(dInfo?.is_preferred),
+      telemetry_status: dInfo?.telemetry_status || "online",
+      route_status: dInfo?.route_status || "on_route",
+      grievances_count: dInfo?.grievances_count || 0,
+      contracts_completed: dInfo?.contracts_completed || 45,
+      status: dInfo?.is_blacklisted ? "blacklisted" : t.status,
+    };
+  });
 }
 
 async function getDepots() {
@@ -2335,20 +2355,35 @@ app.post("/api/dispatch", async (req, res) => {
       }
     }
 
-    // Find available tanker
+    // Find available tanker (Strictly filtering out blacklisted tankers and prioritizing preferred ones)
     const tankers = await getTankers();
     let tanker = null;
     if (requestedTankerId) {
+      const driverCheck = getDriverProfile(requestedTankerId);
+      if (driverCheck && driverCheck.is_blacklisted) {
+        return res.status(403).json({
+          success: false,
+          error: `CONTRACT_REVOKED: Tanker ${requestedTankerId} (Plate ${driverCheck.plate}) operated by ${driverCheck.driver_name} is BLACKLISTED. Municipal dispatch contract revoked.`,
+          is_blacklisted: true,
+          blacklist_reason: driverCheck.blacklist_reason,
+        });
+      }
       tanker = tankers.find(
-        t => (t.transponder_id === requestedTankerId || t.tanker_id === requestedTankerId) && t.status === "available"
+        t => (t.transponder_id === requestedTankerId || t.tanker_id === requestedTankerId) && t.status === "available" && !t.is_blacklisted
       );
       if (!tanker) {
         return res.status(409).json({ success: false, error: `Requested tanker ${requestedTankerId} is not available`, reason: "NO_AVAILABLE_TANKER" });
       }
     } else {
-      tanker = tankers.find(t => t.status === "available" && t.capacity >= volume);
+      // 1. First priority: Preferred high-credit contractors
+      tanker = tankers.find(t => t.status === "available" && !t.is_blacklisted && t.is_preferred && t.capacity >= volume);
+      // 2. Second: Normal standing available tankers
       if (!tanker) {
-        tanker = tankers.find(t => t.status === "available");
+        tanker = tankers.find(t => t.status === "available" && !t.is_blacklisted && t.capacity >= volume);
+      }
+      // 3. Fallback: Any available non-blacklisted tanker
+      if (!tanker) {
+        tanker = tankers.find(t => t.status === "available" && !t.is_blacklisted);
       }
     }
 
