@@ -35,6 +35,9 @@ try {
   }
 } catch (_) {}
 
+const GROQ_API_KEY = process.env.GROQ_API_KEY || process.env.VITE_GROQ_API_KEY || "";
+const GROQ_CHAT_MODEL = process.env.GROQ_CHAT_MODEL || "qwen/qwen3.8-27b";
+
 const { MISSION_VERSIONS, verifyMissionDelivery, initDemoMissions } = require("./field_sync");
 const { computePriority } = require("./core_algorithms");
 const {
@@ -1001,35 +1004,51 @@ router.post("/call/connect-officer", (req, res) => {
 // ---------------------------------------------------------------------------
 // 7. POST /api/citizen/chat
 // Groq LLM-powered multilingual AI water assistant ("JalMitra / जलमित्र")
-// Supports English, Hindi, and Marathi with direct knowledge of Mumbai BMC wards.
+// Supports English, Hindi, and Marathi with strict municipal relevance guardrails,
+// nonsense / confusion redirection to helpline (+91 8369978764), and water allocation queue integration.
 // ---------------------------------------------------------------------------
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY || "";
-const GROQ_CHAT_MODEL = process.env.GROQ_CHAT_MODEL || "qwen/qwen3.8-27b";
+const GROQ_CANDIDATE_MODELS = [
+  process.env.GROQ_CHAT_MODEL || "qwen/qwen3.8-27b",
+  "openai/gpt-oss-20b",
+  "openai/gpt-oss-120b",
+];
 
-const JALMITRA_SYSTEM_PROMPT = `You are "JalMitra" (जलमित्र), the caring, down-to-earth AI Water Assistant for Mumbai residents, speaking on behalf of the Brihanmumbai Municipal Corporation (BMC / मनपा) Water Department.
+const JALMITRA_SYSTEM_PROMPT = `You are "JalMitra" (जलमित्र), the official AI Municipal Water Operations Assistant for Brihanmumbai Municipal Corporation (BMC / मनपा) Water Department.
 
-Core Persona & Tone (Layman-First):
-1. Speak in warm, simple, everyday conversational language that any layman, chawl resident, elderly citizen, or daily-wage worker in Mumbai can easily understand.
-2. Absolutely DO NOT use complex engineering or bureaucratic jargon.
-   - Use "पानी का समय" instead of "जलापूर्ति समय सारिणी / रोस्टर"
-   - Use "पानी की कमी / किल्लत" instead of "जलाभाव / डेफिसिट"
-   - Use "मुफ्त टैंकर" instead of "राहत वाहन"
-   - Use "नल का पानी" instead of "ग्रिड टेलीमेट्री"
-3. Fluently understand and respond to colloquial language, Bambaiya Hindi, Marathi, and Hinglish (e.g. "bhai do din se paani nahi aaya", "nal sukha pada hai", "tanker kidhar hai", "chawl me bache pyase hain").
-4. Keep replies clear, empathetic, and reassuring (2-3 short, spoken-style paragraphs or easy bullet points).
-5. Always reply in the exact language or dialect the citizen used (Hindi, Marathi, or English).
+STRICT DOMAIN SCOPE & RELEVANCE RULES (MANDATORY):
+1. You are EXCLUSIVELY the assistant for BMC Municipal Water Operations (WaterFlow OS) in Mumbai.
+2. You ONLY accept and answer requests directly relevant to the WaterFlow OS municipal water system:
+   - Drinking water supply schedules, timings, and water pressure for Mumbai's 24 wards (e.g. Ward M/E, G/N, K/E, L, A)
+   - Reporting dry taps, water shortage, pipeline bursts, low pressure, or contamination
+   - Requesting or booking emergency relief water tankers (allocated fairly by the municipal equity queue)
+   - Live tracking of relief tankers, vehicle registration plate, driver details, and 4-digit Delivery OTP
+   - Water safety precautions (boiling muddy water 15+ mins, chlorine purification tablets)
+   - Citizen civic credits, credibility score, verified report rewards (+25 Cr), and fast-track ticket priority
+   - Driver conduct grievances (route diversion, GPS transponder tampering, illegal water sales)
+   - Official BMC Water Operations Helpline: 8369978764
 
-Key Information:
-- Mumbai BMC 24 Wards: Ward M/E (Govandi/Mankhurd/Shivaji Nagar - water time 06:00-09:30 AM, high shortage), Ward G/N (Dharavi/Mahim - water time 05:30-08:30 AM), Ward K/E (Andheri East - 07:00-10:00 AM), Ward L (Kurla - 06:30-09:30 AM), Ward A (Colaba - 04:30-07:00 AM).
-- Official 24/7 Free Helpline: +91 8369978764 (Direct Voice Help).
-- Free Relief Tanker OTP: When the municipal water tanker arrives, tell the driver the 4-digit Delivery OTP (e.g. 7419) to get your water.
-- Bad / Dirty Water: Tell them to boil water for 15+ minutes or use chlorine tablets, and reassure them that an urgent repair team will check the pipeline.
-- If someone needs urgent water or wants to file a complaint, assure them their complaint is being logged right here or they can tap 'Grievance' or call +91 8369978764.`;
+3. IRRELEVANT REQUESTS, NONSENSE, OR CONFUSION GUARDRAIL (CRITICAL):
+   - If the user asks about ANYTHING outside municipal water (such as cooking recipes, Bollywood/movies, coding/programming, politics, jokes, homework, general chit-chat, sports, unrelated trivia), OR if the user provides nonsense, gibberish (e.g. "asdfghjkl", random letters), abusive text, or an incomprehensible/confusing prompt:
+   - DO NOT answer or entertain the unrelated topic.
+   - Respond politely stating that you are exclusively the BMC Water Operations Assistant and can only assist with Mumbai water supply, tanker deliveries, shortage grievances, and water emergencies.
+   - ALWAYS give the customer the contact number to be called: 8369978764.
+   - Explicitly instruct them that if they are confused or need human assistance, they can call the BMC Water Operations Helpline directly at 8369978764.
+   - Example (English): "I am JalMitra, your BMC Water Operations Assistant. I can only assist with Mumbai water supply, tanker deliveries, shortage grievances, and water emergencies. If you have any doubts or need assistance, please call our 24/7 Helpline directly at 8369978764."
+   - Example (Hindi): "मैं जलमित्र, बीएमसी (BMC) जल विभाग का विशेष सहायक हूँ। मैं केवल मुंबई जल आपूर्ति, टैंकर वितरण, पानी की किल्लत और शिकायतों में सहायता कर सकता हूँ। किसी भी सहायता या प्रश्न के लिए, कृपया बीएमसी जल हेल्पलाइन 8369978764 पर कॉल करें।"
+   - Example (Marathi): "मी जलमित्र, मनपा (BMC) पाणी पुरवठा विभागाचा साहाय्यक आहे. मी फक्त मुंबई पाणीपुरवठा, टँकर वाटप व तक्रारींविषयी मदत करू शकतो. कोणत्याही मदतीसाठी कृपया मनपा पाणी हेल्पलाइन 8369978764 वर थेट कॉल करा."
+
+4. WATER ALLOCATION & EMERGENCY TANKER REQUESTS (QUEUE INTEGRATION):
+   - If the citizen indicates they have no water, need a tanker, or want to register a shortage complaint:
+   - Reassure them warmly that an emergency relief request is being processed directly into the Municipal Water Allocation Queue.
+   - Remind them that water is prioritized based on distress metrics (dry pipe hours, ward vulnerability).
+   - Inform them of their assigned tanker (e.g. Tanker T-08, Driver Rajesh Patil), ETA (~12 mins), Delivery OTP (7419), and helpline 8369978764.
+
+Tone: Warm, simple, everyday conversational language suitable for any resident, chawl dweller, or elderly citizen. No bureaucratic jargon. Respond in the user's exact language (Hindi, Marathi, or English).`;
 
 router.post("/citizen/chat", async (req, res) => {
   try {
-    const { messages, ward_code, lang } = req.body;
+    const { messages, ward_code, lang, phone } = req.body;
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({ success: false, error: "Messages array is required" });
@@ -1037,90 +1056,191 @@ router.post("/citizen/chat", async (req, res) => {
 
     const currentLang = lang || "en";
     const ward = ward_code || "M/E";
+    const wardData = WARD_MUNICIPAL_DATA[ward] || WARD_MUNICIPAL_DATA["M/E"];
+    const userPhone = phone || "+91-9820012345";
 
-    const enhancedSystemPrompt = `${JALMITRA_SYSTEM_PROMPT}\n\nCurrent User Ward: Ward ${ward}.\nActive Preferred Language: ${
-      currentLang === "hi" ? "Hindi (हिंदी)" : currentLang === "mr" ? "Marathi (मराठी)" : "English"
-    }. Respond politely in this language.`;
+    const lastMsgObj = messages[messages.length - 1];
+    const lastUserMsg = (lastMsgObj?.content || "").trim();
+    const lastUserMsgLower = lastUserMsg.toLowerCase();
 
-    // Attempt Groq LLM API call
-    try {
-      const groqPayload = {
-        model: GROQ_CHAT_MODEL,
-        messages: [
-          { role: "system", content: enhancedSystemPrompt },
-          ...messages.slice(-6), // keep last 6 turns for context
-        ],
-        max_tokens: 450,
-        temperature: 0.6,
+    // Check for Water Allocation / Shortage Complaint intent
+    const isWaterAllocationIntent =
+      /water|tanker|paani|pani|sukha|nal|shortage|dry|pipe|tap|deliver|bhejo|pathwa|chahiye|pahije|book|queue|grievance|burst|leak|dirty|ganda|gadul|किल्लत|टैंकर|पानी|नळ|टँकर|तक्रार|कोरडा/i.test(
+        lastUserMsgLower
+      );
+
+    // Check for obvious off-topic / nonsense keywords
+    const isOffTopicOrNonsense =
+      /recipe|cook|movie|film|cinema|cricket|football|joke|weather in|who is|code|python|java|react|song|dance|actor|actress|politics|modi|election|modelling|girlfriend|boyfriend|homework|algebra|capital of/i.test(
+        lastUserMsgLower
+      ) ||
+      (!isWaterAllocationIntent && /^[a-z0-9]{8,}$/i.test(lastUserMsgLower.replace(/\s+/g, ""))) ||
+      (!isWaterAllocationIntent && !/time|when|schedule|help|call|status|hello|hi|namaste|kasa|kay|kaise|kya|bhai|sir/i.test(lastUserMsgLower) && lastUserMsg.length > 25);
+
+    let allocationQueueData = null;
+
+    // If citizen is requesting water / reporting shortage, enqueue into official municipal allocation queue
+    if (isWaterAllocationIntent && /need|shortage|no water|dry|tanker|bhejo|chahiye|pahije|pathwa|nahi|नाही|नहीं|भेजो|चाहिए|मागवा/i.test(lastUserMsgLower)) {
+      // Calculate priority score matching WaterFlow OS equity algorithm
+      const priorityScore = Number(
+        (
+          (wardData.vulnerability_index * 40) +
+          ((wardData.dry_pipe_hours / 72) * 35) +
+          (wardData.historical_deficit * 25)
+        ).toFixed(1)
+      );
+
+      const generatedTicket = `WF-CHAT-${1000 + activeReports.length + 1}`;
+      const queuedReport = {
+        report_id: 1000 + activeReports.length + 1,
+        ticket_code: generatedTicket,
+        phone_number: userPhone,
+        issue_type: "🔴 Dry Tap Shortage (Chatbot AI Allocation Queue)",
+        status: "dispatched",
+        lat: 19.0607,
+        lng: 72.9263,
+        ward_code: ward,
+        ward_name: wardData.name,
+        priority_score: priorityScore,
+        queue_position: 1,
+        assigned_tanker_id: wardData.tanker_id || "T-08",
+        assigned_plate: "MH-03-BW-7821",
+        driver_name: wardData.driver_name || "Rajesh Patil",
+        driver_phone: wardData.driver_phone || "+91 98201 55432",
+        eta_mins: wardData.eta_mins || 12,
+        otp_code: wardData.otp_code || "7419",
+        notes: "Queued directly via JalMitra AI Assistant into Municipal Water Allocation Queue",
+        created_at: new Date().toISOString(),
       };
 
-      const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${GROQ_API_KEY}`,
-        },
-        body: JSON.stringify(groqPayload),
-      });
+      activeReports.unshift(queuedReport);
 
-      if (groqRes.ok) {
-        const groqData = await groqRes.json();
-        const reply = groqData.choices?.[0]?.message?.content;
-        if (reply && reply.trim().length > 0) {
-          return res.json({
-            success: true,
-            reply: reply.trim(),
-            model: GROQ_CHAT_MODEL,
-            provider: "groq",
+      allocationQueueData = {
+        ticket_id: generatedTicket,
+        report_id: queuedReport.report_id,
+        ward_code: ward,
+        ward_name: wardData.name,
+        priority_score: priorityScore,
+        queue_position: 1,
+        total_in_queue: activeReports.length,
+        assigned_tanker: wardData.tanker_id || "T-08",
+        plate: "MH-03-BW-7821",
+        driver: wardData.driver_name || "Rajesh Patil",
+        driver_phone: wardData.driver_phone || "+91 98201 55432",
+        eta_mins: wardData.eta_mins || 12,
+        otp_code: wardData.otp_code || "7419",
+        helpline: "8369978764",
+      };
+    }
+
+    const enhancedSystemPrompt = `${JALMITRA_SYSTEM_PROMPT}
+
+CURRENT CONTEXT:
+- Citizen Location: Ward ${ward} (${wardData.name})
+- Regular Water Timetable: ${wardData.timetable}
+- Dry Pipe Duration: ${wardData.dry_pipe_hours} hours continuous
+- Relief Tanker Assigned: ${wardData.tanker_id} (Driver: ${wardData.driver_name}, Vehicle Plate: MH-03-BW-7821, ETA: ${wardData.eta_mins} mins)
+- Delivery Verification OTP: ${wardData.otp_code}
+- Official BMC Water Helpline: 8369978764
+- User Language: ${currentLang === "hi" ? "Hindi (हिंदी)" : currentLang === "mr" ? "Marathi (मराठी)" : "English"}.
+
+REMEMBER: If the user input is nonsense or unrelated to water operations, politely decline and provide the contact number 8369978764.`;
+
+    const groqApiKey = process.env.GROQ_API_KEY || process.env.VITE_GROQ_API_KEY || "";
+    let generatedReply = "";
+    let usedModel = "";
+
+    // Attempt Groq LLM API call across candidate models
+    if (groqApiKey) {
+      for (const candidateModel of GROQ_CANDIDATE_MODELS) {
+        try {
+          const groqPayload = {
+            model: candidateModel,
+            messages: [
+              { role: "system", content: enhancedSystemPrompt },
+              ...messages.slice(-6),
+            ],
+            max_tokens: 450,
+            temperature: 0.5,
+          };
+
+          const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${groqApiKey}`,
+            },
+            body: JSON.stringify(groqPayload),
           });
+
+          if (groqRes.ok) {
+            const groqData = await groqRes.json();
+            const reply = groqData.choices?.[0]?.message?.content;
+            if (reply && reply.trim().length > 0) {
+              generatedReply = reply.trim();
+              usedModel = candidateModel;
+              break;
+            }
+          } else {
+            const errText = await groqRes.text();
+            console.warn(`Groq candidate model ${candidateModel} failed:`, groqRes.status, errText);
+          }
+        } catch (llmErr) {
+          console.warn(`Direct Groq API fetch failed for model ${candidateModel}:`, llmErr.message);
+        }
+      }
+    }
+
+    // Intelligent local fallback if LLM is offline or returned empty
+    if (!generatedReply) {
+      if (isOffTopicOrNonsense) {
+        if (currentLang === "mr") {
+          generatedReply = `मी जलमित्र, बृहन्मुंबई महानगरपालिकेचा (BMC) अधिकृत जल साहाय्यक आहे. मी फक्त मुंबई पाणीपुरवठा, टँकर वाटप, पाण्याची वेळ आणि जल तक्रारींविषयी मदत करू शकतो. आपल्याला कोणत्याही शंका असल्यास किंवा मदत हवी असल्यास कृपया मनपा पाणी हेल्पलाइन 8369978764 वर थेट कॉल करा.`;
+        } else if (currentLang === "hi") {
+          generatedReply = `मैं जलमित्र, बृहन्मुंबई महानगरपालिका (BMC) का आधिकारिक जल सहायक हूँ। मैं केवल मुंबई जल आपूर्ति, टैंकर वितरण, पानी के समय और जल शिकायतों में सहायता कर सकता हूँ। किसी भी प्रकार के संशय या सहायता के लिए, कृपया बीएमसी जल हेल्पलाइन 8369978764 पर सीधे संपर्क करें।`;
+        } else {
+          generatedReply = `I am JalMitra, the official BMC Municipal Water Operations Assistant. I can only assist with Mumbai water supply schedules, emergency tanker deliveries, shortage grievances, and water emergencies. If you are confused or require assistance, please call our 24/7 Helpline directly at 8369978764.`;
+        }
+      } else if (allocationQueueData) {
+        if (currentLang === "mr") {
+          generatedReply = `तुमची तातडीची पाण्याची मागणी पालिकेच्या अधिकृत वाटप रांगेत (Water Allocation Queue) समाविष्ट केली आहे!\n\n📋 तक्रार क्रमांक: ${allocationQueueData.ticket_id}\n🎯 प्राधान्य गुण (Priority Score): ${allocationQueueData.priority_score}/100 (स्थान: क्र. ${allocationQueueData.queue_position})\n🚛 नेमलेला टँकर: ${allocationQueueData.assigned_tanker} (${allocationQueueData.plate}, चालक: ${allocationQueueData.driver})\n⏱️ अंदाजे वेळ: ~${allocationQueueData.eta_mins} मिनिटे\n🔑 डिलिव्हरी OTP: ${allocationQueueData.otp_code}\n\nकोणत्याही तातडीच्या मदतीसाठी थेट हेल्पलाइन 8369978764 वर कॉल करा.`;
+        } else if (currentLang === "hi") {
+          generatedReply = `आपकी पानी की मांग को आधिकारिक मनपा जल आवंटन कतार (Water Allocation Queue) में दर्ज कर लिया गया है!\n\n📋 टिकट क्र.: ${allocationQueueData.ticket_id}\n🎯 प्राथमिकता स्कोर: ${allocationQueueData.priority_score}/100 (कतार स्थान: #1)\n🚛 आवंटित टैंकर: ${allocationQueueData.assigned_tanker} (${allocationQueueData.plate}, ड्राइवर: ${allocationQueueData.driver})\n⏱️ संभावित आगमन: ~${allocationQueueData.eta_mins} मिनट\n🔑 डिलीवरी OTP: ${allocationQueueData.otp_code}\n\nसीधी सहायता या जानकारी के लिए बीएमसी हेल्पलाइन 8369978764 पर कॉल करें।`;
+        } else {
+          generatedReply = `Your emergency water request has been enqueued into the official Municipal Water Allocation Queue!\n\n📋 Ticket ID: ${allocationQueueData.ticket_id}\n🎯 Priority Score: ${allocationQueueData.priority_score}/100 (Queue Rank: #${allocationQueueData.queue_position})\n🚛 Assigned Relief Tanker: ${allocationQueueData.assigned_tanker} (${allocationQueueData.plate}, Driver: ${allocationQueueData.driver})\n⏱️ Estimated Arrival: ~${allocationQueueData.eta_mins} mins\n🔑 Delivery Verification OTP: ${allocationQueueData.otp_code}\n\nFor urgent escalations or queries, call Helpline 8369978764 directly.`;
+        }
+      } else if (lastUserMsgLower.includes("when") || lastUserMsgLower.includes("time") || lastUserMsgLower.includes("schedule") || lastUserMsgLower.includes("समय") || lastUserMsgLower.includes("वेळ")) {
+        if (currentLang === "mr") {
+          generatedReply = `नमस्कार! वॉर्ड ${ward} (${wardData.name}) साठी नियमित नळाचे पाणी सकाळी ${wardData.timetable} वाजता येते. जर पाणी आले नसेल, तर काळजी करू नका—तुम्ही थेट टँकर मागवू शकता किंवा हेल्पलाइन 8369978764 वर कॉल करू शकता.`;
+        } else if (currentLang === "hi") {
+          generatedReply = `नमस्ते! वार्ड ${ward} (${wardData.name}) के लिए नल का पानी सुबह ${wardData.timetable} बजे निर्धारित है। अगर आज पानी नहीं आया है तो परेशान न हों, आप आपातकालीन टैंकर मंगा सकते हैं या हेल्पलाइन 8369978764 पर कॉल कर सकते हैं।`;
+        } else {
+          generatedReply = `Hello! Tap water for Ward ${ward} (${wardData.name}) is scheduled for ${wardData.timetable}. If your taps are currently dry, you can request an emergency relief tanker right here or call helpline 8369978764.`;
         }
       } else {
-        const errText = await groqRes.text();
-        console.warn("Groq API error response:", groqRes.status, errText);
+        if (currentLang === "mr") {
+          generatedReply = `नमस्कार! मी जलमित्र (मनपा पाणी साहाय्यक) आहे. मी वॉर्ड ${ward} मधील पाण्याचा वेळ, टँकर ट्रॅकिंग किंवा टंचाई तक्रारीत मदत करू शकतो. आपल्याला काही अडचण असल्यास कृपया 8369978764 वर थेट संपर्क साधा.`;
+        } else if (currentLang === "hi") {
+          generatedReply = `नमस्ते! मैं जलमित्र (मनपा जल सहायक) हूँ। मैं वार्ड ${ward} में पानी की आपूर्ति, टैंकर ट्रैकिंग और शिकायतों में सहायता कर सकता हूँ। किसी भी सहायता के लिए हेल्पलाइन 8369978764 पर संपर्क करें।`;
+        } else {
+          generatedReply = `Hello! I am JalMitra, your BMC Water Operations Assistant. How can I assist you with Ward ${ward} water supply timings, relief tanker status, or logging a shortage complaint? For immediate voice help, call 8369978764.`;
+        }
       }
-    } catch (llmErr) {
-      console.warn("Direct Groq API fetch failed, utilizing intelligent fallback:", llmErr.message);
+      usedModel = "municipal-knowledge-rules";
     }
 
-    // Intelligent multilingual fallback if external LLM network is offline
-    const lastUserMsg = (messages[messages.length - 1]?.content || "").toLowerCase();
-    let fallbackReply = "";
-
-    if (currentLang === "mr") {
-      if (lastUserMsg.includes("पाणी") && (lastUserMsg.includes("कधी") || lastUserMsg.includes("वेळ") || lastUserMsg.includes("नाही"))) {
-        fallbackReply = `नमस्कार! वॉर्ड ${ward} मध्ये नळाचे पाणी सकाळी ०६:०० ते ०९:३० वाजता येते. जर पाणी आले नसेल तर काळजी करू नका, तुम्ही खालील 'तक्रार नोंदवा' बटणावरून मोफत मदतीचा टँकर मागवू शकता.`;
-      } else if (lastUserMsg.includes("टँकर") || lastUserMsg.includes("ट्रॅक") || lastUserMsg.includes("कुठे")) {
-        fallbackReply = `वॉर्ड ${ward} साठी पाण्याचा टँकर T-08 (चालक: राजेश पाटील, ९८२०१ ५५४३२) रस्त्यावर आहे. साधारण १२ ते १४ मिनिटांत पोहोचेल. पाणी घेताना चालकाला OTP ७४१९ सांगा.`;
-      } else {
-        fallbackReply = `नमस्कार! मी जलमित्र (मनपा पाणी साहाय्यक) आहे. वॉर्ड ${ward} मधील पाण्याचा वेळ, टँकर कुठे आला आहे किंवा तक्रार नोंदवण्यासाठी मी तुमची काय मदत करू? हेल्पलाईन: +91 8369978764.`;
-      }
-    } else if (currentLang === "hi") {
-      if (lastUserMsg.includes("पानी") && (lastUserMsg.includes("कब") || lastUserMsg.includes("समय") || lastUserMsg.includes("नहीं"))) {
-        fallbackReply = `नमस्ते! वार्ड ${ward} में नल का पानी सुबह 06:00 से 09:30 बजे आता है। अगर आज पानी नहीं आया है तो फिक्र मत कीजिए—आप तुरंत 'शिकायत करें' से मुफ्त राहत टैंकर मंगा सकते हैं।`;
-      } else if (lastUserMsg.includes("टैंकर") || lastUserMsg.includes("ट्रैक") || lastUserMsg.includes("कहाँ") || lastUserMsg.includes("किधर")) {
-        fallbackReply = `वार्ड ${ward} के लिए पानी का टैंकर T-08 (ड्राइवर: राजेश पाटिल, 98201 55432) रास्ते में है। लगभग 12 से 14 मिनट में पहुँचेगा। पानी लेते वक्त ड्राइवर को OTP 7419 बता दीजिएगा।`;
-      } else {
-        fallbackReply = `नमस्ते! मैं जलमित्र (मनपा पानी सहायक) हूँ। वार्ड ${ward} में पानी का समय, टैंकर कहाँ पहुँचा है या शिकायत दर्ज करने के लिए मैं आपकी क्या मदद कर सकता हूँ? हेल्पलाइन: +91 8369978764.`;
-      }
-    } else {
-      if (lastUserMsg.includes("when") || lastUserMsg.includes("time") || lastUserMsg.includes("schedule") || lastUserMsg.includes("no water")) {
-        fallbackReply = `Hello! Tap water for Ward ${ward} comes from 06:00 to 09:30 AM. If your taps are dry today, don't worry—you can request a free relief tanker right from the Grievance tab.`;
-      } else if (lastUserMsg.includes("tanker") || lastUserMsg.includes("track") || lastUserMsg.includes("where")) {
-        fallbackReply = `For Ward ${ward}, water tanker T-08 (Driver: Rajesh Patil, +91 98201 55432) is on the way and will arrive in ~12 mins. Share Delivery OTP: 7419 when taking water.`;
-      } else {
-        fallbackReply = `Hello! I am JalMitra, your BMC Water Assistant. How can I help you today with water timing, tracking your relief tanker, or reporting an issue? Helpline: +91 8369978764.`;
-      }
-    }
-
-    res.json({
+    return res.json({
       success: true,
-      reply: fallbackReply,
-      model: "municipal-knowledge-rules",
-      provider: "local-fallback",
+      reply: generatedReply,
+      model: usedModel,
+      provider: usedModel === "municipal-knowledge-rules" ? "local-fallback" : "groq",
+      allocation_queue: allocationQueueData,
+      helpline: "8369978764",
+      is_nonsense_or_confused: isOffTopicOrNonsense,
     });
   } catch (err) {
     console.error("Error in /api/citizen/chat:", err);
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ success: false, error: err.message, helpline: "8369978764" });
   }
 });
 
