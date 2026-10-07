@@ -485,9 +485,7 @@ function AppContent() {
             {mobileMenuOpen ? <X className="w-5 h-5 text-deep-blue" /> : <Menu className="w-5 h-5" />}
           </button>
 
-          <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 bg-deep-blue shadow-sm flex items-center justify-center p-1">
-            <Droplet className="w-5 h-5 text-white" />
-          </div>
+          <img src="/logo.jpg" alt="WaterFlow OS Logo" className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-sm object-cover" />
           <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
             <span className="font-extrabold text-sm sm:text-base tracking-tight text-deep-blue whitespace-nowrap">
               WaterFlow OS
@@ -656,9 +654,7 @@ function AppContent() {
               {/* Header */}
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center p-1">
-                    <Droplet className="w-5 h-5 text-white" />
-                  </div>
+                  <img src="/logo.jpg" alt="WaterFlow OS Logo" className="w-8 h-8 rounded-lg shadow-sm shrink-0 object-cover" />
                   <div>
                     <div className="font-extrabold text-sm text-white">WaterFlow OS</div>
                     <div className="text-[10px] text-blue-200 font-mono">SCADA Control Console</div>

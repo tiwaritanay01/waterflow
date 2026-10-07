@@ -17,8 +17,9 @@ import {
   Layers,
   Sparkles,
   Scale,
-  Compass,
-  FileCheck
+  FileCheck,
+  Search,
+  Calendar
 } from "lucide-react";
 
 export default function LandingPage({
@@ -26,6 +27,22 @@ export default function LandingPage({
   onOpenPortalDirectly,
 }) {
   const [lang, setLang] = useState("en");
+  const [modalContent, setModalContent] = useState(null);
+
+  const getModalInfo = () => {
+    switch(modalContent) {
+      case "Sitemap": return { title: "Sitemap", body: "Explore the comprehensive structure of WaterFlow OS. Main sections include Citizen Portal, SCADA Command Center, Field Operations, and Analytics. Navigate seamlessly across municipal domains." };
+      case "FAQs": return { title: "Frequently Asked Questions", body: "Q: What is WaterFlow OS?\nA: A unified municipal water governance platform for Mumbai.\n\nQ: How do I report a water shortage?\nA: Use the Citizen Portal to file a deficit report which algorithms use to dispatch tankers." };
+      case "Downloads": return { title: "Downloads", body: "• WaterFlow Citizen App (APK)\n• Field Worker Terminal (APK)\n• SCADA Operator Manual (PDF)\n• Annual Water Report 2026 (PDF)" };
+      case "Help": return { title: "Help & Support", body: "For technical assistance, please contact the BMC IT Cell.\n24/7 Helpline: +91 8369978764\nEmail: support@waterflow-mcgm.gov.in" };
+      case "Disclaimer": return { title: "Disclaimer & Policies", body: "All data displayed on WaterFlow OS is property of the Government of Maharashtra and BMC. The information is provided for municipal operations and civic transparency. Unauthorized access to the SCADA Command Center is strictly prohibited and subject to prosecution." };
+      case "Accessibility": return { title: "Accessibility Statement", body: "WaterFlow OS is committed to ensuring digital accessibility for people with disabilities. We are continually improving the user experience for everyone, and applying the relevant accessibility standards." };
+      case "Internet": return { title: "Web Portal", body: "The WaterFlow OS is fully accessible via any modern web browser. No app download is necessary for standard citizen services." };
+      default: return null;
+    }
+  };
+
+  const modalData = getModalInfo();
 
   return (
     <div className="min-h-screen w-full bg-[#f5faff] font-sans text-slate-800 antialiased selection:bg-sky-100 flex flex-col">
@@ -33,67 +50,43 @@ export default function LandingPage({
       {/* ============================================================
           FIXED MUNICIPAL HEADER
           ============================================================ */}
-      <header className="sticky top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md z-40 flex items-center justify-between px-4 sm:px-8 border-b border-slate-200 shadow-2xs">
+      <header className="sticky top-0 left-0 right-0 h-16 bg-[#003f87] z-40 flex items-center justify-between px-4 xl:px-8 shadow-md border-b border-[#002f6c]">
         
         {/* Brand */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#003f87] flex items-center justify-center text-white shadow-xs shrink-0">
-            <Droplet className="w-5 h-5 fill-sky-200 text-sky-200" />
+          <div className="bg-white rounded-full p-0.5 shadow-sm">
+            <img src="/logo.jpg" alt="WaterFlow OS Logo" className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover shrink-0" />
           </div>
-          <div className="flex flex-col min-w-0">
-            <span className="font-black text-sm sm:text-base tracking-tight text-[#003f87] leading-tight flex items-center gap-1 truncate">
-              <span>WaterFlow</span>
-              <span className="text-[#0060ab]">OS</span>
-            </span>
-            <span className="text-[8px] sm:text-[9.5px] font-mono font-semibold uppercase text-slate-500 truncate">
-              MCGM / BMC SCADA Control
-            </span>
-          </div>
+          <span className="font-extrabold text-[15px] sm:text-base tracking-tight text-white whitespace-nowrap">
+            WaterFlow OS
+          </span>
         </div>
 
-        {/* Center Grid Status (Hidden on small mobile) */}
-        <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 border border-slate-200 text-xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="text-slate-600 font-medium">Metropolitan Water Command Center</span>
-          <span className="text-slate-300">|</span>
-          <span className="font-mono text-emerald-700 font-bold text-[11px]">SCADA 99.4% Grid Stable</span>
-        </div>
+        {/* Center Navigation Links (Hidden on mobile/tablet) */}
+        <nav className="hidden lg:flex items-center justify-center gap-4 xl:gap-6 text-white text-[13px] font-medium whitespace-nowrap mx-4">
+          <a href="#" className="hover:text-sky-200 transition-colors">Home</a>
+          <button onClick={() => onOpenPortalDirectly("citizen")} className="hover:text-sky-200 transition-colors cursor-pointer">Citizens</button>
+          <button onClick={() => onOpenPortalDirectly("command")} className="hover:text-sky-200 transition-colors cursor-pointer">Command Center</button>
+          <button onClick={() => onOpenPortalDirectly("worker")} className="hover:text-sky-200 transition-colors cursor-pointer">Field Operations</button>
+          <a href="#" className="hover:text-sky-200 transition-colors">Analytics</a>
+          <a href="#" className="hover:text-sky-200 transition-colors">About Us</a>
+          <a href="#" className="hover:text-sky-200 transition-colors">Help & Support</a>
+        </nav>
 
-        {/* Right Actions: Language & Login CTA */}
-        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-          <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200">
-            <button
-              onClick={() => setLang("en")}
-              className={`px-1.5 sm:px-2 py-1 rounded text-[11px] sm:text-xs font-bold transition cursor-pointer ${
-                lang === "en" ? "bg-white text-[#0056b3] shadow-2xs" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              EN
-            </button>
-            <button
-              onClick={() => setLang("hi")}
-              className={`px-1.5 sm:px-2 py-1 rounded text-[11px] sm:text-xs font-bold transition cursor-pointer ${
-                lang === "hi" ? "bg-white text-[#0056b3] shadow-2xs" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              हिं
-            </button>
-            <button
-              onClick={() => setLang("mr")}
-              className={`px-1.5 sm:px-2 py-1 rounded text-[11px] sm:text-xs font-bold transition cursor-pointer ${
-                lang === "mr" ? "bg-white text-[#0056b3] shadow-2xs" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              मरा
-            </button>
-          </div>
-
+        {/* Right Actions: Search & Login CTA */}
+        <div className="flex items-center gap-3 sm:gap-5 shrink-0">
+          <button
+            className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#003f87] hover:bg-slate-100 transition-colors cursor-pointer shadow-sm"
+            aria-label="Search"
+          >
+            <Search className="w-4 h-4 stroke-[2.5px]" />
+          </button>
+          
           <button
             onClick={onNavigateToLogin}
-            className="inline-flex items-center justify-center px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-[#0056b3] text-white font-bold text-xs tracking-wide uppercase hover:bg-sky-800 transition-all shadow-xs cursor-pointer whitespace-nowrap"
+            className="inline-flex items-center justify-center px-5 sm:px-7 py-1.5 sm:py-2 rounded bg-white text-[#003f87] font-bold text-[13px] sm:text-sm hover:bg-slate-50 transition-all shadow-sm cursor-pointer whitespace-nowrap"
           >
-            <span className="hidden sm:inline">Sign In / Portal Access</span>
-            <span className="sm:hidden">Sign In</span>
+            Login
           </button>
         </div>
       </header>
@@ -162,32 +155,6 @@ export default function LandingPage({
                 WaterFlow OS transforms municipal water governance across Mumbai’s 24 BMC wards. By analyzing real-time SCADA pressure, vulnerability indices, and citizen deficit reports, it guarantees mathematically equitable water distribution and coordinated emergency tanker dispatch.
               </p>
 
-              {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                <button
-                  onClick={() => onOpenPortalDirectly("command")}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-[#0056b3] text-white font-bold text-xs sm:text-sm hover:bg-sky-800 transition-all shadow-sm active:scale-95 cursor-pointer"
-                >
-                  <Activity className="w-4 h-4" />
-                  <span>Explore Live Command Center</span>
-                </button>
-
-                <button
-                  onClick={() => onOpenPortalDirectly("citizen")}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white text-sky-800 border border-sky-300 font-bold text-xs sm:text-sm hover:bg-sky-50 transition-all shadow-2xs active:scale-95 cursor-pointer"
-                >
-                  <Droplet className="w-4 h-4 text-sky-600" />
-                  <span>Citizen Water Portal</span>
-                </button>
-
-                <button
-                  onClick={() => onOpenPortalDirectly("worker")}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white text-amber-800 border border-amber-300 font-bold text-xs sm:text-sm hover:bg-amber-50 transition-all shadow-2xs active:scale-95 cursor-pointer"
-                >
-                  <Truck className="w-4 h-4 text-amber-600" />
-                  <span>Worker Field Terminal</span>
-                </button>
-              </div>
 
               {/* Quick Auto-Detect Ward Action */}
               <div className="pt-1">
@@ -464,32 +431,73 @@ export default function LandingPage({
       {/* ============================================================
           MUNICIPAL CIVIC FOOTER
           ============================================================ */}
-      <footer className="mt-auto bg-white border-t border-slate-200 py-8 px-4 sm:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#003f87] flex items-center justify-center text-white font-bold text-xs">
-              MCGM
-            </div>
-            <div>
-              <p className="font-bold text-slate-800">
-                Brihanmumbai Municipal Corporation (BMC) · Water Engineering Dept
-              </p>
-              <p className="text-[11px] text-slate-400">
-                WaterFlow OS SCADA Algorithmic Grid Telemetry v4.12 · 24 Administrative Wards
-              </p>
+      <footer className="mt-auto bg-[#003f87] py-8 px-4 sm:px-8 text-white text-center border-t border-[#002f6c]">
+        <div className="max-w-6xl mx-auto flex flex-col items-center gap-4 text-[13px]">
+          
+          {/* Top Links */}
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-4 items-center font-medium">
+            <button onClick={() => window.scrollTo(0, 0)} className="hover:text-sky-200 transition cursor-pointer">Home</button>
+            <span className="text-white/40">|</span>
+            <button onClick={() => setModalContent("Sitemap")} className="hover:text-sky-200 transition cursor-pointer">Sitemap</button>
+            <span className="text-white/40">|</span>
+            <button onClick={() => setModalContent("FAQs")} className="hover:text-sky-200 transition cursor-pointer">FAQs</button>
+            <span className="text-white/40">|</span>
+            <button onClick={() => setModalContent("Downloads")} className="hover:text-sky-200 transition cursor-pointer">Downloads</button>
+            <span className="text-white/40">|</span>
+            <button onClick={() => setModalContent("Help")} className="hover:text-sky-200 transition cursor-pointer">Help</button>
+            <span className="text-white/40">|</span>
+            <button onClick={() => setModalContent("Disclaimer")} className="hover:text-sky-200 transition cursor-pointer">Disclaimer & Policies</button>
+            <span className="text-white/40">|</span>
+            <button onClick={() => setModalContent("Accessibility")} className="hover:text-sky-200 transition cursor-pointer">Accessibility Statement</button>
+          </div>
+
+          {/* Connect & Apps */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-2">
+            <span className="text-sm font-semibold">Connect Us with</span>
+            <div className="flex gap-4">
+              <button onClick={() => setModalContent("Internet")} className="text-white hover:text-slate-300 transition-colors cursor-pointer" aria-label="Web Portal">
+                <Globe className="w-6 h-6" />
+              </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px] font-mono">
-            <span>CERT-In Audited</span>
-            <span>•</span>
-            <span>STQC Cert #4491-MCGM</span>
-            <span>•</span>
-            <a href="tel:+918369978764" className="hover:text-sky-300 transition">24/7 Helpline: +91 8369978764</a>
+          <div className="h-px w-full max-w-4xl bg-white/10 my-1"></div>
+
+          {/* Legal / Disclaimers */}
+          <div className="text-[11px] text-white/70 leading-relaxed max-w-4xl mx-auto">
+            A digital initiative of the Government of Maharashtra for efficient, transparent and equitable water resource allocation.<br />
+            Supporting informed decision-making and sustainable water management through technology.
           </div>
+
+          <div className="flex items-center justify-center gap-2 text-xs font-semibold mt-1">
+            <Calendar className="w-3.5 h-3.5" />
+            <span>Page updated on: 07/10/2026</span>
+          </div>
+
         </div>
       </footer>
 
+      {/* Dynamic Info Modal */}
+      {modalData && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+            <div className="bg-[#003f87] px-5 py-4 flex items-center justify-between">
+              <h3 className="text-white font-bold text-lg">{modalData.title}</h3>
+              <button onClick={() => setModalContent(null)} className="text-white/70 hover:text-white transition cursor-pointer">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <div className="p-6 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap font-medium">
+              {modalData.body}
+            </div>
+            <div className="px-5 py-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+              <button onClick={() => setModalContent(null)} className="px-5 py-2 bg-[#003f87] hover:bg-[#002f6c] text-white font-semibold rounded-lg transition cursor-pointer">
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
