@@ -337,7 +337,7 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen lg:h-screen w-full flex flex-col bg-canvas text-head-text font-sans antialiased overflow-x-hidden">
+    <div className="min-h-screen lg:h-screen w-full flex flex-col bg-canvas text-head-text font-sans antialiased overflow-x-clip">
       {/* Real-time Dispatch Toast Notification */}
       {dispatchNotification && (
         <div className={`fixed top-4 right-4 z-50 px-4 py-2.5 rounded-lg shadow-xl border text-xs font-semibold flex items-center space-x-2 transition-all ${

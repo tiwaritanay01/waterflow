@@ -36,16 +36,16 @@ export default function LandingPage({
       <header className="sticky top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md z-40 flex items-center justify-between px-4 sm:px-8 border-b border-slate-200 shadow-2xs">
         
         {/* Brand */}
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#003f87] flex items-center justify-center text-white shadow-xs">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#003f87] flex items-center justify-center text-white shadow-xs shrink-0">
             <Droplet className="w-5 h-5 fill-sky-200 text-sky-200" />
           </div>
-          <div className="flex flex-col">
-            <span className="font-black text-base tracking-tight text-[#003f87] leading-tight flex items-center gap-1">
+          <div className="flex flex-col min-w-0">
+            <span className="font-black text-sm sm:text-base tracking-tight text-[#003f87] leading-tight flex items-center gap-1 truncate">
               <span>WaterFlow</span>
               <span className="text-[#0060ab]">OS</span>
             </span>
-            <span className="text-[9.5px] font-mono font-semibold uppercase text-slate-500">
+            <span className="text-[8px] sm:text-[9.5px] font-mono font-semibold uppercase text-slate-500 truncate">
               MCGM / BMC SCADA Control
             </span>
           </div>
@@ -60,7 +60,7 @@ export default function LandingPage({
         </div>
 
         {/* Right Actions: Language & Login CTA */}
-        <div className="flex items-center gap-1.5 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200">
             <button
               onClick={() => setLang("en")}
@@ -119,22 +119,24 @@ export default function LandingPage({
         <div className="relative max-w-7xl mx-auto flex flex-col gap-6">
           
           {/* Top Badges & Emergency Ribbon */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white text-sky-900 shadow-2xs border border-sky-200 text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-              <span className="uppercase tracking-wider text-[10.5px]">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="flex items-start sm:items-center gap-2 px-3 py-2 sm:py-1 rounded-xl sm:rounded-full bg-white text-sky-900 shadow-2xs border border-sky-200 text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0 mt-1 sm:mt-0"></span>
+              <span className="uppercase tracking-wider text-[10px] sm:text-[10.5px] leading-snug">
                 MUNICIPAL WATER COMMAND &amp; CIVIC EQUITY PLATFORM · SCADA v4.12
               </span>
             </div>
 
             <a
               href="tel:+918369978764"
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 text-xs font-semibold shadow-2xs transition"
+              className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 px-3 py-2 sm:py-1 rounded-xl sm:rounded-full bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 text-xs font-semibold shadow-2xs transition"
             >
-              <Phone className="w-3.5 h-3.5 text-rose-600" />
-              <span>Emergency Helpline: +91 8369978764</span>
-              <span className="text-rose-300">•</span>
-              <span className="font-mono font-bold text-[11px]">24/7 AI Bot &amp; Call Queue</span>
+              <div className="flex items-center gap-1.5">
+                <Phone className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                <span>Emergency Helpline: +91 8369978764</span>
+              </div>
+              <span className="hidden sm:inline text-rose-300">•</span>
+              <span className="font-mono font-bold text-[10px] sm:text-[11px] opacity-90 pl-5 sm:pl-0">24/7 AI Bot &amp; Call Queue</span>
             </a>
           </div>
 
