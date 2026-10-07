@@ -1057,9 +1057,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
       <div className="civic-card rounded-xl p-3.5 border border-sky-300/80 bg-gradient-to-r from-sky-50/80 via-white to-sky-50/60 shadow-xs relative overflow-hidden animate-fade-in">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-start space-x-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#0056b3] text-white flex items-center justify-center shadow-sm shrink-0 mt-0.5 border border-white/20">
-              <Droplet className="w-5 h-5 text-sky-200 fill-sky-300" />
-            </div>
+            <img src="/logo.jpg" alt="WaterFlow OS Logo" className="w-9 h-9 rounded-xl shadow-sm shrink-0 mt-0.5 border border-white/20 object-cover" />
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-xs font-bold text-slate-900 tracking-tight">

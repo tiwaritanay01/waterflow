@@ -125,9 +125,7 @@ export default function LoginPage({ onNavigateToLanding, onLoginSuccess, initial
               
               {/* Municipal Seal & Authority Header */}
               <div className="flex items-start gap-3.5">
-                <div className="w-13 h-13 rounded-xl bg-[#003f87] flex items-center justify-center text-white shadow-sm shrink-0">
-                  <Droplet className="w-7 h-7 fill-sky-200 text-sky-200" />
-                </div>
+                <img src="/logo.jpg" alt="WaterFlow OS Logo" className="w-13 h-13 rounded-xl shadow-sm shrink-0 object-cover" />
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-bold text-sky-900 uppercase tracking-widest font-mono">

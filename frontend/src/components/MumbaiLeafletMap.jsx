@@ -6,6 +6,7 @@ import {
   Marker,
   Popup,
   Polyline,
+  ZoomControl,
   useMap,
 } from "react-leaflet";
 import L from "leaflet";
@@ -639,8 +640,7 @@ export default function MumbaiLeafletMap({
         </div>
       </div>
 
-      {/* Main Leaflet Map Canvas */}
-      <div className="flex-1 w-full h-full relative">
+      <div className="flex-1 w-full h-full relative leaflet-middle-right-zoom">
         <MapContainer
           key={mapKey}
           center={MUMBAI_CENTER}
@@ -650,7 +650,9 @@ export default function MumbaiLeafletMap({
           maxBounds={MUMBAI_BOUNDS}
           style={{ height: "100%", width: "100%" }}
           scrollWheelZoom={true}
+          zoomControl={false}
         >
+          <ZoomControl position="topright" />
           <MapController bounds={MUMBAI_BOUNDS} />
 
           {/* Base Tile Layer */}
