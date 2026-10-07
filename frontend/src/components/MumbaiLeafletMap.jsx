@@ -17,7 +17,11 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { DEFAULT_MUMBAI_WARDS } from "../utils/mumbaiWardsData";
+import {
+  DEFAULT_MUMBAI_WARDS,
+  DEFAULT_MUMBAI_DEPOTS,
+  DEFAULT_MUMBAI_TANKERS,
+} from "../utils/mumbaiWardsData";
 
 // Mumbai center coordinates
 const MUMBAI_CENTER = [19.085, 72.885];
@@ -140,6 +144,33 @@ function createDepotIcon(depot) {
   });
 }
 
+// Key Mumbai Municipal SCADA Monitoring Telemetry Nodes
+const MUMBAI_SCADA_NODES = [
+  { id: "scada-1", name: "Bhandup Master Plant SCADA", lat: 19.145, lng: 72.930, pressure: "2.40 Bar", status: "optimal" },
+  { id: "scada-2", name: "Dharavi Transit SCADA Gateway", lat: 19.040, lng: 72.855, pressure: "1.32 Bar", status: "alert" },
+  { id: "scada-3", name: "Trombay Feeder SCADA Node", lat: 19.025, lng: 72.910, pressure: "1.15 Bar", status: "critical" },
+  { id: "scada-4", name: "Veravali Reservoir SCADA", lat: 19.130, lng: 72.872, pressure: "1.90 Bar", status: "optimal" },
+  { id: "scada-5", name: "Dadar Junction SCADA", lat: 19.020, lng: 72.845, pressure: "1.65 Bar", status: "optimal" },
+];
+
+function createScadaIcon(node) {
+  const isAlert = node.status === "alert" || node.status === "critical";
+  const ringColor = isAlert ? "#FF5C5C" : "#19D3E6";
+  const coreColor = isAlert ? "#FF5C5C" : "#0056B3";
+
+  return L.divIcon({
+    className: "custom-scada-marker",
+    html: `
+      <div style="position: relative; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); cursor: pointer;">
+        <span style="position: absolute; width: 14px; height: 14px; border-radius: 9999px; border: 1.5px solid ${ringColor}; background: rgba(25, 211, 230, 0.25);"></span>
+        <span style="width: 5px; height: 5px; border-radius: 9999px; background: ${coreColor}; box-shadow: 0 0 4px ${ringColor};"></span>
+      </div>
+    `,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+  });
+}
+
 export default function MumbaiLeafletMap({
   wards = [],
   tankers = [],
@@ -148,6 +179,7 @@ export default function MumbaiLeafletMap({
   selectedWard = null,
   onSelectWard = () => {},
   isExpanded: _isExpanded = false,
+  variant = "dashboard",
 }) {
   const [geoJsonData, setGeoJsonData] = useState(null);
   const [activeLayer, setActiveLayer] = useState("deficit"); // deficit | vulnerability | dry_pipe | priority
@@ -158,6 +190,10 @@ export default function MumbaiLeafletMap({
   const [showRoutes, setShowRoutes] = useState(true);
   const [mapKey, setMapKey] = useState(0);
   const geoJsonRef = useRef(null);
+
+  // Fallback to rich Mumbai dataset if tankers or depots are not provided
+  const effectiveTankers = tankers && tankers.length > 0 ? tankers : DEFAULT_MUMBAI_TANKERS;
+  const effectiveDepots = depots && depots.length > 0 ? depots : DEFAULT_MUMBAI_DEPOTS;
 
   // Load Mumbai GeoJSON
   useEffect(() => {
@@ -269,7 +305,18 @@ export default function MumbaiLeafletMap({
         ""
       ).toUpperCase().trim();
       const ward = wardMap[code];
-      if (!ward) return "#0056B3";
+      if (!ward) return variant === "login" ? "#003F87" : "#0056B3";
+
+      if (variant === "login") {
+        const deficit = ward.water_deficit_pct != null
+          ? ward.water_deficit_pct
+          : Math.round((1 - (ward.coverage_pct || 50) / 100) * 100);
+        
+        if (deficit >= 70) return "#FF5C5C"; // Critical shortage: red
+        if (deficit >= 50) return "#F5B942"; // High-risk wards: amber
+        if (deficit >= 30) return "#19D3E6"; // Moderate-risk: slightly stronger aqua
+        return "#003F87"; // Normal wards: low-opacity blue
+      }
 
       if (activeLayer === "deficit") {
         const deficit = ward.water_deficit_pct != null
@@ -307,7 +354,7 @@ export default function MumbaiLeafletMap({
 
       return "#0056B3";
     },
-    [activeLayer, wardMap, rankMap]
+    [activeLayer, wardMap, rankMap, variant]
   );
 
   // Leaflet Polygon Style Function
@@ -324,6 +371,17 @@ export default function MumbaiLeafletMap({
         String(selectedWard.ward_code || selectedWard.ward_number || "").toUpperCase().trim() === code;
 
       const baseColor = getFeatureColor(feature);
+
+      if (variant === "login") {
+        return {
+          fillColor: baseColor,
+          weight: isSelected ? 2.5 : 1.2,
+          opacity: 0.85,
+          color: isSelected ? "#00204E" : "#003F87",
+          fillOpacity: 0.28,
+          className: "transition-all duration-300 cursor-pointer",
+        };
+      }
 
       if (showColors) {
         return {
@@ -348,7 +406,7 @@ export default function MumbaiLeafletMap({
         className: "transition-all duration-200 cursor-pointer",
       };
     },
-    [showColors, selectedWard, getFeatureColor]
+    [showColors, selectedWard, getFeatureColor, variant]
   );
 
   // Synchronize GeoJSON layers when color toggle or layer changes
@@ -512,7 +570,7 @@ export default function MumbaiLeafletMap({
   // Dispatch route polylines connecting depots to target wards
   const dispatchRoutes = useMemo(() => {
     const routes = [];
-    const enRouteTankers = tankers.filter((t) => t.status === "en_route" && t.assigned_ward);
+    const enRouteTankers = effectiveTankers.filter((t) => t.status === "en_route" && t.assigned_ward);
 
     for (const t of enRouteTankers) {
       const ward = wardMap[String(t.assigned_ward).toUpperCase()];
@@ -529,11 +587,12 @@ export default function MumbaiLeafletMap({
       }
     }
     return routes;
-  }, [tankers, wardMap]);
+  }, [effectiveTankers, wardMap]);
 
   return (
-    <div className="relative w-full h-full flex flex-col overflow-hidden select-none bg-[#EAF2F9] isolate">
+    <div className="relative w-full h-full flex flex-col overflow-hidden select-none isolate bg-[#EAF2F9]">
       {/* Top Map Control Bar */}
+      {variant !== "login" && (
       <div className="z-20 absolute top-2 left-2 right-2 flex flex-wrap gap-1.5 items-center justify-between pointer-events-none">
         {/* Layer Selector */}
         <div className="pointer-events-auto bg-white/95 backdrop-blur-md px-2 py-1 rounded-lg border border-card-border shadow-sm flex items-center space-x-1 text-xs overflow-x-auto max-w-full">
@@ -638,6 +697,7 @@ export default function MumbaiLeafletMap({
           </button>
         </div>
       </div>
+      )}
 
       {/* Main Leaflet Map Canvas */}
       <div className="flex-1 w-full h-full relative">
@@ -653,8 +713,8 @@ export default function MumbaiLeafletMap({
         >
           <MapController bounds={MUMBAI_BOUNDS} />
 
-          {/* Base Tile Layer */}
-          {tileSource === "carto" ? (
+          {/* Base Tile Layer - Reusing the working Admin Dashboard OSM configuration (No API key needed) */}
+          {tileSource === "carto" && variant !== "login" ? (
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
               url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
@@ -695,7 +755,7 @@ export default function MumbaiLeafletMap({
 
           {/* Live Tanker Fleet Markers */}
           {showTankers &&
-            tankers.map((tanker) => {
+            effectiveTankers.map((tanker) => {
               if (!tanker.lat || !tanker.lng) return null;
               return (
                 <Marker
@@ -735,7 +795,7 @@ export default function MumbaiLeafletMap({
 
           {/* Municipal Depots */}
           {showDepots &&
-            depots.map((depot) => {
+            effectiveDepots.map((depot) => {
               if (!depot.lat || !depot.lng) return null;
               return (
                 <Marker
@@ -764,10 +824,32 @@ export default function MumbaiLeafletMap({
                 </Marker>
               );
             })}
+
+          {/* Subtle Municipal SCADA Telemetry Nodes */}
+          {MUMBAI_SCADA_NODES.map((node) => (
+            <Marker
+              key={node.id}
+              position={[node.lat, node.lng]}
+              icon={createScadaIcon(node)}
+            >
+              <Popup>
+                <div className="p-1 font-sans text-xs">
+                  <div className="font-bold text-deep-blue flex items-center space-x-1">
+                    <span className="w-2 h-2 rounded-full bg-cyan-500"></span>
+                    <span>{node.name}</span>
+                  </div>
+                  <div className="text-[10px] text-sec-text mt-0.5 font-mono">
+                    Pressure: <strong>{node.pressure}</strong> · Status: <span className="font-bold capitalize">{node.status}</span>
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
         </MapContainer>
       </div>
 
       {/* Floating Bottom HUD */}
+      {variant !== "login" && (
       <div className="z-20 absolute bottom-2 left-2 right-2 flex items-center justify-between pointer-events-none">
         {/* Choropleth Legend with Interactive Color Toggle */}
         <div className="pointer-events-auto bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-lg border border-card-border shadow-sm text-[10px] flex flex-wrap items-center gap-x-3 gap-y-1.5">
@@ -840,6 +922,7 @@ export default function MumbaiLeafletMap({
           </button>
         </div>
       </div>
+      )}
     </div>
   );
 }
