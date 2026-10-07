@@ -26,12 +26,13 @@
    Global Reset & Base Styles
    ============================================================ */
 
+/* Global Reset & Base Styles */
+
 html {
-  height: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  min-height: 100%;
   margin: 0;
   padding: 0;
   background-color: var(--color-canvas);
@@ -42,7 +43,6 @@ body {
 }
 
 #root {
-  min-height: 100%;
   display: flex;
   flex-direction: column;
 }
