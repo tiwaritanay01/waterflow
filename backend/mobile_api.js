@@ -37,6 +37,18 @@ try {
 
 const { MISSION_VERSIONS, verifyMissionDelivery, initDemoMissions } = require("./field_sync");
 const { computePriority } = require("./core_algorithms");
+const {
+  getCitizenProfile,
+  rewardVerifiedComplaint,
+  downvoteFalseComplaint,
+  rewardDeliveryOtpConfirmation,
+  redeemFastTrackCredit,
+  getDriverProfile,
+  getAllDrivers,
+  recordDriverInfraction,
+  recordDriverReward,
+  setTankerBlacklist,
+} = require("./integrity_engine");
 
 // ---------------------------------------------------------------------------
 // In-Memory Fallback State (Synchronized with PostgreSQL if available)
@@ -113,12 +125,19 @@ function findNearbyDispatch(lat, lng, phone) {
 
 router.post("/citizen/report", async (req, res) => {
   try {
-    const { phone_number, lat, lng, latitude, longitude, issue_type, notes } = req.body;
+    const { phone_number, lat, lng, latitude, longitude, issue_type, notes, use_fast_track } = req.body;
 
     const reportLat = parseFloat(lat || latitude || 19.0550);
     const reportLng = parseFloat(lng || longitude || 72.9180);
     const phone = phone_number || "+91-9820012345";
     const issue = issue_type || "Severe Dry Pipe (>48h)";
+
+    // Redeem Fast-Track priority credits if requested
+    let fastTrackResult = null;
+    if (use_fast_track) {
+      const generatedId = 1000 + activeReports.length + 1;
+      fastTrackResult = redeemFastTrackCredit(phone, generatedId);
+    }
 
     // Attempt PostgreSQL insert if database pool is attached
     if (req.app.locals.pool && req.app.locals.dbAvailable) {
@@ -170,6 +189,8 @@ router.post("/citizen/report", async (req, res) => {
       ward_name: "Govandi / Mankhurd / Shivaji Nagar",
       assigned_tanker_id: "T-08",
       notes: notes || "Submitted via Citizen Portal",
+      is_fast_track: Boolean(fastTrackResult?.success),
+      priority_boost: fastTrackResult?.success ? "FAST_TRACK_CIVIC_CREDIT" : "NORMAL",
       created_at: new Date().toISOString(),
     };
     activeReports.unshift(newReport);
@@ -180,8 +201,11 @@ router.post("/citizen/report", async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Water shortage report logged in Municipal SCADA",
+      message: fastTrackResult?.success
+        ? "Water shortage report fast-tracked with Civic Credits (+Top Priority)!"
+        : "Water shortage report logged in Municipal SCADA",
       report: newReport,
+      fast_track_applied: Boolean(fastTrackResult?.success),
       matched_tanker: matchedDispatch,
     });
   } catch (err) {
@@ -374,6 +398,10 @@ router.post("/worker/verify-delivery", async (req, res) => {
         r.status = "resolved";
       }
     }
+
+    // Award +15 credits to citizen for verified handover and +15 credits to driver
+    const citReward = rewardDeliveryOtpConfirmation(mission.citizen_phone || "+91-9820012345", mission.mission_id);
+    const drvReward = recordDriverReward(mission.tanker_id, "ON_TIME_DELIVERY", `Verified OTP handover at ${mission.destination_address || "Ward Standpost"}`);
 
     res.json({
       success: true,
@@ -1138,5 +1166,153 @@ router.post("/citizen/offline-sync", (req, res) => {
   }
 });
 
+// ============================================================================
+// CITIZEN CREDIBILITY & CIVIC CREDITS ENDPOINTS
+// ============================================================================
+
+// GET /api/citizen/credits - Fetch citizen credit balance & debit/credit ledger
+router.get("/citizen/credits", (req, res) => {
+  try {
+    const phone = req.query.phone || "+91-9820012345";
+    const profile = getCitizenProfile(phone);
+    res.json({ success: true, profile });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/citizen/review-complaint - Admin verifies genuine complaint (+25) or downvotes false report (-40)
+router.post("/citizen/review-complaint", (req, res) => {
+  try {
+    const { report_id, action, reviewer_name, reason, phone } = req.body;
+    const rPhone = phone || "+91-9820012345";
+
+    if (action === "verify") {
+      const result = rewardVerifiedComplaint(rPhone, report_id, reviewer_name || "Ward Junior Engineer");
+      // Update report status in activeReports
+      for (const r of activeReports) {
+        if (String(r.report_id) === String(report_id)) {
+          r.status = "verified_genuine";
+          r.admin_reviewed = true;
+        }
+      }
+      return res.json({
+        success: true,
+        message: `Complaint #${report_id} verified as genuine! +25 Civic Credits awarded to citizen.`,
+        ...result,
+      });
+    } else if (action === "false" || action === "downvote") {
+      const result = downvoteFalseComplaint(rPhone, report_id, reviewer_name || "Ward Junior Engineer", reason || "False / Unverified claim");
+      // Update report status in activeReports
+      for (const r of activeReports) {
+        if (String(r.report_id) === String(report_id)) {
+          r.status = "flagged_false";
+          r.admin_reviewed = true;
+        }
+      }
+      return res.json({
+        success: true,
+        message: `Complaint #${report_id} detected as false report. -40 Credits debited and citizen credibility decreased.`,
+        ...result,
+      });
+    }
+
+    res.status(400).json({ success: false, error: "Action must be 'verify' or 'false'" });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/citizen/driver-grievance - Citizen logs grievance against tanker driver
+router.post("/citizen/driver-grievance", (req, res) => {
+  try {
+    const { tanker_id, citizen_phone, issue_type, notes } = req.body;
+    const tId = tanker_id || "T-08";
+    const result = recordDriverInfraction(
+      tId,
+      "CUSTOMER_GRIEVANCE",
+      notes || issue_type || "Customer grievance filed via Citizen App (Poor service / diversion)"
+    );
+
+    res.json({
+      success: true,
+      message: `Grievance registered against Tanker ${tId}. Driver integrity docked by 30 Credits.`,
+      ...result,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ============================================================================
+// DRIVER & TANKER INTEGRITY ENDPOINTS
+// ============================================================================
+
+// GET /api/driver/integrity - Fetch all driver integrity scores or specific tanker
+router.get("/driver/integrity", (req, res) => {
+  try {
+    const { tanker_id } = req.query;
+    if (tanker_id) {
+      const driver = getDriverProfile(tanker_id);
+      return res.json({ success: true, driver });
+    }
+    const drivers = getAllDrivers();
+    res.json({ success: true, drivers });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/driver/infraction - Record route diversion, GPS cut, customer grievance, or illegal water sale
+router.post("/driver/infraction", (req, res) => {
+  try {
+    const { tanker_id, infraction_type, details } = req.body;
+    const tId = tanker_id || "T-08";
+    const result = recordDriverInfraction(tId, infraction_type || "ROUTE_DIVERSION", details);
+    res.json({
+      success: true,
+      message: `Infraction ${infraction_type} recorded against Tanker ${tId}.`,
+      ...result,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/driver/reward - Reward on-time delivery or praise
+router.post("/driver/reward", (req, res) => {
+  try {
+    const { tanker_id, reward_type, details } = req.body;
+    const tId = tanker_id || "T-08";
+    const result = recordDriverReward(tId, reward_type || "ON_TIME_DELIVERY", details);
+    res.json({
+      success: true,
+      message: `Reward applied to Tanker ${tId}.`,
+      ...result,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/driver/blacklist - Manually blacklist or restore tanker plate contract
+router.post("/driver/blacklist", (req, res) => {
+  try {
+    const { tanker_id, should_blacklist, reason } = req.body;
+    const tId = tanker_id || "T-08";
+    const driver = setTankerBlacklist(tId, should_blacklist !== false, reason);
+    res.json({
+      success: true,
+      message: driver.is_blacklisted
+        ? `Tanker ${driver.transponder_id} (${driver.plate}) has been BLACKLISTED. Contract revoked.`
+        : `Tanker ${driver.transponder_id} (${driver.plate}) contract has been RESTORED.`,
+      driver,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 module.exports = router;
+
 

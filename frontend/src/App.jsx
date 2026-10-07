@@ -28,6 +28,9 @@ import {
   Filter,
   Menu,
   X,
+  Star,
+  Award,
+  AlertOctagon,
 } from "lucide-react";
 
 import KpiStrip from "./components/KpiStrip";
@@ -225,6 +228,122 @@ function AppContent() {
 
   const [fleetFilter, setFleetFilter] = useState("all");
   const [optimizerRunning, setOptimizerRunning] = useState(false);
+
+  // Admin: Review citizen complaint (verify genuine +25 Cr or downvote false -40 Cr)
+  const handleReviewCitizenReport = async (phone, ticketId, action) => {
+    try {
+      const res = await fetch(`${API_URL}/api/citizen/review-complaint`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone,
+          ticket_id: ticketId,
+          action,
+          admin_notes: action === "VERIFY_GENUINE"
+            ? "Verified on-site by Ward Junior Engineer"
+            : "False report detected via ultrasonic flowmeter logs",
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setDispatchNotification({
+          type: action === "VERIFY_GENUINE" ? "success" : "error",
+          message: action === "VERIFY_GENUINE"
+            ? `✓ Citizen report #${ticketId} verified genuine! Awarded +25 Civic Credits. New Trust Score: ${json.profile.credibility_score}%.`
+            : `⚠️ Citizen report #${ticketId} flagged FALSE! Downvoted -40 Civic Credits. New Trust Score: ${json.profile.credibility_score}%.`,
+        });
+        setTimeout(() => setDispatchNotification(null), 8000);
+      }
+    } catch (e) {
+      console.warn("Review complaint error:", e);
+    }
+  };
+
+  // Admin: Record driver infraction (route diversion -25, gps tamper -35, illegal sale -60)
+  const handleDriverInfractionAdmin = async (tankerId, infractionType, notes) => {
+    try {
+      const res = await fetch(`${API_URL}/api/driver/infraction`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tanker_id: tankerId,
+          infraction_type: infractionType,
+          notes,
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setDispatchNotification({
+          type: json.driver?.is_blacklisted ? "error" : "warning",
+          message: json.message,
+        });
+        const dashRes = await fetch(`${API_URL}/api/dashboard`);
+        const dashJson = await dashRes.json();
+        setData(dashJson);
+        setTimeout(() => setDispatchNotification(null), 8000);
+      }
+    } catch (e) {
+      console.warn("Infraction error:", e);
+    }
+  };
+
+  // Admin: Reward driver on-time delivery (+15 Cr)
+  const handleDriverRewardAdmin = async (tankerId, rewardType, details) => {
+    try {
+      const res = await fetch(`${API_URL}/api/driver/reward`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tanker_id: tankerId,
+          reward_type: rewardType,
+          details,
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setDispatchNotification({
+          type: "success",
+          message: json.message,
+        });
+        const dashRes = await fetch(`${API_URL}/api/dashboard`);
+        const dashJson = await dashRes.json();
+        setData(dashJson);
+        setTimeout(() => setDispatchNotification(null), 8000);
+      }
+    } catch (e) {
+      console.warn("Reward error:", e);
+    }
+  };
+
+  // Admin: Toggle tanker plate blacklist status
+  const handleToggleBlacklistAdmin = async (tankerId, currentlyBlacklisted) => {
+    try {
+      const res = await fetch(`${API_URL}/api/driver/blacklist`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tanker_id: tankerId,
+          is_blacklisted: !currentlyBlacklisted,
+          reason: !currentlyBlacklisted
+            ? "Administrative contract revocation: Telemetry tamper & route violation"
+            : "Audited & restored by Municipal Chief Hydraulic Engineer",
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setDispatchNotification({
+          type: !currentlyBlacklisted ? "error" : "success",
+          message: json.message,
+        });
+        const dashRes = await fetch(`${API_URL}/api/dashboard`);
+        const dashJson = await dashRes.json();
+        setData(dashJson);
+        setTimeout(() => setDispatchNotification(null), 8000);
+      }
+    } catch (e) {
+      console.warn("Blacklist toggle error:", e);
+    }
+  };
 
   const handleRerunOptimizer = async () => {
     setOptimizerRunning(true);
@@ -1039,6 +1158,118 @@ function AppContent() {
                     </tbody>
                   </table>
                 </div>
+
+                {/* Citizen Shortage Reports & Credibility Verification Section */}
+                <div className="mt-3 pt-3 border-t border-card-border shrink-0">
+                  <div className="flex items-center justify-between pb-2">
+                    <div>
+                      <h4 className="text-xs font-black text-head-text flex items-center space-x-1.5">
+                        <Award className="w-4 h-4 text-amber-500" />
+                        <span>Citizen Complaint Credibility &amp; Anti-Fraud Verification Gate</span>
+                      </h4>
+                      <p className="text-[10px] text-sec-text">
+                        Admin Triage: Genuine reports award +25 Civic Credits. False / fabricated reports detected via telemetry downvote citizen (-40 Civic Credits).
+                      </p>
+                    </div>
+                    <span className="text-[10px] font-mono font-bold bg-amber-50 text-amber-900 border border-amber-200 px-2 py-0.5 rounded">
+                      SCADA Citizen Trust Engine
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                    {/* Complaint Card 1: High trust fast-track */}
+                    <div className="p-2.5 rounded-lg border border-amber-300 bg-amber-50/40 flex flex-col justify-between space-y-2">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center space-x-1.5">
+                            <span className="font-mono font-bold text-xs text-head-text">#WF-24-918</span>
+                            <span className="text-[9px] font-bold bg-amber-200 text-amber-900 px-1.5 py-0.2 rounded font-mono">
+                              ⚡ Fast-Track Booster Active (-20 Cr Used)
+                            </span>
+                          </div>
+                          <div className="text-[11px] font-semibold text-slate-800 mt-1">
+                            Severe Dry Tap (&gt;48 Hours Continuous) · Ward M/East
+                          </div>
+                          <div className="text-[10px] text-sec-text mt-0.5">
+                            Caller: <strong>+91 98200 12345</strong> · Govandi Shivaji Nagar Sec-4
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-mono block">
+                            92% Trust Score
+                          </span>
+                          <span className="text-[9px] text-sec-text block mt-0.5">Gold Contributor (145 Cr)</span>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-amber-200/60 flex items-center justify-between">
+                        <span className="text-[10px] text-sec-text italic">
+                          SCADA acoustic log: Confirms 0 bar pressure at standpost #4
+                        </span>
+                        <div className="flex items-center space-x-1.5">
+                          <button
+                            onClick={() => handleReviewCitizenReport("+91 98200 12345", "WF-24-918", "VERIFY_GENUINE")}
+                            className="px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] transition cursor-pointer shadow-2xs"
+                          >
+                            ✓ Verify Genuine (+25 Cr)
+                          </button>
+                          <button
+                            onClick={() => handleReviewCitizenReport("+91 98200 12345", "WF-24-918", "DOWNVOTE_FALSE")}
+                            className="px-2 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] transition cursor-pointer shadow-2xs"
+                          >
+                            ⚠️ Flag False (-40 Cr)
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Complaint Card 2: Low trust suspicious report */}
+                    <div className="p-2.5 rounded-lg border border-slate-200 bg-slate-50 flex flex-col justify-between space-y-2">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center space-x-1.5">
+                            <span className="font-mono font-bold text-xs text-head-text">#WF-24-942</span>
+                            <span className="text-[9px] font-bold bg-slate-200 text-slate-700 px-1.5 py-0.2 rounded font-mono">
+                              Standard Triage Queue
+                            </span>
+                          </div>
+                          <div className="text-[11px] font-semibold text-slate-800 mt-1">
+                            Unscheduled Outage Claim · Ward L (Kurla)
+                          </div>
+                          <div className="text-[10px] text-sec-text mt-0.5">
+                            Caller: <strong>+91 98334 88120</strong> · Kurla Pipe Road Standpost
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="text-[10px] font-bold text-rose-700 bg-rose-100 px-1.5 py-0.5 rounded font-mono block">
+                            48% Trust Score
+                          </span>
+                          <span className="text-[9px] text-sec-text block mt-0.5">Probationary (25 Cr)</span>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-200 flex items-center justify-between">
+                        <span className="text-[10px] text-sec-text italic">
+                          SCADA sensor: Line pressure normal (2.4 bar) during reported hour
+                        </span>
+                        <div className="flex items-center space-x-1.5">
+                          <button
+                            onClick={() => handleReviewCitizenReport("+91 98334 88120", "WF-24-942", "VERIFY_GENUINE")}
+                            className="px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] transition cursor-pointer shadow-2xs"
+                          >
+                            ✓ Verify Genuine (+25 Cr)
+                          </button>
+                          <button
+                            onClick={() => handleReviewCitizenReport("+91 98334 88120", "WF-24-942", "DOWNVOTE_FALSE")}
+                            className="px-2 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] transition cursor-pointer shadow-2xs"
+                          >
+                            ⚠️ Flag False (-40 Cr)
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -1209,18 +1440,22 @@ function AppContent() {
 
             {/* TAB: Fleet & Logistics */}
             {activeTab === "fleet" && (() => {
-              const allTankers = tankers || DEFAULT_MUMBAI_TANKERS;
+              const allTankers = (tankers && tankers.length > 0) ? tankers : DEFAULT_MUMBAI_TANKERS;
               const enRouteCount = allTankers.filter(t => t.status === "en_route").length;
               const dispensingCount = allTankers.filter(t => t.status === "dispensing").length;
               const loadingCount = allTankers.filter(t => t.status === "loading").length;
-              const availableCount = allTankers.filter(t => t.status === "available").length;
+              const availableCount = allTankers.filter(t => t.status === "available" && !t.is_blacklisted).length;
               const otherCount = allTankers.filter(t => ["returning", "maintenance"].includes(t.status)).length;
+              const preferredCount = allTankers.filter(t => t.is_preferred).length;
+              const blacklistedCount = allTankers.filter(t => t.is_blacklisted).length;
               const activeCount = enRouteCount + dispensingCount + loadingCount;
 
               const filteredTankers = allTankers.filter(t => {
                 if (fleetFilter === "all") return true;
+                if (fleetFilter === "preferred") return t.is_preferred;
+                if (fleetFilter === "blacklisted") return t.is_blacklisted;
                 if (fleetFilter === "active") return ["en_route", "dispensing", "loading"].includes(t.status);
-                if (fleetFilter === "available") return t.status === "available";
+                if (fleetFilter === "available") return t.status === "available" && !t.is_blacklisted;
                 if (fleetFilter === "en_route") return t.status === "en_route";
                 if (fleetFilter === "dispensing") return t.status === "dispensing";
                 if (fleetFilter === "loading") return t.status === "loading";
@@ -1237,13 +1472,13 @@ function AppContent() {
                         <span>Municipal Tanker Fleet Transponders &amp; Turnaround</span>
                       </h3>
                       <p className="text-[11px] text-sec-text">
-                        {allTankers.length} Total Registered Municipal Tankers · Average Dispatch Latency: 14 min
+                        {allTankers.length} Registered Municipal Tankers · Preferred Tier: {preferredCount} · Blacklisted: {blacklistedCount}
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="flex items-center space-x-1.5 px-2 py-0.5 bg-emerald-50 text-olive-green border border-emerald-200 text-xs font-bold rounded">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span>100% Telemetry Online</span>
+                        <span>Telemetry Online</span>
                       </span>
                     </div>
                   </div>
@@ -1254,21 +1489,21 @@ function AppContent() {
                       <div className="text-[9px] font-bold text-sec-text uppercase">Total Fleet</div>
                       <div className="text-sm font-extrabold text-head-text">{allTankers.length} Units</div>
                     </div>
+                    <div className="p-2 bg-amber-50/70 rounded-lg border border-amber-300">
+                      <div className="text-[9px] font-bold text-amber-800 uppercase">⭐ Preferred Contractors</div>
+                      <div className="text-sm font-extrabold text-amber-900">{preferredCount} Priority Units</div>
+                    </div>
+                    <div className="p-2 bg-rose-50/70 rounded-lg border border-rose-300">
+                      <div className="text-[9px] font-bold text-rose-800 uppercase">⛔ Blacklisted Plates</div>
+                      <div className="text-sm font-extrabold text-rose-900">{blacklistedCount} Banned</div>
+                    </div>
                     <div className="p-2 bg-blue-50/60 rounded-lg border border-blue-200">
                       <div className="text-[9px] font-bold text-deep-blue uppercase">Active Dispatches</div>
                       <div className="text-sm font-extrabold text-deep-blue">{activeCount} Running</div>
                     </div>
                     <div className="p-2 bg-emerald-50/60 rounded-lg border border-emerald-200">
-                      <div className="text-[9px] font-bold text-olive-green uppercase">Standby Available</div>
-                      <div className="text-sm font-extrabold text-olive-green">{availableCount} Ready</div>
-                    </div>
-                    <div className="p-2 bg-indigo-50/60 rounded-lg border border-indigo-200">
-                      <div className="text-[9px] font-bold text-indigo-700 uppercase">Depot Loading</div>
-                      <div className="text-sm font-extrabold text-indigo-700">{loadingCount} In Bay</div>
-                    </div>
-                    <div className="p-2 bg-amber-50/60 rounded-lg border border-amber-200">
-                      <div className="text-[9px] font-bold text-warm-amber uppercase">Maintenance / Refit</div>
-                      <div className="text-sm font-extrabold text-warm-amber">{otherCount} Units</div>
+                      <div className="text-[9px] font-bold text-olive-green uppercase">Standby Ready</div>
+                      <div className="text-sm font-extrabold text-olive-green">{availableCount} Available</div>
                     </div>
                   </div>
 
@@ -1276,6 +1511,8 @@ function AppContent() {
                   <div className="flex items-center space-x-1 overflow-x-auto custom-scroll pb-1 shrink-0 border-b border-card-border text-xs">
                     {[
                       { id: "all", label: `All (${allTankers.length})` },
+                      { id: "preferred", label: `⭐ Preferred (${preferredCount})` },
+                      { id: "blacklisted", label: `⛔ Blacklisted (${blacklistedCount})` },
                       { id: "active", label: `Active Pipeline (${activeCount})` },
                       { id: "available", label: `Available Standby (${availableCount})` },
                       { id: "en_route", label: `En Route (${enRouteCount})` },
@@ -1286,7 +1523,7 @@ function AppContent() {
                       <button
                         key={f.id}
                         onClick={() => setFleetFilter(f.id)}
-                        className={`px-2.5 py-1 rounded-md text-[11px] font-bold whitespace-nowrap transition-colors ${
+                        className={`px-2.5 py-1 rounded-md text-[11px] font-bold whitespace-nowrap transition-colors cursor-pointer ${
                           fleetFilter === f.id
                             ? "bg-deep-blue text-white shadow-2xs"
                             : "bg-slate-100 text-sec-text hover:bg-slate-200 hover:text-head-text"
@@ -1312,23 +1549,64 @@ function AppContent() {
                         const sc = statusColors[tanker.status] || statusColors.available;
                         const loadPct = tanker.capacity > 0 ? Math.round((tanker.current_load / tanker.capacity) * 100) : 0;
                         const ward = wards?.find(w => w.ward_number === tanker.assigned_ward);
+                        const tankerKey = tanker.transponder_id || tanker.tanker_id;
 
                         return (
-                          <div key={tanker.tanker_id} className="p-3 rounded-lg border border-card-border bg-[#FBFDFF] hover:border-blue-300 transition-all shadow-2xs flex flex-col justify-between">
+                          <div key={tankerKey} className={`p-3 rounded-xl border transition-all shadow-2xs flex flex-col justify-between ${
+                            tanker.is_blacklisted
+                              ? "bg-rose-50/50 border-rose-400 ring-1 ring-rose-400/50"
+                              : tanker.is_preferred
+                              ? "bg-[#FBFDFF] border-amber-300 ring-1 ring-amber-300/40"
+                              : "bg-[#FBFDFF] border-card-border hover:border-blue-300"
+                          }`}>
                             <div>
-                              <div className="flex justify-between items-start">
+                              <div className="flex justify-between items-start gap-1">
                                 <div>
-                                  <div className="flex items-center space-x-1.5">
+                                  <div className="flex items-center space-x-1.5 flex-wrap">
                                     <span className="font-mono font-black text-sm text-head-text">{tanker.transponder_id}</span>
-                                    <span className="text-[10px] font-mono text-sec-text px-1 bg-slate-100 rounded border border-card-border">{tanker.plate || "MH-01-M-4491"}</span>
+                                    <span className="text-[10px] font-mono font-bold text-slate-800 px-1.5 py-0.2 bg-white rounded border border-slate-300 shadow-2xs">
+                                      {tanker.plate || "MH-01-M-4491"}
+                                    </span>
                                   </div>
                                   <div className="text-[11px] text-sec-text mt-0.5">
                                     Driver: <strong className="text-head-text">{tanker.driver || "Municipal Fleet Crew"}</strong>
                                   </div>
                                 </div>
-                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold border capitalize font-mono ${sc.badge}`}>
-                                  {tanker.status.replace("_", " ")}
-                                </span>
+
+                                <div className="flex flex-col items-end gap-1">
+                                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold border capitalize font-mono ${sc.badge}`}>
+                                    {tanker.status.replace("_", " ")}
+                                  </span>
+                                  {tanker.is_blacklisted ? (
+                                    <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-rose-600 text-white font-mono animate-pulse">
+                                      ⛔ Blacklisted
+                                    </span>
+                                  ) : tanker.is_preferred ? (
+                                    <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 font-mono">
+                                      ⭐ Preferred
+                                    </span>
+                                  ) : null}
+                                </div>
+                              </div>
+
+                              {/* Integrity & Telemetry Strip */}
+                              <div className="flex items-center justify-between bg-slate-50 p-1.5 rounded-lg border border-slate-200 mt-2 text-[10px] font-mono">
+                                <div className="flex items-center space-x-1">
+                                  <span className="text-sec-text">Credits:</span>
+                                  <strong className={tanker.is_blacklisted ? "text-rose-600 font-black" : tanker.credit_balance >= 90 ? "text-amber-700 font-black" : "text-deep-blue font-bold"}>
+                                    {tanker.credit_balance !== undefined ? tanker.credit_balance : (tanker.is_blacklisted ? 20 : 85)} Cr
+                                  </strong>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <span className="text-sec-text">GPS:</span>
+                                  <span className={`font-bold ${tanker.telemetry_status === "TAMPER_DETECTED" ? "text-rose-600" : "text-emerald-700"}`}>
+                                    {tanker.telemetry_status === "TAMPER_DETECTED" ? "⚠️ Tampered" : "Online"}
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <span className="text-sec-text">Rating:</span>
+                                  <span className="font-bold text-amber-600">★ {tanker.integrity_rating || "4.8"}</span>
+                                </div>
                               </div>
 
                               {/* Capacity Meter */}
@@ -1366,29 +1644,79 @@ function AppContent() {
                               </div>
                             </div>
 
-                            {/* Action Button */}
-                            <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between">
-                              {tanker.status === "available" ? (
-                                <button
-                                  onClick={() => {
-                                    const topWard = priorityQueue[0];
-                                    if (topWard) handleDispatchWard(topWard, { tankerId: tanker.transponder_id });
-                                  }}
-                                  className="w-full py-1 px-2.5 bg-deep-blue text-white rounded text-[11px] font-bold hover:bg-blue-700 transition-colors shadow-2xs"
-                                >
-                                  Quick Dispatch to Priority Ward
-                                </button>
-                              ) : tanker.status === "en_route" || tanker.status === "dispensing" ? (
-                                <button
-                                  onClick={() => setActiveTab("spatial")}
-                                  className="w-full py-1 px-2.5 bg-blue-50 text-deep-blue border border-blue-200 rounded text-[11px] font-bold hover:bg-blue-100 transition-colors"
-                                >
-                                  Track on Live GIS Map
-                                </button>
+                            {/* Action Button & Admin Simulators */}
+                            <div className="mt-3 pt-2 border-t border-slate-100 space-y-1.5">
+                              {tanker.is_blacklisted ? (
+                                <div className="space-y-1.5">
+                                  <div className="text-[10px] font-bold text-rose-700 bg-rose-100 p-1.5 rounded flex items-center space-x-1">
+                                    <AlertOctagon className="w-3.5 h-3.5 shrink-0" />
+                                    <span>CONTRACT REVOKED: Banned due to low credits (&lt;30 Cr). Barred from allocation.</span>
+                                  </div>
+                                  <button
+                                    onClick={() => handleToggleBlacklistAdmin(tankerKey, true)}
+                                    className="w-full py-1 px-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold transition-colors cursor-pointer shadow-2xs"
+                                  >
+                                    ✓ Reinstate Plate &amp; Driver (Admin Passed Audit)
+                                  </button>
+                                </div>
                               ) : (
-                                <span className="text-[10px] text-sec-text italic w-full text-center py-1">
-                                  Depot Operations in Progress
-                                </span>
+                                <>
+                                  {tanker.status === "available" ? (
+                                    <button
+                                      onClick={() => {
+                                        const topWard = priorityQueue[0];
+                                        if (topWard) handleDispatchWard(topWard, { tankerId: tanker.transponder_id });
+                                      }}
+                                      className="w-full py-1 px-2.5 bg-deep-blue text-white rounded text-[11px] font-bold hover:bg-blue-700 transition-colors shadow-2xs cursor-pointer"
+                                    >
+                                      Quick Dispatch to Priority Ward
+                                    </button>
+                                  ) : tanker.status === "en_route" || tanker.status === "dispensing" ? (
+                                    <button
+                                      onClick={() => setActiveTab("spatial")}
+                                      className="w-full py-1 px-2.5 bg-blue-50 text-deep-blue border border-blue-200 rounded text-[11px] font-bold hover:bg-blue-100 transition-colors cursor-pointer"
+                                    >
+                                      Track on Live GIS Map
+                                    </button>
+                                  ) : (
+                                    <span className="text-[10px] text-sec-text italic w-full text-center py-1 block">
+                                      Depot Operations in Progress
+                                    </span>
+                                  )}
+
+                                  {/* Admin Simulation Actions Strip */}
+                                  <div className="flex items-center justify-between gap-1 pt-1 border-t border-slate-100 text-[9px] font-mono">
+                                    <span className="text-slate-400">Infractions:</span>
+                                    <button
+                                      onClick={() => handleDriverInfractionAdmin(tankerKey, "ROUTE_DIVERSION", "Off-corridor diversion detected")}
+                                      className="px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 cursor-pointer font-bold"
+                                      title="Simulate Route Diversion (-25 Cr)"
+                                    >
+                                      Divert (-25)
+                                    </button>
+                                    <button
+                                      onClick={() => handleDriverInfractionAdmin(tankerKey, "GPS_TAMPER", "GPS transponder signal lost")}
+                                      className="px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 cursor-pointer font-bold"
+                                      title="Simulate GPS Tamper (-35 Cr)"
+                                    >
+                                      Cut GPS (-35)
+                                    </button>
+                                    <button
+                                      onClick={() => handleDriverInfractionAdmin(tankerKey, "ILLEGAL_WATER_SALE", "Vigilance alert: Selling relief water")}
+                                      className="px-1.5 py-0.5 rounded bg-rose-600 text-white hover:bg-rose-700 cursor-pointer font-black"
+                                      title="Report Illegal Sale (-60 Cr & Immediate Blacklist)"
+                                    >
+                                      Illegal Sale (-60)
+                                    </button>
+                                    <button
+                                      onClick={() => handleDriverRewardAdmin(tankerKey, "ON_TIME_DELIVERY", "On-time arrival praise")}
+                                      className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 cursor-pointer font-bold"
+                                      title="Reward On-Time Delivery (+15 Cr)"
+                                    >
+                                      Reward (+15)
+                                    </button>
+                                  </div>
+                                </>
                               )}
                             </div>
                           </div>

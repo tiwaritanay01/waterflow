@@ -30,7 +30,12 @@ import {
   History,
   AlertCircle,
   X,
-  Layers
+  Layers,
+  Star,
+  Award,
+  TrendingUp,
+  TrendingDown,
+  ShieldAlert,
 } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle } from "react-leaflet";
 import L from "leaflet";
@@ -119,6 +124,130 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
   const [syncFeedback, setSyncFeedback] = useState(null);
   const [activeConflict, setActiveConflict] = useState(null);
   const [showQueueDrawer, setShowQueueDrawer] = useState(false);
+
+  // Driver Integrity, Telemetry & Blacklisting State
+  const [driverCredits, setDriverCredits] = useState(120);
+  const [integrityRating, setIntegrityRating] = useState(4.8);
+  const [isBlacklisted, setIsBlacklisted] = useState(false);
+  const [isPreferred, setIsPreferred] = useState(true);
+  const [telemetryStatus, setTelemetryStatus] = useState("ONLINE"); // "ONLINE" | "TAMPER_DETECTED"
+  const [routeStatus, setRouteStatus] = useState("ON_CORRIDOR"); // "ON_CORRIDOR" | "OFF_ROUTE_DIVERSION"
+  const [infractionHistory, setInfractionHistory] = useState([]);
+  const [integrityFeedback, setIntegrityFeedback] = useState(null);
+  const [integrityLoading, setIntegrityLoading] = useState(false);
+  const [showIntegrityLedger, setShowIntegrityLedger] = useState(false);
+
+  // Sync Driver Integrity Profile from Backend
+  const fetchDriverIntegrity = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/driver/integrity?tanker_id=${mission.tanker_id}`);
+      const data = await res.json();
+      if (data.success && data.driver) {
+        setDriverCredits(data.driver.credit_balance);
+        setIntegrityRating(data.driver.integrity_rating);
+        setIsBlacklisted(data.driver.is_blacklisted);
+        setIsPreferred(data.driver.is_preferred);
+        setTelemetryStatus(data.driver.telemetry_status || "ONLINE");
+        setRouteStatus(data.driver.route_status || "ON_CORRIDOR");
+        if (data.driver.history) {
+          setInfractionHistory(data.driver.history);
+        }
+      }
+    } catch (_) {}
+  };
+
+  useEffect(() => {
+    fetchDriverIntegrity();
+  }, [mission.tanker_id]);
+
+  // Infraction & Telemetry Simulators for Evaluators
+  const handleTriggerInfraction = async (infractionType, notes) => {
+    setIntegrityLoading(true);
+    setIntegrityFeedback(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/driver/infraction`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tanker_id: mission.tanker_id,
+          infraction_type: infractionType,
+          notes: notes,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.driver) {
+        setDriverCredits(data.driver.credit_balance);
+        setIntegrityRating(data.driver.integrity_rating);
+        setIsBlacklisted(data.driver.is_blacklisted);
+        setIsPreferred(data.driver.is_preferred);
+        setTelemetryStatus(data.driver.telemetry_status);
+        setRouteStatus(data.driver.route_status);
+        if (data.driver.history) setInfractionHistory(data.driver.history);
+        setIntegrityFeedback(data.message);
+      }
+    } catch (err) {
+      setIntegrityFeedback("Failed to record infraction: " + err.message);
+    } finally {
+      setIntegrityLoading(false);
+    }
+  };
+
+  const handleTriggerReward = async (rewardType, details) => {
+    setIntegrityLoading(true);
+    setIntegrityFeedback(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/driver/reward`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tanker_id: mission.tanker_id,
+          reward_type: rewardType,
+          details: details,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.driver) {
+        setDriverCredits(data.driver.credit_balance);
+        setIntegrityRating(data.driver.integrity_rating);
+        setIsBlacklisted(data.driver.is_blacklisted);
+        setIsPreferred(data.driver.is_preferred);
+        if (data.driver.history) setInfractionHistory(data.driver.history);
+        setIntegrityFeedback(data.message);
+      }
+    } catch (err) {
+      setIntegrityFeedback("Failed to record reward: " + err.message);
+    } finally {
+      setIntegrityLoading(false);
+    }
+  };
+
+  const handleToggleBlacklist = async () => {
+    setIntegrityLoading(true);
+    setIntegrityFeedback(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/driver/blacklist`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tanker_id: mission.tanker_id,
+          is_blacklisted: !isBlacklisted,
+          reason: !isBlacklisted ? "Manual municipal audit flag: Transponder tampered & route violated" : "Audited & restored by Municipal Chief Hydraulic Engineer",
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.driver) {
+        setIsBlacklisted(data.driver.is_blacklisted);
+        setDriverCredits(data.driver.credit_balance);
+        setIsPreferred(data.driver.is_preferred);
+        if (data.driver.history) setInfractionHistory(data.driver.history);
+        setIntegrityFeedback(data.message);
+      }
+    } catch (err) {
+      setIntegrityFeedback("Failed to update blacklist status: " + err.message);
+    } finally {
+      setIntegrityLoading(false);
+    }
+  };
 
   // Helper to re-read pending and queued actions from IndexedDB
   const refreshQueueStatus = async () => {
@@ -658,6 +787,205 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
               ============================================================ */}
           <div className={`${forceMobileFrame ? "space-y-3.5" : "lg:col-span-7 space-y-4"}`}>
             
+            {/* ============================================================
+                DRIVER & TANKER INTEGRITY SCORECARD & COMPLIANCE BANNER
+                ============================================================ */}
+            <div className={`rounded-2xl p-4 transition-all shadow-md border ${
+              isBlacklisted
+                ? "bg-gradient-to-br from-rose-950 via-slate-900 to-rose-900 text-white border-rose-500/80 ring-2 ring-rose-500/50"
+                : isPreferred
+                ? "bg-gradient-to-br from-slate-900 via-sky-950 to-blue-900 text-white border-amber-400/40"
+                : "bg-white text-slate-800 border-slate-200"
+            }`}>
+              {/* Header row: License Plate & Standing */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 pb-3 border-b border-white/10">
+                <div className="flex items-center space-x-3">
+                  {/* High-Security Registration Plate Mockup */}
+                  <div className="flex items-center border-2 border-slate-700 rounded bg-white px-2 py-0.5 shadow-sm text-slate-900 shrink-0">
+                    <div className="flex flex-col items-center mr-1.5 pr-1 border-r border-slate-300">
+                      <span className="text-[7px] font-black text-blue-800 leading-none">IND</span>
+                      <span className="text-[8px] leading-none">🇮🇳</span>
+                    </div>
+                    <span className="font-mono font-black text-sm tracking-wider uppercase text-slate-900">
+                      {mission.license_plate}
+                    </span>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center space-x-1.5 flex-wrap">
+                      <span className={`text-xs font-black ${isBlacklisted || isPreferred ? "text-white" : "text-slate-900"}`}>
+                        {mission.driver_name}
+                      </span>
+                      <span className="text-[10px] opacity-75 font-mono">({mission.driver_id})</span>
+                    </div>
+                    <span className="text-[10px] opacity-80 block font-medium">
+                      Municipal Assigned Fleet · {mission.destination_ward}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  {isBlacklisted ? (
+                    <span className="px-2.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-rose-600 text-white border border-rose-400 flex items-center space-x-1 animate-pulse">
+                      <AlertOctagon className="w-3.5 h-3.5" />
+                      <span>⛔ CONTRACT REVOKED</span>
+                    </span>
+                  ) : isPreferred ? (
+                    <span className="px-2.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-400 text-slate-950 border border-amber-300 flex items-center space-x-1 shadow-xs">
+                      <Star className="w-3.5 h-3.5 fill-slate-950" />
+                      <span>⭐ PREFERRED CONTRACTOR</span>
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-100 text-sky-800 border border-sky-300">
+                      Active Contractor
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Blacklisted Warning Banner */}
+              {isBlacklisted && (
+                <div className="mt-3 p-3 rounded-xl bg-rose-600/30 border-2 border-rose-500 text-rose-100 text-xs space-y-1">
+                  <div className="flex items-center space-x-1.5 font-black text-white text-xs">
+                    <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0" />
+                    <span>VEHICLE BLACKLISTED — WATER ALLOCATION CONTRACT CANCELLED</span>
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-rose-200">
+                    Tanker plate <strong>{mission.license_plate}</strong> credit balance dropped to <strong>{driverCredits} Credits</strong> (below threshold of 30). This vehicle is barred from BMC water delivery contracts. Handover water must be cleared by Municipal Vigilance.
+                  </p>
+                </div>
+              )}
+
+              {/* Key Metrics Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3 text-xs">
+                {/* Credit Balance */}
+                <div className={`p-2.5 rounded-xl border ${isBlacklisted ? "bg-white/5 border-white/10" : isPreferred ? "bg-white/10 border-white/15" : "bg-slate-50 border-slate-200"}`}>
+                  <span className="text-[10px] opacity-75 font-mono block">Driver Credits</span>
+                  <div className="flex items-baseline space-x-1 mt-0.5">
+                    <span className={`text-xl font-black font-mono ${isBlacklisted ? "text-rose-400" : isPreferred ? "text-amber-300" : "text-[#0056b3]"}`}>
+                      {driverCredits}
+                    </span>
+                    <span className="text-[10px] opacity-75">/ 100</span>
+                  </div>
+                  <span className="text-[9.5px] opacity-70 block mt-0.5">
+                    {driverCredits < 30 ? "Threshold < 30 breached" : driverCredits >= 90 ? "Preferred priority tier" : "Standard standing"}
+                  </span>
+                </div>
+
+                {/* Rating */}
+                <div className={`p-2.5 rounded-xl border ${isBlacklisted ? "bg-white/5 border-white/10" : isPreferred ? "bg-white/10 border-white/15" : "bg-slate-50 border-slate-200"}`}>
+                  <span className="text-[10px] opacity-75 font-mono block">Customer Rating</span>
+                  <div className="flex items-baseline space-x-1 mt-0.5">
+                    <span className="text-xl font-black font-mono text-amber-400">{integrityRating}</span>
+                    <span className="text-xs text-amber-300">★</span>
+                  </div>
+                  <span className="text-[9.5px] opacity-70 block mt-0.5">Ward feedback score</span>
+                </div>
+
+                {/* GPS Telemetry */}
+                <div className={`p-2.5 rounded-xl border ${isBlacklisted ? "bg-white/5 border-white/10" : isPreferred ? "bg-white/10 border-white/15" : "bg-slate-50 border-slate-200"}`}>
+                  <span className="text-[10px] opacity-75 font-mono block">Transponder (GPS)</span>
+                  <div className="flex items-center space-x-1.5 mt-1">
+                    <span className={`w-2 h-2 rounded-full ${telemetryStatus === "ONLINE" ? "bg-emerald-400 live-pulse" : "bg-rose-500 animate-ping"}`} />
+                    <span className={`font-bold text-xs ${telemetryStatus === "ONLINE" ? "text-emerald-300" : "text-rose-400"}`}>
+                      {telemetryStatus === "ONLINE" ? "GPS Online" : "TAMPERED"}
+                    </span>
+                  </div>
+                  <span className="text-[9.5px] opacity-70 block mt-0.5">
+                    {telemetryStatus === "ONLINE" ? "Corridor Adherence: 98%" : "Signal cut (-35 Cr)"}
+                  </span>
+                </div>
+
+                {/* Route Adherence */}
+                <div className={`p-2.5 rounded-xl border ${isBlacklisted ? "bg-white/5 border-white/10" : isPreferred ? "bg-white/10 border-white/15" : "bg-slate-50 border-slate-200"}`}>
+                  <span className="text-[10px] opacity-75 font-mono block">Corridor Adherence</span>
+                  <div className="flex items-center space-x-1 mt-1">
+                    <span className={`font-bold text-xs ${routeStatus === "ON_CORRIDOR" ? "text-emerald-300" : "text-rose-400"}`}>
+                      {routeStatus === "ON_CORRIDOR" ? "On Corridor" : "Diverted Route"}
+                    </span>
+                  </div>
+                  <span className="text-[9.5px] opacity-70 block mt-0.5">
+                    {routeStatus === "ON_CORRIDOR" ? "No deviation flags" : "Deviation flagged (-25 Cr)"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Evaluator Interactive Telemetry & Infraction Controls */}
+              <div className="mt-3 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center space-x-1.5 flex-wrap gap-y-1 text-[10px]">
+                  <span className="opacity-75 font-mono uppercase mr-1">Evaluator Simulator:</span>
+                  <button
+                    type="button"
+                    onClick={() => handleTriggerInfraction("GPS_TAMPER", "Worker simulated transponder disconnect / power cut")}
+                    disabled={integrityLoading}
+                    className="px-2 py-1 rounded bg-rose-900/60 hover:bg-rose-800 text-rose-200 border border-rose-500/40 font-bold transition cursor-pointer"
+                    title="Simulate GPS cut (-35 Credits)"
+                  >
+                    📡 Cut GPS (-35 Cr)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleTriggerInfraction("ROUTE_DIVERSION", "Worker simulated route deviation outside municipal corridor")}
+                    disabled={integrityLoading}
+                    className="px-2 py-1 rounded bg-rose-900/60 hover:bg-rose-800 text-rose-200 border border-rose-500/40 font-bold transition cursor-pointer"
+                    title="Simulate Route Diversion (-25 Credits)"
+                  >
+                    ⚠️ Divert Route (-25 Cr)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleTriggerInfraction("ILLEGAL_WATER_SALE", "Simulated consumer complaint: Demanded extra money for water")}
+                    disabled={integrityLoading}
+                    className="px-2 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white font-black border border-rose-400 transition cursor-pointer"
+                    title="Report Illegal Sale / Bribe (-60 Credits & Immediate Blacklist)"
+                  >
+                    🚨 Illegal Sale (-60 Cr)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleTriggerReward("ON_TIME_DELIVERY", "On-time arrival within 5 minutes of SCADA ETA")}
+                    disabled={integrityLoading}
+                    className="px-2 py-1 rounded bg-emerald-800/70 hover:bg-emerald-700 text-emerald-200 border border-emerald-500/40 font-bold transition cursor-pointer"
+                    title="Award on-time delivery (+15 Credits)"
+                  >
+                    ⭐ Reward (+15 Cr)
+                  </button>
+                </div>
+
+                <div className="flex items-center space-x-1.5 text-[10px]">
+                  <button
+                    type="button"
+                    onClick={handleToggleBlacklist}
+                    disabled={integrityLoading}
+                    className={`px-2.5 py-1 rounded font-bold border transition cursor-pointer ${
+                      isBlacklisted
+                        ? "bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-400"
+                        : "bg-rose-800 hover:bg-rose-900 text-rose-100 border-rose-600"
+                    }`}
+                  >
+                    {isBlacklisted ? "✓ Reinstate Plate" : "⛔ Blacklist Plate"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowIntegrityLedger(true)}
+                    className="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-white font-mono border border-white/20 transition cursor-pointer"
+                  >
+                    Audit Log ({infractionHistory.length})
+                  </button>
+                </div>
+              </div>
+
+              {/* Status feedback message */}
+              {integrityFeedback && (
+                <div className="mt-2.5 p-2 rounded-lg bg-white/10 border border-white/20 text-xs font-bold text-amber-200 animate-fade-in flex items-center justify-between">
+                  <span>{integrityFeedback}</span>
+                  <button onClick={() => setIntegrityFeedback(null)} className="opacity-75 hover:opacity-100 cursor-pointer">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Dynamic Offline-First Status & Control Bar */}
             <div className="space-y-2">
               <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-xs flex flex-wrap items-center justify-between gap-2 text-xs">
@@ -1309,28 +1637,35 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                   </div>
 
                   {/* Confirm Delivery Button */}
-                  <button
-                    type="button"
-                    onClick={handleVerifyDelivery}
-                    disabled={verifying || inputOtp.length !== 4}
-                    className={`mt-4 w-full py-3 rounded-xl font-bold text-xs sm:text-sm tracking-wide shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer ${
-                      inputOtp.length === 4
-                        ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-700/30"
-                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
-                    }`}
-                  >
-                    {verifying ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                        <span>Verifying OTP (तपासत आहे)...</span>
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle2 className="w-4 h-4" />
-                        <span>CONFIRM DELIVERY (पाणी दिले)</span>
-                      </>
-                    )}
-                  </button>
+                  {isBlacklisted ? (
+                    <div className="mt-4 p-3 rounded-xl bg-rose-100 border border-rose-300 text-rose-900 text-xs font-bold flex items-center space-x-2">
+                      <AlertOctagon className="w-4 h-4 text-rose-600 shrink-0" />
+                      <span>⛔ DELIVERY LOCKED: Tanker Plate Blacklisted due to low integrity credits ({driverCredits} &lt; 30).</span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleVerifyDelivery}
+                      disabled={verifying || inputOtp.length !== 4}
+                      className={`mt-4 w-full py-3 rounded-xl font-bold text-xs sm:text-sm tracking-wide shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer ${
+                        inputOtp.length === 4
+                          ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-700/30"
+                          : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                      }`}
+                    >
+                      {verifying ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          <span>Verifying OTP (तपासत आहे)...</span>
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span>CONFIRM DELIVERY (पाणी दिले)</span>
+                        </>
+                      )}
+                    </button>
+                  )}
                 </>
               )}
             </>
@@ -1492,6 +1827,105 @@ export default function WorkerApp({ onBackToDashboard, onSignOut, user }) {
                 <button
                   type="button"
                   onClick={() => setShowQueueDrawer(false)}
+                  className="px-4 py-1.5 rounded-lg bg-slate-800 text-white font-bold text-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================
+            DRIVER INTEGRITY & INFRACTION AUDIT LOG MODAL
+            ============================================================ */}
+        {showIntegrityLedger && (
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-2xl max-w-xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+              <div className="p-4 bg-slate-900 text-white flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <History className="w-5 h-5 text-amber-400" />
+                  <div>
+                    <h3 className="text-sm font-bold">Driver Telemetry &amp; Infraction Audit Log</h3>
+                    <p className="text-[10px] text-slate-400 font-mono">
+                      Plate: {mission.license_plate} · Driver: {mission.driver_name}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowIntegrityLedger(false)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Status summary banner */}
+              <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-mono">
+                <div>
+                  <span className="text-slate-500">Current Balance: </span>
+                  <strong className={isBlacklisted ? "text-rose-600 font-bold" : "text-emerald-700 font-bold"}>
+                    {driverCredits} Credits
+                  </strong>
+                </div>
+                <div>
+                  <span className="text-slate-500">Contract Standing: </span>
+                  <strong className={isBlacklisted ? "text-rose-600 font-bold" : isPreferred ? "text-amber-600 font-bold" : "text-sky-700 font-bold"}>
+                    {isBlacklisted ? "REVOKED / BLACKLISTED" : isPreferred ? "PREFERRED CONTRACTOR" : "ACTIVE"}
+                  </strong>
+                </div>
+              </div>
+
+              {/* List */}
+              <div className="p-4 overflow-y-auto space-y-2 flex-1 custom-scroll text-xs">
+                {infractionHistory.length === 0 ? (
+                  <div className="text-center py-8 text-slate-400">
+                    <CheckCircle2 className="w-8 h-8 mx-auto text-emerald-500 mb-2 opacity-60" />
+                    <p>Clean track record! No infractions or customer grievances recorded.</p>
+                  </div>
+                ) : (
+                  infractionHistory.map((item, idx) => (
+                    <div
+                      key={item.id || idx}
+                      className={`p-3 rounded-xl border flex items-start justify-between gap-2 ${
+                        item.type === "REWARD"
+                          ? "bg-emerald-50/70 border-emerald-200"
+                          : item.amount < -30
+                          ? "bg-rose-50/80 border-rose-300"
+                          : "bg-amber-50/70 border-amber-300"
+                      }`}
+                    >
+                      <div className="flex items-start space-x-2.5">
+                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                          item.type === "REWARD" ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
+                        }`}>
+                          {item.type === "REWARD" ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                        </div>
+                        <div>
+                          <div className="flex items-center space-x-2 font-mono">
+                            <span className={`font-bold ${item.type === "REWARD" ? "text-emerald-700" : "text-rose-700"}`}>
+                              {item.amount > 0 ? `+${item.amount}` : item.amount} Credits
+                            </span>
+                            <span className="text-[10px] text-slate-400">· {item.timestamp}</span>
+                          </div>
+                          <p className="text-slate-800 font-medium text-xs mt-0.5">{item.reason}</p>
+                        </div>
+                      </div>
+
+                      <div className="text-right shrink-0">
+                        <span className="text-[10px] text-slate-400 font-mono block">Balance</span>
+                        <span className="font-mono font-bold text-slate-800">{item.balance_after} Cr</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="p-3 bg-slate-100 border-t border-slate-200 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowIntegrityLedger(false)}
                   className="px-4 py-1.5 rounded-lg bg-slate-800 text-white font-bold text-xs"
                 >
                   Close
