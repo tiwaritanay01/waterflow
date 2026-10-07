@@ -24,90 +24,7 @@ import {
   DEFAULT_MUMBAI_DEPOTS,
 } from "../utils/mumbaiWardsData";
 
-/**
- * Bespoke WaterFlow Brand Emblem
- * Features circular civic-inspired geometry, precision telemetry calibrations,
- * and dual interlocking fluid conduits flowing into a central infrastructure core.
- */
-export function WaterFlowEmblem({ className = "w-10 h-10", dark = false }) {
-  const primaryColor = dark ? "#003F87" : "#FFFFFF";
-  const aquaColor = "#19D3E6";
-  const blueColor = "#3399FF";
-  const ringColor = dark ? "rgba(0, 63, 135, 0.15)" : "rgba(25, 211, 230, 0.25)";
 
-  return (
-    <svg
-      viewBox="0 0 100 100"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      aria-label="WaterFlow Emblem"
-    >
-      <defs>
-        <linearGradient id={`wf-flow-grad-${dark ? "d" : "l"}`} x1="15" y1="20" x2="85" y2="80" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor={aquaColor} />
-          <stop offset="50%" stopColor={blueColor} />
-          <stop offset="100%" stopColor={dark ? "#0056B3" : "#FFFFFF"} />
-        </linearGradient>
-        <radialGradient id={`wf-core-glow-${dark ? "d" : "l"}`} cx="50" cy="50" r="30" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor={aquaColor} stopOpacity={dark ? "0.3" : "0.5"} />
-          <stop offset="100%" stopColor={aquaColor} stopOpacity="0" />
-        </radialGradient>
-      </defs>
-
-      {/* Central Ambient Glow */}
-      <circle cx="50" cy="50" r="32" fill={`url(#wf-core-glow-${dark ? "d" : "l"})`} />
-
-      {/* Outer Precision Telemetry Ring */}
-      <circle
-        cx="50"
-        cy="50"
-        r="44"
-        stroke={ringColor}
-        strokeWidth="1.5"
-        strokeDasharray="2 4"
-      />
-
-      {/* Calibrated Cardinal Ticks */}
-      <line x1="50" y1="3" x2="50" y2="9" stroke={aquaColor} strokeWidth="2" strokeLinecap="round" />
-      <line x1="50" y1="91" x2="50" y2="97" stroke={aquaColor} strokeWidth="2" strokeLinecap="round" />
-      <line x1="3" y1="50" x2="9" y2="50" stroke={aquaColor} strokeWidth="2" strokeLinecap="round" />
-      <line x1="91" y1="50" x2="97" y2="50" stroke={aquaColor} strokeWidth="2" strokeLinecap="round" />
-
-      {/* Inner Structural Track */}
-      <circle
-        cx="50"
-        cy="50"
-        r="36"
-        stroke={dark ? "rgba(0, 63, 135, 0.2)" : "rgba(255, 255, 255, 0.2)"}
-        strokeWidth="1"
-      />
-
-      {/* Primary Interlocking Conduits (Smart Fluid Dynamics) */}
-      <path
-        d="M26 50 C26 34 38 22 52 22 C64 22 74 30 74 42 C74 54 62 62 50 62 C40 62 34 68 34 76"
-        stroke={`url(#wf-flow-grad-${dark ? "d" : "l"})`}
-        strokeWidth="4"
-        strokeLinecap="round"
-      />
-      <path
-        d="M74 50 C74 66 62 78 48 78 C36 78 26 70 26 58 C26 46 38 38 50 38 C60 38 66 32 66 24"
-        stroke={dark ? "#003F87" : "#FFFFFF"}
-        strokeWidth="3.5"
-        strokeLinecap="round"
-        strokeOpacity={dark ? "0.9" : "0.95"}
-      />
-
-      {/* Core Infrastructure Nexus Point */}
-      <circle cx="50" cy="50" r="5.5" fill={aquaColor} />
-      <circle cx="50" cy="50" r="2.5" fill={dark ? "#003F87" : "#FFFFFF"} />
-
-      {/* Micro Telemetry Orbital Points */}
-      <circle cx="34" cy="28" r="1.8" fill={blueColor} />
-      <circle cx="66" cy="72" r="1.8" fill={blueColor} />
-    </svg>
-  );
-}
 
 
 
@@ -188,7 +105,11 @@ export default function LoginPage({ onNavigateToLanding, onLoginSuccess, initial
         {/* Top Header: WaterFlow Logo & Municipal Platform Title */}
         <div className="relative z-10 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <WaterFlowEmblem className="w-10 h-10 sm:w-11 sm:h-11 drop-shadow-md" dark={false} />
+            <img
+              src="/logo.jpg"
+              alt="WaterFlow Water Intelligence Logo"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover shadow-md shrink-0 border border-white/20"
+            />
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <span className="font-extrabold text-lg sm:text-xl tracking-[0.16em] text-white font-sans">
@@ -339,7 +260,11 @@ export default function LoginPage({ onNavigateToLanding, onLoginSuccess, initial
           {/* Header Section */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2.5">
-              <WaterFlowEmblem className="w-8 h-8" dark={true} />
+              <img
+                src="/logo.jpg"
+                alt="WaterFlow Water Intelligence Logo"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover shadow-xs shrink-0 border border-slate-200"
+              />
               <span className="font-extrabold text-base tracking-[0.14em] text-[#003F87] font-sans">
                 WATERFLOW
               </span>
