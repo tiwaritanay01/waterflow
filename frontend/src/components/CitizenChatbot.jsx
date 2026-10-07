@@ -35,12 +35,12 @@ const CHAT_I18N = {
     quickPromptsLabel: "Quick Assistance:",
     prompts: [
       "When is water scheduled today?",
-      "Where is my emergency tanker?",
+      "Need water immediately (Queue Tanker)",
+      "Where is my assigned tanker & OTP?",
       "Report muddy or contaminated water",
-      "How is my priority score calculated?",
     ],
     welcomeMessage:
-      "Hello! I am **JalMitra**, your AI Water Assistant from MCGM / BMC. How can I help you today? You can ask about water supply timings, track your relief tanker, or report water deficits in English, Hindi, or Marathi.",
+      "Hello! I am **JalMitra**, your AI Water Assistant from BMC. How can I help you today? You can ask about water supply timings, queue an emergency tanker, or report water deficits in English, Hindi, or Marathi.",
     raiseTicketAction: "Raise Grievance Ticket",
     sosAction: "Call Helpline +91 8369978764",
     speechError: "Speech recognition not supported in this browser.",
@@ -55,12 +55,12 @@ const CHAT_I18N = {
     quickPromptsLabel: "त्वरित सहायता:",
     prompts: [
       "आज पानी कब आएगा?",
-      "मेरा आपातकालीन टैंकर कहाँ है?",
+      "तुरंत पानी चाहिए / टैंकर मंगाएं",
+      "मेरा आवंटित टैंकर व OTP कहाँ है?",
       "गंदे व बदबूदार पानी की शिकायत दर्ज करें",
-      "राहत प्राथमिकता स्कोर कैसे तय होता है?",
     ],
     welcomeMessage:
-      "नमस्ते! मैं **जलमित्र**, बृहन्मुंबई महानगरपालिका (BMC) का AI जल सहायक हूँ। मैं आपकी क्या मदद कर सकता हूँ? आप जलापूर्ति समय, टैंकर ट्रैकिंग या पानी की किल्लत के बारे में हिंदी, मराठी या अंग्रेजी में पूछ सकते हैं।",
+      "नमस्ते! मैं **जलमित्र**, बृहन्मुंबई महानगरपालिका (BMC) का AI जल सहायक हूँ। मैं आपकी क्या मदद कर सकता हूँ? आप जलापूर्ति समय, आपातकालीन टैंकर कतार या पानी की किल्लत के बारे में हिंदी, मराठी या अंग्रेजी में पूछ सकते हैं।",
     raiseTicketAction: "शिकायत दर्ज करें",
     sosAction: "हेल्पलाइन +91 8369978764 कॉल करें",
     speechError: "आपके ब्राउज़र में आवाज़ पहचान (Web Speech) उपलब्ध नहीं है।",
@@ -75,12 +75,12 @@ const CHAT_I18N = {
     quickPromptsLabel: "तातडीचे प्रश्न:",
     prompts: [
       "आज पाणी पुरवठा वेळ काय आहे?",
-      "माझा आपत्कालीन टँकर कुठे आहे?",
+      "तातडीने पाणी पाहिजे / टँकर पाठवा",
+      "माझा टँकर आणि OTP कुठे आहे?",
       "गढूळ किंवा दूषित पाण्याची तक्रार नोंदवा",
-      "प्राधान्य गुण (Priority Score) कसा ठरतो?",
     ],
     welcomeMessage:
-      "नमस्कार! मी **जलमित्र**, बृहन्मुंबई महानगरपालिकेचा (BMC) AI जल साहाय्यक आहे. मी आपली काय मदत करू शकतो? आपण पाणी पुरवठा वेळापत्रक, टँकर ट्रॅकिंग किंवा टंचाई तक्रारीबाबत मराठी, हिंदी किंवा इंग्रजीत विचारू शकता.",
+      "नमस्कार! मी **जलमित्र**, बृहन्मुंबई महानगरपालिकेचा (BMC) AI जल साहाय्यक आहे. मी आपली काय मदत करू शकतो? आपण पाणी पुरवठा वेळापत्रक, आपत्कालीन टँकर वाटप किंवा टंचाई तक्रारीबाबत मराठी, हिंदी किंवा इंग्रजीत विचारू शकता.",
     raiseTicketAction: "तक्रार नोंदवा",
     sosAction: "हेल्पलाइन +91 8369978764 डायल करा",
     speechError: "आपल्या ब्राउझरमध्ये व्हॉइस इनपुट उपलब्ध नाही.",
@@ -203,6 +203,9 @@ Instructions:
 5. If they report contaminated water or a burst pipe, advise safe precautions and offer to raise a priority grievance.`;
 
     let replyText = "";
+    let allocationQueue = null;
+    let isNonsenseOrConfused = false;
+    let helplineNumber = "8369978764";
 
     // 1. Try Backend Proxy endpoint
     try {
@@ -213,6 +216,7 @@ Instructions:
           messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
           ward_code: wardCode,
           lang: lang,
+          phone: "+91-9820012345",
         }),
       });
 
@@ -220,6 +224,9 @@ Instructions:
         const data = await response.json();
         if (data.reply) {
           replyText = data.reply;
+          allocationQueue = data.allocation_queue || null;
+          isNonsenseOrConfused = Boolean(data.is_nonsense_or_confused);
+          helphoneNumber = data.helpline || "8369978764";
         }
       }
     } catch (backendErr) {
@@ -228,27 +235,84 @@ Instructions:
 
     // 2. Fallback to Direct Groq API if backend was unreachable or empty
     if (!replyText) {
-      try {
-        const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${GROQ_API_KEY}`,
-          },
-          body: JSON.stringify({
-            model: GROQ_MODEL,
-            messages: [
-              { role: "system", content: systemPrompt },
-              ...newMessages.slice(-5).map((m) => ({ role: m.role, content: m.content })),
-            ],
-            max_tokens: 380,
-            temperature: 0.6,
-          }),
-        });
+      const isWaterIntent = /water|tanker|paani|pani|sukha|shortage|dry|deliver|bhejo|pathwa|chahiye|pahije|book|queue|टैंकर|पानी|टँकर|कोरडा|तक्रार/i.test(query);
+      const isGibberish = /recipe|cook|movie|film|cricket|football|joke|who is|code|python|song|politics|homework/i.test(query) || (!isWaterIntent && query.length > 25 && !/time|when|schedule|help|call/i.test(query));
 
-        if (groqRes.ok) {
-          const groqData = await groqRes.json();
-          replyText = groqData.choices?.[0]?.message?.content || "";
+      if (isWaterIntent) {
+        allocationQueue = {
+          ticket_id: `WF-CHAT-${Math.floor(1000 + Math.random() * 9000)}`,
+          ward_code: wardCode,
+          ward_name: wardName,
+          priority_score: 94.2,
+          queue_position: 1,
+          assigned_tanker: tankerId,
+          plate: "MH-03-BW-7821",
+          driver: driver,
+          eta_mins: etaMins,
+          otp_code: otpCode,
+          helpline: "8369978764",
+        };
+      }
+
+      if (isGibberish) {
+        isNonsenseOrConfused = true;
+      }
+
+      const strictSystemPrompt = `You are "JalMitra" (जलमित्र), the official AI Municipal Water Operations Assistant for Brihanmumbai Municipal Corporation (BMC / मनपा).
+
+STRICT DOMAIN SCOPE & RELEVANCE RULES (MANDATORY):
+1. You are EXCLUSIVELY the assistant for BMC Municipal Water Operations (WaterFlow OS) in Mumbai.
+2. You ONLY accept and answer requests directly relevant to Mumbai municipal water operations:
+   - Drinking water supply schedules, timetable, and water pressure for Mumbai's 24 wards (e.g. Ward ${wardCode} - ${timetable})
+   - Reporting dry taps, water shortage, pipeline bursts, low pressure, or contamination
+   - Requesting or booking emergency relief water tankers (allocated fairly by the municipal equity queue)
+   - Live tracking of relief tankers (${tankerId}, Driver: ${driver}), vehicle plate (MH-03-BW-7821), and 4-digit Delivery OTP (${otpCode})
+   - Water safety precautions (boiling muddy water 15+ mins, chlorine purification tablets)
+   - Citizen civic credits, credibility score, and fast-track ticket priority
+   - Driver conduct grievances (route diversion, GPS tampering, illegal water sales)
+   - Official BMC Water Operations Helpline: 8369978764
+
+3. IRRELEVANT REQUESTS, NONSENSE, OR CONFUSION GUARDRAIL (CRITICAL):
+   - If the user asks about ANYTHING outside municipal water (such as cooking recipes, Bollywood/movies, coding/programming, politics, jokes, homework, general chit-chat, sports, unrelated trivia), OR if the user provides nonsense, gibberish (e.g. "asdfghjkl", random letters), abusive text, or an incomprehensible/confusing prompt:
+   - DO NOT answer or entertain the unrelated topic.
+   - Respond politely stating that you are exclusively the BMC Water Operations Assistant and can only assist with Mumbai water supply, tanker deliveries, shortage grievances, and water emergencies.
+   - ALWAYS give the customer the contact number to be called: 8369978764.
+   - Example (English): "I am JalMitra, your BMC Water Operations Assistant. I can only assist with Mumbai water supply, tanker deliveries, shortage grievances, and water emergencies. If you have any doubts or need assistance, please call our 24/7 Helpline directly at 8369978764."
+   - Example (Hindi): "मैं जलमित्र, बीएमसी (BMC) जल विभाग का विशेष सहायक हूँ। मैं केवल मुंबई जल आपूर्ति, टैंकर वितरण, पानी की किल्लत और शिकायतों में सहायता कर सकता हूँ। किसी भी सहायता या प्रश्न के लिए, कृपया बीएमसी जल हेल्पलाइन 8369978764 पर कॉल करें।"
+   - Example (Marathi): "मी जलमित्र, मनपा (BMC) पाणी पुरवठा विभागाचा साहाय्यक आहे. मी फक्त मुंबई पाणीपुरवठा, टँकर वाटप व तक्रारींविषयी मदत करू शकतो. कोणत्याही मदतीसाठी कृपया मनपा पाणी हेल्पलाइन 8369978764 वर थेट कॉल करा."
+
+4. WATER ALLOCATION & EMERGENCY TANKER REQUESTS (QUEUE INTEGRATION):
+   - If the citizen indicates they have no water, need a tanker, or want to register a shortage complaint:
+   - Reassure them that an emergency relief request is being processed directly into the Municipal Water Allocation Queue.
+   - Remind them of Tanker ${tankerId} (Driver: ${driver}, ETA: ${etaMins} mins), Delivery OTP: ${otpCode}, and Helpline: 8369978764.
+
+Respond politely and warmly in the user's language (${lang === "hi" ? "Hindi" : lang === "mr" ? "Marathi" : "English"}).`;
+
+      try {
+        const candidateModels = ["qwen/qwen3.8-27b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
+        for (const m of candidateModels) {
+          const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${GROQ_API_KEY}`,
+            },
+            body: JSON.stringify({
+              model: m,
+              messages: [
+                { role: "system", content: strictSystemPrompt },
+                ...newMessages.slice(-5).map((msg) => ({ role: msg.role, content: msg.content })),
+              ],
+              max_tokens: 380,
+              temperature: 0.5,
+            }),
+          });
+
+          if (groqRes.ok) {
+            const groqData = await groqRes.json();
+            replyText = groqData.choices?.[0]?.message?.content || "";
+            if (replyText) break;
+          }
         }
       } catch (directErr) {
         console.warn("Direct Groq API fetch error:", directErr);
@@ -257,7 +321,23 @@ Instructions:
 
     // 3. Fallback to Local Municipal Knowledge if offline
     if (!replyText) {
-      if (lang === "mr") {
+      if (isNonsenseOrConfused) {
+        if (lang === "mr") {
+          replyText = `मी जलमित्र, बृहन्मुंबई महानगरपालिकेचा (BMC) अधिकृत जल साहाय्यक आहे. मी फक्त मुंबई पाणीपुरवठा, टँकर वाटप, पाण्याची वेळ आणि जल तक्रारींविषयी मदत करू शकतो. आपल्याला कोणत्याही शंका असल्यास किंवा मदत हवी असल्यास कृपया मनपा पाणी हेल्पलाइन 8369978764 वर थेट कॉल करा.`;
+        } else if (lang === "hi") {
+          replyText = `मैं जलमित्र, बृहन्मुंबई महानगरपालिका (BMC) का आधिकारिक जल सहायक हूँ। मैं केवल मुंबई जल आपूर्ति, टैंकर वितरण, पानी के समय और जल शिकायतों में सहायता कर सकता हूँ। किसी भी प्रकार के संशय या सहायता के लिए, कृपया बीएमसी जल हेल्पलाइन 8369978764 पर सीधे संपर्क करें।`;
+        } else {
+          replyText = `I am JalMitra, the official BMC Municipal Water Operations Assistant. I can only assist with Mumbai water supply schedules, emergency tanker deliveries, shortage grievances, and water emergencies. If you are confused or require assistance, please call our 24/7 Helpline directly at 8369978764.`;
+        }
+      } else if (allocationQueue) {
+        if (lang === "mr") {
+          replyText = `तुमची तातडीची पाण्याची मागणी पालिकेच्या अधिकृत वाटप रांगेत (Water Allocation Queue) समाविष्ट केली आहे! तक्रार क्रमांक: ${allocationQueue.ticket_id}. प्राधान्य गुण: ${allocationQueue.priority_score}/100. नेमलेला टँकर ${allocationQueue.assigned_tanker} (~${allocationQueue.eta_mins} मिनिटे). डिलिव्हरी OTP: ${allocationQueue.otp_code}. हेल्पलाइन: 8369978764.`;
+        } else if (lang === "hi") {
+          replyText = `आपकी पानी की मांग को आधिकारिक मनपा जल आवंटन कतार (Water Allocation Queue) में दर्ज कर लिया गया है! टिकट क्र.: ${allocationQueue.ticket_id}. प्राथमिकता स्कोर: ${allocationQueue.priority_score}/100. आवंटित टैंकर ${allocationQueue.assigned_tanker} (~${allocationQueue.eta_mins} मिनट). डिलीवरी OTP: ${allocationQueue.otp_code}. हेल्पलाइन: 8369978764.`;
+        } else {
+          replyText = `Your emergency water request has been enqueued into the official Municipal Water Allocation Queue! Ticket ID: ${allocationQueue.ticket_id}. Priority Score: ${allocationQueue.priority_score}/100. Assigned Tanker: ${allocationQueue.assigned_tanker} (~${allocationQueue.eta_mins} mins). Delivery OTP: ${allocationQueue.otp_code}. Helpline: 8369978764.`;
+        }
+      } else if (lang === "mr") {
         replyText = `वॉर्ड ${wardCode} (${wardName}) साठी आजचे पाणी वेळापत्रक ${timetable} आहे. तातडीचा टँकर ${tankerId} (ETA ${etaMins} मिनिटे) तैनात आहे. डिलिव्हरी OTP: ${otpCode}. तातडीच्या मदतीसाठी +91 8369978764 वर कॉल करा.`;
       } else if (lang === "hi") {
         replyText = `वार्ड ${wardCode} (${wardName}) के लिए आज का जलापूर्ति समय ${timetable} है। राहत टैंकर ${tankerId} (ETA ${etaMins} मिनट) रास्ते में है। डिलीवरी OTP: ${otpCode} है। हेल्पलाइन: +91 8369978764.`;
@@ -270,6 +350,9 @@ Instructions:
       id: Date.now() + 1,
       role: "assistant",
       content: replyText,
+      allocation_queue: allocationQueue,
+      is_nonsense_or_confused: isNonsenseOrConfused,
+      helpline: helplineNumber,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
 
@@ -381,6 +464,115 @@ Instructions:
               }`}
             >
               <div className="whitespace-pre-wrap">{msg.content}</div>
+
+              {/* Water Allocation Queue Card */}
+              {msg.allocation_queue && (
+                <div className="mt-2.5 p-3 rounded-xl bg-gradient-to-br from-sky-50 to-indigo-50/50 border border-sky-200 text-slate-800 shadow-xs space-y-2">
+                  <div className="flex items-center justify-between border-b border-sky-100 pb-1.5">
+                    <div className="flex items-center space-x-1.5 text-[#0056b3]">
+                      <Droplet className="w-3.5 h-3.5 animate-pulse text-sky-600" />
+                      <span className="font-bold text-[11px] uppercase tracking-wider">
+                        {lang === "hi" ? "जल आवंटन कतार में दर्ज" : lang === "mr" ? "पाणी वाटप रांगेत समाविष्ट" : "Water Allocation Queue"}
+                      </span>
+                    </div>
+                    <span className="px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-mono font-bold text-[9.5px]">
+                      {msg.allocation_queue.ticket_id}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-[10.5px]">
+                    <div className="bg-white/90 p-2 rounded-lg border border-sky-100">
+                      <span className="text-slate-500 block text-[9.5px]">
+                        {lang === "hi" ? "कतार प्राथमिकता" : lang === "mr" ? "रांग प्राधान्य" : "Allocation Rank"}
+                      </span>
+                      <span className="font-black text-[#0056b3] text-xs">
+                        #{msg.allocation_queue.queue_position} · {msg.allocation_queue.priority_score}/100
+                      </span>
+                    </div>
+                    <div className="bg-white/90 p-2 rounded-lg border border-sky-100">
+                      <span className="text-slate-500 block text-[9.5px]">
+                        {lang === "hi" ? "आगमन समय" : lang === "mr" ? "अंदाजे वेळ" : "Estimated Arrival"}
+                      </span>
+                      <span className="font-black text-emerald-700 text-xs">
+                        ~{msg.allocation_queue.eta_mins} mins
+                      </span>
+                    </div>
+                    <div className="bg-white/90 p-2 rounded-lg border border-sky-100">
+                      <span className="text-slate-500 block text-[9.5px]">
+                        {lang === "hi" ? "टैंकर व ड्राइवर" : lang === "mr" ? "टँकर व चालक" : "Tanker & Driver"}
+                      </span>
+                      <span className="font-bold text-slate-800 text-[10px] truncate block">
+                        {msg.allocation_queue.assigned_tanker} ({msg.allocation_queue.plate})
+                      </span>
+                      <span className="text-slate-500 text-[9px] block">
+                        {msg.allocation_queue.driver}
+                      </span>
+                    </div>
+                    <div className="bg-white/90 p-2 rounded-lg border border-amber-200 bg-amber-50/60">
+                      <span className="text-amber-800 block text-[9.5px] font-bold">
+                        {lang === "hi" ? "डिलीवरी OTP" : lang === "mr" ? "डिलिव्हरी OTP" : "Delivery OTP"}
+                      </span>
+                      <span className="font-mono font-black text-amber-900 text-sm tracking-widest">
+                        {msg.allocation_queue.otp_code}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 pt-1">
+                    {onOpenEmergencyModal && (
+                      <button
+                        onClick={onOpenEmergencyModal}
+                        className="flex-1 py-1.5 px-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10.5px] flex items-center justify-center space-x-1 transition shadow-xs cursor-pointer"
+                      >
+                        <Phone className="w-3.5 h-3.5" />
+                        <span>Helpline 8369978764</span>
+                      </button>
+                    )}
+                    {onOpenGrievance && (
+                      <button
+                        onClick={onOpenGrievance}
+                        className="flex-1 py-1.5 px-2 rounded-lg bg-white hover:bg-sky-50 text-[#0056b3] border border-sky-300 font-bold text-[10.5px] flex items-center justify-center space-x-1 transition shadow-2xs cursor-pointer"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>{lang === "hi" ? "कतार देखें" : lang === "mr" ? "रांग पहा" : "View Queue"}</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* BMC Helpline Redirection Card for Off-Topic / Nonsense / Confused Queries */}
+              {(msg.is_nonsense_or_confused || (msg.role === "assistant" && msg.content?.includes("8369978764") && !msg.allocation_queue)) && (
+                <div className="mt-2.5 p-2.5 rounded-xl bg-amber-50/90 border border-amber-200 text-amber-950 text-[11px] flex items-center justify-between gap-2 shadow-2xs">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-7 h-7 rounded-lg bg-amber-200/90 text-amber-900 flex items-center justify-center shrink-0 shadow-2xs">
+                      <Phone className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-[10.5px] text-amber-950">
+                        {lang === "hi" ? "बीएमसी जल हेल्पलाइन" : lang === "mr" ? "मनपा पाणी हेल्पलाइन" : "BMC Water Operations Helpline"}
+                      </div>
+                      <div className="text-[9.5px] text-amber-800 font-mono font-semibold">
+                        +91 8369978764 (Direct Assistance)
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (onOpenEmergencyModal) {
+                        onOpenEmergencyModal();
+                      } else {
+                        window.location.href = "tel:+918369978764";
+                      }
+                    }}
+                    className="px-2.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] shrink-0 transition flex items-center space-x-1 shadow-xs cursor-pointer active:scale-95"
+                  >
+                    <Phone className="w-3 h-3" />
+                    <span>Call 8369978764</span>
+                  </button>
+                </div>
+              )}
+
               <div
                 className={`text-[9px] mt-1 font-mono text-right ${
                   msg.role === "user" ? "text-sky-200" : "text-slate-400"

@@ -2979,7 +2979,7 @@ export default function CitizenApp({ onBackToDashboard, onSignOut, user }) {
                 lang={lang}
                 detectedWard={detectedWard}
                 onOpenGrievance={() => setActiveNav("grievance")}
-                onOpenEmergencyModal={() => setShowEmergencyModal(true)}
+                onOpenEmergencyModal={handleStartHelplineCall}
               />
             </div>
           )}
